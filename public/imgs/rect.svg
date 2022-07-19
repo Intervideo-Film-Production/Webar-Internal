@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+
+  <mask id="myMask">
+    <!-- Everything under a white pixel will be visible -->
+    <rect x="0" y="0" width="1000" height="1000" fill="white" />
+
+    <!-- Everything under a black pixel will be invisible -->
+    <rect x="400" y="131" width="200" height="200" rx="40" ry="40" fill="black" />
+  </mask>
+
+  <rect id="mask" x="0" y="0" width="1000" height="1000" mask="url(#myMask)" />
+</svg>

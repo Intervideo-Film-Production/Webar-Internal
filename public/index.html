@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- BEGIN PGdataLayer -->
+  <script type="text/javascript">
+    // FIXME
+
+    if (typeof PGdataLayer == "undefined") {
+      var PGdataLayer = {};
+      // here I have added the text
+      var href = window.location.href;
+      var languageMatch = href.match(/\/([a-z]{2,3}\-[a-z]{2,3})\/[a-zA-Z\-]*\?.+$/);
+      var languageWithCode, language;
+      if (languageMatch != null) {
+        languageWithCode = languageMatch[1];
+        language = languageWithCode.split("-")[0];
+      } else {
+        languageWithCode = "de-DE";
+        language = "de";
+      }
+
+      console.log('current language: ', languageWithCode);
+      PGdataLayer.GTM = {
+        SiteLocale: "", // update based on locale
+        SiteTouchpoint: "33355",
+        SiteCountry: "", // update based on locale
+        SiteBrand: "Braun",
+        SiteLanguage: "English", // update based on locale
+        SitePlatform: "ModernWeb",
+        // "SiteEnvironment": "Dev",
+        // "SiteHost": "Azure",
+        SiteTechnicalAgency: "TMC",
+        SiteStatus: "Live",
+        SiteLocalContainer: "GTM-MWHNMTR",
+        // "GoogleAnalyticsLocal": "UA-15118132-102",
+        GoogleAnalyticsSiteSpeedSampleRate: "High",
+        GoogleAnalyticsAllowLinker: "false",
+        GoogleAnalyticsLinkerDomains: "",
+        GoogleAnalyticsReportingView: "229632994",
+        GoogleReCaptcha: "false",
+        ConsentOverlay: "", // update based on locale
+        ConsentOverlayID: "", // update based on locale
+        SitePrivacyProtection: "", // CCPA for US only
+      };
+
+      const formattedLocale = Intl.getCanonicalLocales(languageWithCode)[0];
+      const reactStaticData = "%REACT_APP_STATIC_DATA%";
+      let cookieConsentQueryLink;
+      if (reactStaticData.toLowerCase() == "true") {
+        cookieConsentQueryLink = "./sourceData/cookieConsent.json";
+      } else {
+        cookieConsentQueryLink = "https://%REACT_APP_PROJECT_ID%.api.sanity.io/v2021-03-25/data/query/%REACT_APP_DATASET%?query=*%5B_type%20%3D%3D%22cookieConsent%22%5D";
+      }
+      fetch(cookieConsentQueryLink)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          let fetchedData;
+
+          if (reactStaticData.toLowerCase() == "true") {
+            fetchedData = data;
+          } else {
+            fetchedData = data.result;
+          }
+          let cookieConsentData = fetchedData.find(cd => {
+            const cdLocale = Intl.getCanonicalLocales(cd.supportLanguage.replace('_', '-'))[0];
+            return formattedLocale == cdLocale;
+          })
+
+          PGdataLayer.GTM = {
+            ...PGdataLayer.GTM,
+            SiteLanguage: cookieConsentData.siteLanguage,
+            ConsentOverlay: cookieConsentData.consentOverlay,
+            ConsentOverlayID: cookieConsentData.consentOverlayID,
+            SitePrivacyProtection: cookieConsentData.sitePrivacyProtection,
+            SiteLocale: cookieConsentData.supportLanguage, // update based on locale
+            SiteCountry: language, // update based on locale
+          };
+
+          console.log('load google tag manager');
+          // Google Tag Manager
+          (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({
+              "gtm.start": new Date().getTime(),
+              event: "gtm.js",
+            });
+            var f = d.getElementsByTagName(s)[0],
+              j = d.createElement(s),
+              dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+          })(window, document, "script", "dataLayer", "GTM-MWHNMTR");
+
+          // End Google Tag Manager
+        });
+    }
+  </script>
+
+  <!-- END PGdataLayer -->
+
+  <meta charset="utf-8" />
+  <meta aria-valuetext="%REACT_APP_STATIC_DATA%" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+  <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+  <!-- We've included a slightly modified version of A-Frame, which fixes some polish concerns -->
+  <!-- <script defer src="//cdn.8thwall.com/web/aframe/8frame-1.2.0.min.js"></script> -->
+
+  <script defer src="./8frame/8frame-1.2.0.js"></script>
+  <script defer src="//cdn.8thwall.com/web/aframe/aframe-extras-6.1.1.min.js"></script>
+  <script defer src="//cdn.8thwall.com/web/aframe/aframe-physics-system-4.0.1.min.js"></script>
+  <script defer src="https://cdn.8thwall.com/web/aframe/aframe-chromakey-material-1.1.1.min.js"></script>
+
+  <!-- XR Extras - provides utilities like load screen, almost there, and error handling.
+         See github.com/8thwall/web/tree/master/xrextras -->
+  <script defer src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
+
+  <!--  &lt;!&ndash; 8thWall Web - Replace the app key here with your own app key &ndash;&gt;-->
+  <script defer async
+    src="//apps.8thwall.com/xrweb?appKey=dN599OZhj4gqv3UIrE8Ojom6OSylxEruF8wkpfpMID59sFesBybDKiAPDBNrb5XbIfTMg5"></script>
+
+  <title>Web AR</title>
+</head>
+
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MWHNMTR" height="0" width="0"
+      style="display: none; visibility: hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+</body>
+
+</html>
