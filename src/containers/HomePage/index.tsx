@@ -28,6 +28,7 @@ const HomePage = () => {
     if (nextPage) {
       history.push('/scan-page');
     }
+    console.log("++++++====")
   })
 
   return (

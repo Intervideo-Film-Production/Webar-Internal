@@ -1,4 +1,4 @@
-import { ARPage, HomePage, ScanPage, ProductFinder } from "../containers";
+import { ARPage, HomePage, ScanPage, ProductFinder,AllowScanPage} from "../containers";
 import { IAppRoute } from "../core/declarations/app";
 /**
  * WARNING: for further development, check deployment scenario before developing nested routes
@@ -13,12 +13,13 @@ export const AppPages = {
   StorePage: '/store',
   ARPage: '/ar-page',
   ScanPage: '/scan-page',
-  ProductFinderPage: '/product-finder'
+  ProductFinderPage: '/product-finder',
+  // AllowScanPage:'/allow-scan',
 };
 
 const routeMaps: IAppRoute[] = [
   {
-    path: AppPages.HomePage,
+    path: AppPages.InitialPage,
     exact: true,
     component: HomePage
   },
@@ -33,7 +34,11 @@ const routeMaps: IAppRoute[] = [
   {
     path: AppPages.ProductFinderPage,
     component: ProductFinder
-  }
+  },
+  // {
+  //   path: AppPages.AllowScanPage,
+  //   component: AllowScanPage
+  // }
 ];
 
 export default routeMaps;
