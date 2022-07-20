@@ -7,19 +7,19 @@ import { IAppRoute } from "../core/declarations/app";
  * see helpers.tsx / getRootSubPath function for current solution
 */
 export const AppPages = {
+  HomePage: '/',
   InitialPage: '/initialize',
   LoginPage: '/login',
-  HomePage: '/',
   StorePage: '/store',
   ARPage: '/ar-page',
   ScanPage: '/scan-page',
   ProductFinderPage: '/product-finder',
-  // AllowScanPage:'/allow-scan',
+  AllowScanPage:'/allow-scan',
 };
 
 const routeMaps: IAppRoute[] = [
   {
-    path: AppPages.InitialPage,
+    path: AppPages.HomePage,
     exact: true,
     component: HomePage
   },
@@ -35,10 +35,10 @@ const routeMaps: IAppRoute[] = [
     path: AppPages.ProductFinderPage,
     component: ProductFinder
   },
-  // {
-  //   path: AppPages.AllowScanPage,
-  //   component: AllowScanPage
-  // }
+  {
+    path: AppPages.AllowScanPage,
+    component: AllowScanPage
+  }
 ];
 
 export default routeMaps;
