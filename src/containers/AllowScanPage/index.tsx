@@ -10,6 +10,7 @@ const AllowScanPage = () => {
     const { t } = useTranslation();
     const history = useHistory();
     const [nextPage, setNextPage] = useState(false);
+    const [backPage, setBackPage] = useState(false);
 
 
 
@@ -18,6 +19,9 @@ const AllowScanPage = () => {
     useEffect(() => {
         if (nextPage) {
             history.push('/scan-page');
+        }
+        if (backPage) {
+            history.push('/');
         }
     })
 
@@ -37,7 +41,7 @@ const AllowScanPage = () => {
                     alignContent: 'flex-start',
                     position: 'relative'
                 }}>
-                    <Typography variant="h4" style={{ padding: '7%', fontSize: '1.9rem' }}>
+                    <Typography variant="h4" style={{ padding: '7%', fontSize: '1.9rem',color:"black" }}>
                         AR requires access to
                         device motion sensors.
                     </Typography>
@@ -48,8 +52,14 @@ const AllowScanPage = () => {
                         justifyContent: "space-around",
 
                     }}>
-                        <Button variant="outlined" style={{ borderRadius: 0, width: "40%" }}>Cancel</Button>
-                        <Button variant="contained" style={{ borderRadius: 0, width: "40%" }}>Allow</Button>
+                        <Button variant="outlined" style={{ borderRadius: 0, width: "40%" }}
+                                onClick={() => { setBackPage(true); }}
+
+                        >Cancel</Button>
+                        <Button variant="contained" style={{ borderRadius: 0, width: "40%" }}
+                                onClick={() => { setNextPage(true); }}
+
+                        >Allow</Button>
                     </Grid>
                 </Grid>
             </Grid>

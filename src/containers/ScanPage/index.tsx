@@ -16,11 +16,22 @@ import { map, Subject, filter, throttle, interval } from 'rxjs';
 import parse from 'html-react-parser';
 import { IQRCodeData } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
+
 import Hammer from "hammerjs"
+
 
 declare let XR8: any;
 declare let XRExtras: any;
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
+
+//
+// const useStyles = makeStyles({
+//   buttonStep: {
+//     width: "150px",
+//     height: "49px",
+//     backgroundImage: "linear-gradient(.25turn, #f00, #00f)"
+//   }
+// });
 
 // FIXME should check UX for button press behavior
 const ScanPage = () => {
@@ -250,6 +261,7 @@ const ScanPage = () => {
           </Grid>
         </Grid>
 
+
         <Grid sx={{
           textAlign: 'center',
           marginBottom: 5,
@@ -268,15 +280,57 @@ const ScanPage = () => {
               >{data.name}</span></>)
             }
           </Typography>
+          <Typography variant="h3" >or pick one</Typography>
 
-          <AppButton
-            ref={productFinderButton}
-            variant="contained"
-            sx={theme => ({
-              whiteSpace: 'pre-wrap',
-              ...theme.scanPageStyles.productFinderButton
-            })}
-          >{t("ScanPageHelperButtonText")}</AppButton>
+          <img
+                src="https://ik.imagekit.io/ikmedia/backlit.jpg"
+                style={{
+                  width:"50px",
+                  height:"50px",
+                  borderRadius: "50%",
+                  margin: "2%"
+                }}
+                onClick={() => console.log("+++++here will handle")}
+            />
+          <img
+              src="https://ik.imagekit.io/ikmedia/backlit.jpg"
+              style={{
+                width:"50px",
+                height:"50px",
+                borderRadius: "50%",
+                margin: "2%"
+
+              }}
+              onClick={() => console.log("+++++here will handle")}
+          />  <img
+            src="https://ik.imagekit.io/ikmedia/backlit.jpg"
+            style={{
+              width:"50px",
+              height:"50px",
+              borderRadius: "50%",
+              margin: "2%"
+
+            }}
+            onClick={() => console.log("+++++here will handle")}
+        />  <img
+            src="https://ik.imagekit.io/ikmedia/backlit.jpg"
+            style={{
+              width:"50px",
+              height:"50px",
+              borderRadius: "50%",
+              margin: "2%"
+
+            }}
+            onClick={() => console.log("+++++here will handle")}
+        />
+        {/*  <AppButton*/}
+        {/*    ref={productFinderButton}*/}
+        {/*    variant="contained"*/}
+        {/*    sx={theme => ({*/}
+        {/*      whiteSpace: 'pre-wrap',*/}
+        {/*      ...theme.scanPageStyles.productFinderButton*/}
+        {/*    })}*/}
+        {/*  >{t("ScanPageHelperButtonText")}</AppButton>*/}
         </Grid>
       </AppGrid>
     </>
