@@ -18,7 +18,9 @@ const AllowScanPage = () => {
     // by putting a loading box when next page button is clicked
     useEffect(() => {
         if (nextPage) {
-            history.push('/scan-page');
+            // history.push('/scan-page');
+            history.push('/ar-page');
+
         }
         if (backPage) {
             history.push('/');

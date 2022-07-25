@@ -48,9 +48,9 @@ const ARPage = () => {
   return (
     <>
       <ArComponent />
-      <Fade in={modelLoading}>
-        <LoadingScreen product={productData as IProduct} />
-      </Fade>
+      {/*<Fade in={modelLoading}>*/}
+      {/*  <LoadingScreen product={productData as IProduct} />*/}
+      {/*</Fade>*/}
     </>
   )
 }

@@ -183,21 +183,21 @@ const ScanPage = () => {
 
   }, [imageTargets.data]);
 
-  useEffect(() => {
-    const hammer = new Hammer.Manager(productFinderButton.current as HTMLButtonElement, {});
-    const singleTap = new Hammer.Tap({ event: "tap" });
-    const press = new Hammer.Press({ event: "press", pointers: 1, threshold: 9, time: 300 });
-    hammer.add([singleTap, press]);
-
-    hammer.on('tap', function (e) {
-      history.push('/product-finder')
-    });
-
-    hammer.on('press', (e) => {
-      history.push('/product-finder?showFullList=true')
-    })
-
-  }, [history])
+  // useEffect(() => {
+  //   const hammer = new Hammer.Manager(productFinderButton.current as HTMLButtonElement, {});
+  //   const singleTap = new Hammer.Tap({ event: "tap" });
+  //   const press = new Hammer.Press({ event: "press", pointers: 1, threshold: 9, time: 300 });
+  //   hammer.add([singleTap, press]);
+  //
+  //   hammer.on('tap', function (e) {
+  //     history.push('/product-finder')
+  //   });
+  //
+  //   hammer.on('press', (e) => {
+  //     history.push('/product-finder?showFullList=true')
+  //   })
+  //
+  // }, [history])
 
   return (
     <>
@@ -323,14 +323,14 @@ const ScanPage = () => {
             }}
             onClick={() => console.log("+++++here will handle")}
         />
-        {/*  <AppButton*/}
-        {/*    ref={productFinderButton}*/}
-        {/*    variant="contained"*/}
-        {/*    sx={theme => ({*/}
-        {/*      whiteSpace: 'pre-wrap',*/}
-        {/*      ...theme.scanPageStyles.productFinderButton*/}
-        {/*    })}*/}
-        {/*  >{t("ScanPageHelperButtonText")}</AppButton>*/}
+          {/*<AppButton*/}
+          {/*  ref={productFinderButton}*/}
+          {/*  variant="contained"*/}
+          {/*  sx={theme => ({*/}
+          {/*    whiteSpace: 'pre-wrap',*/}
+          {/*    ...theme.scanPageStyles.productFinderButton*/}
+          {/*  })}*/}
+          {/*>{t("ScanPageHelperButtonText")}</AppButton>*/}
         </Grid>
       </AppGrid>
     </>
