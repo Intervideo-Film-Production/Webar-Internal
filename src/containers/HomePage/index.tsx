@@ -8,6 +8,7 @@ import { AppGrid, AppButton, LoadingBox } from 'src/components';
 import { useQueryClient } from 'react-query';
 import HomePageBackground from './HomePageBackground';
 import { IQRCodeData } from 'src/core/declarations/app';
+// import { AppPages } from 'src/routes/routeMap';
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -26,7 +27,8 @@ const HomePage = () => {
   // by putting a loading box when next page button is clicked
   useEffect(() => {
     if (nextPage) {
-      history.push('/scan-page');
+      // console.log(AppPages.AllowScanPage);
+      history.push("/allow-scan");
     }
   })
 

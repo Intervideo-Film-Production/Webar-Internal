@@ -87,6 +87,54 @@ const ARPageController = (props: ARPageControllerProps) => {
         bottom: 0,
         left: 0,
         right: 0,
+        marginBottom: '350px',
+        display:'grid',
+        justifyContent:"flex-end",
+        marginRight:'50px'
+      }}>
+        <Grid  style ={{color:"black"}}sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          p: '0px 20px 10px',
+        }}>
+          <AppButton
+              variant='contained'
+              style={{borderRadius:'0',
+              background:'#f93a6b'
+              }}
+              onClick={() => console.log("+++++++++++++===========1")}
+          >VR</AppButton>
+        </Grid>
+        <Grid  style ={{color:"black"}}sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          p: '0px 20px 10px',
+        }}>    <AppButton
+            variant='contained'
+            style={{borderRadius:'0',
+              background:'#f93a6b'
+            }}
+            onClick={() => console.log("+++++++++++++===========1")}
+        >Call</AppButton></Grid>
+        <Grid  style ={{color:"black"}}sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          p: '0px 20px 10px',
+        }}>    <AppButton
+            variant='contained'
+            style={{borderRadius:'0',
+              background:'#f93a6b'
+            }}
+            onClick={() => console.log("+++++++++++++===========1")}
+        >Email</AppButton></Grid>
+      </Grid>
+
+
+      <Grid sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
         marginBottom: '20px'
       }}>
         <Grid sx={{
@@ -121,7 +169,32 @@ const ARPageController = (props: ARPageControllerProps) => {
                   backgroundColor: '#fff',
                 }
               }} onClick={() => controlHandle(true)}>
-              <AppArrowUpIcon sx={theme => ({ ...theme.arPageStyles.pageController.toggleArrowUp })} />
+              {/*<AppArrowUpIcon sx={theme => ({ ...theme.arPageStyles.pageController.toggleArrowUp })} />*/}
+              <AppButton
+                  sx={theme => ({
+                    backgroundColor: 'transparent',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
+                    borderRadius: 0,
+                    whiteSpace: 'pre-wrap',
+                    width: 65,
+                    height: 70,
+                    textAlign: 'center',
+                    position: 'relative',
+                    fontSize:'12px',
+                    ...(theme.arPageStyles.pageController.scanOtherProductBox)
+                  })}
+                  onClick={() => scanButtonHandle()}
+                  startIcon={<AppCameraSquareIcon sx={theme => ({
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    top: 0,
+                    left: 0
+                  })} />}
+              >
+                {t('ArPageScanOtherProductButtonText')}
+              </AppButton>
             </AppButton>
           </Grid>
 
@@ -137,30 +210,30 @@ const ARPageController = (props: ARPageControllerProps) => {
                 p: '24px',
               }}>
                 <Grid>
-                  <AppButton
-                    sx={theme => ({
-                      backgroundColor: 'transparent',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundSize: 'cover',
-                      borderRadius: 0,
-                      whiteSpace: 'pre-wrap',
-                      width: 90,
-                      height: 90,
-                      textAlign: 'center',
-                      position: 'relative',
-                      ...(theme.arPageStyles.pageController.scanOtherProductBox)
-                    })}
-                    onClick={() => scanButtonHandle()}
-                    startIcon={<AppCameraSquareIcon sx={theme => ({
-                      position: 'absolute',
-                      width: '100%',
-                      height: '100%',
-                      top: 0,
-                      left: 0
-                    })} />}
-                  >
-                    {t('ArPageScanOtherProductButtonText')}
-                  </AppButton>
+                  {/*<AppButton*/}
+                  {/*  sx={theme => ({*/}
+                  {/*    backgroundColor: 'transparent',*/}
+                  {/*    backgroundRepeat: 'no-repeat',*/}
+                  {/*    backgroundSize: 'cover',*/}
+                  {/*    borderRadius: 0,*/}
+                  {/*    whiteSpace: 'pre-wrap',*/}
+                  {/*    width: 90,*/}
+                  {/*    height: 90,*/}
+                  {/*    textAlign: 'center',*/}
+                  {/*    position: 'relative',*/}
+                  {/*    ...(theme.arPageStyles.pageController.scanOtherProductBox)*/}
+                  {/*  })}*/}
+                  {/*  onClick={() => scanButtonHandle()}*/}
+                  {/*  startIcon={<AppCameraSquareIcon sx={theme => ({*/}
+                  {/*    position: 'absolute',*/}
+                  {/*    width: '100%',*/}
+                  {/*    height: '100%',*/}
+                  {/*    top: 0,*/}
+                  {/*    left: 0*/}
+                  {/*  })} />}*/}
+                  {/*>*/}
+                  {/*  {t('ArPageScanOtherProductButtonText')}*/}
+                  {/*</AppButton>*/}
                 </Grid>
                 <Grid>
                   <IconButton sx={{

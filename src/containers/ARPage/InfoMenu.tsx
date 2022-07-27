@@ -134,7 +134,6 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 								{lng.name}
 							</ListItemButton >))}
 					</List>
-
 				</TabPanel>
 			</Box>
 		</Modal>

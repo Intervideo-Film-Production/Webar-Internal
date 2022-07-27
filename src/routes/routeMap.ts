@@ -1,4 +1,4 @@
-import { ARPage, HomePage, ScanPage, ProductFinder } from "../containers";
+import { ARPage, HomePage, ScanPage, ProductFinder,AllowScanPage} from "../containers";
 import { IAppRoute } from "../core/declarations/app";
 /**
  * WARNING: for further development, check deployment scenario before developing nested routes
@@ -7,13 +7,14 @@ import { IAppRoute } from "../core/declarations/app";
  * see helpers.tsx / getRootSubPath function for current solution
 */
 export const AppPages = {
+  HomePage: '/',
   InitialPage: '/initialize',
   LoginPage: '/login',
-  HomePage: '/',
   StorePage: '/store',
   ARPage: '/ar-page',
   ScanPage: '/scan-page',
-  ProductFinderPage: '/product-finder'
+  ProductFinderPage: '/product-finder',
+  AllowScanPage:'/allow-scan',
 };
 
 const routeMaps: IAppRoute[] = [
@@ -33,6 +34,10 @@ const routeMaps: IAppRoute[] = [
   {
     path: AppPages.ProductFinderPage,
     component: ProductFinder
+  },
+  {
+    path: AppPages.AllowScanPage,
+    component: AllowScanPage
   }
 ];
 

@@ -71,10 +71,10 @@ const CompareDrawer = memo(({ drawerOpen, onDrawerToggle, onCompareDetails }: IC
           <KeyboardArrowRightIcon />
         </IconButton>
 
-        <Typography
-          variant="h6"
-          sx={theme => ({ ...theme.arPageStyles.compareDrawer.titleBox.title })}
-        >{t('ArPageCompareTitle', { productName: name })}</Typography>
+        {/*<Typography*/}
+        {/*  variant="h6"*/}
+        {/*  sx={theme => ({ ...theme.arPageStyles.compareDrawer.titleBox.title })}*/}
+        {/*>{t('ArPageCompareTitle', { productName: name })}</Typography>*/}
 
       </Grid>
 
