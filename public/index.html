@@ -2,105 +2,6 @@
 <html lang="en">
 
 <head>
-  <!-- BEGIN PGdataLayer -->
-  <!-- implement later -->
-  <!-- <script type="text/javascript">
-    if (typeof PGdataLayer == "undefined") {
-      var PGdataLayer = {};
-      // here I have added the text
-      var href = window.location.href;
-      var languageMatch = href.match(/\/([a-z]{2,3}\-[a-z]{2,3})\/[a-zA-Z\-]*\?.+$/);
-      var languageWithCode, language;
-      if (languageMatch != null) {
-        languageWithCode = languageMatch[1];
-        language = languageWithCode.split("-")[0];
-      } else {
-        languageWithCode = "de-DE";
-        language = "de";
-      }
-
-      console.log('current language: ', languageWithCode);
-      PGdataLayer.GTM = {
-        SiteLocale: "", // update based on locale
-        SiteTouchpoint: "33355",
-        SiteCountry: "", // update based on locale
-        SiteBrand: "Braun",
-        SiteLanguage: "English", // update based on locale
-        SitePlatform: "ModernWeb",
-        // "SiteEnvironment": "Dev",
-        // "SiteHost": "Azure",
-        SiteTechnicalAgency: "TMC",
-        SiteStatus: "Live",
-        SiteLocalContainer: "GTM-MWHNMTR",
-        // "GoogleAnalyticsLocal": "UA-15118132-102",
-        GoogleAnalyticsSiteSpeedSampleRate: "High",
-        GoogleAnalyticsAllowLinker: "false",
-        GoogleAnalyticsLinkerDomains: "",
-        GoogleAnalyticsReportingView: "229632994",
-        GoogleReCaptcha: "false",
-        ConsentOverlay: "", // update based on locale
-        ConsentOverlayID: "", // update based on locale
-        SitePrivacyProtection: "", // CCPA for US only
-      };
-
-      const formattedLocale = Intl.getCanonicalLocales(languageWithCode)[0];
-      const reactStaticData = "%REACT_APP_STATIC_DATA%";
-      let cookieConsentQueryLink;
-      if (reactStaticData.toLowerCase() == "true") {
-        cookieConsentQueryLink = "./sourceData/cookieConsent.json";
-      } else {
-        cookieConsentQueryLink = "https://%REACT_APP_PROJECT_ID%.api.sanity.io/v2021-03-25/data/query/%REACT_APP_DATASET%?query=*%5B_type%20%3D%3D%22cookieConsent%22%5D";
-      }
-      fetch(cookieConsentQueryLink)
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          let fetchedData;
-
-          if (reactStaticData.toLowerCase() == "true") {
-            fetchedData = data;
-          } else {
-            fetchedData = data.result;
-          }
-          let cookieConsentData = fetchedData.find(cd => {
-            const cdLocale = Intl.getCanonicalLocales(cd.supportLanguage.replace('_', '-'))[0];
-            return formattedLocale == cdLocale;
-          })
-
-          PGdataLayer.GTM = {
-            ...PGdataLayer.GTM,
-            SiteLanguage: cookieConsentData.siteLanguage,
-            ConsentOverlay: cookieConsentData.consentOverlay,
-            ConsentOverlayID: cookieConsentData.consentOverlayID,
-            SitePrivacyProtection: cookieConsentData.sitePrivacyProtection,
-            SiteLocale: cookieConsentData.supportLanguage, // update based on locale
-            SiteCountry: language, // update based on locale
-          };
-
-          console.log('load google tag manager');
-          // Google Tag Manager
-          (function (w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({
-              "gtm.start": new Date().getTime(),
-              event: "gtm.js",
-            });
-            var f = d.getElementsByTagName(s)[0],
-              j = d.createElement(s),
-              dl = l != "dataLayer" ? "&l=" + l : "";
-            j.async = true;
-            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-            f.parentNode.insertBefore(j, f);
-          })(window, document, "script", "dataLayer", "GTM-MWHNMTR");
-
-          // End Google Tag Manager
-        });
-    }
-  </script> -->
-
-  <!-- END PGdataLayer -->
-
   <meta charset="utf-8" />
   <meta aria-valuetext="%REACT_APP_STATIC_DATA%" />
   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -135,10 +36,6 @@
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
-  <!-- <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MWHNMTR" height="0" width="0"
-      style="display: none; visibility: hidden"></iframe></noscript> -->
-  <!-- End Google Tag Manager (noscript) -->
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
   <!--
