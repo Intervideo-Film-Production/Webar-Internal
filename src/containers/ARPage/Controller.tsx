@@ -204,7 +204,7 @@ const ARPageController = (props: ARPageControllerProps) => {
               zIndex: 1,
             }}
           >
-            <AppButton
+            {/* <AppButton
               className={classes.topRadius}
               sx={{
                 width: 90,
@@ -217,8 +217,9 @@ const ARPageController = (props: ARPageControllerProps) => {
               }}
               onClick={() => controlHandle(true)}
             >
-              {/*<AppArrowUpIcon sx={theme => ({ ...theme.arPageStyles.pageController.toggleArrowUp })} />*/}
-              <AppButton
+            </AppButton> */}
+
+            <AppButton
                 sx={(theme) => ({
                   backgroundColor: "transparent",
                   backgroundRepeat: "no-repeat",
@@ -247,7 +248,6 @@ const ARPageController = (props: ARPageControllerProps) => {
               >
                 {t("ArPageScanOtherProductButtonText")}
               </AppButton>
-            </AppButton>
           </Grid>
         </Grid>
 
@@ -265,32 +265,6 @@ const ARPageController = (props: ARPageControllerProps) => {
                   p: "24px",
                 }}
               >
-                <Grid>
-                  {/*<AppButton*/}
-                  {/*  sx={theme => ({*/}
-                  {/*    backgroundColor: 'transparent',*/}
-                  {/*    backgroundRepeat: 'no-repeat',*/}
-                  {/*    backgroundSize: 'cover',*/}
-                  {/*    borderRadius: 0,*/}
-                  {/*    whiteSpace: 'pre-wrap',*/}
-                  {/*    width: 90,*/}
-                  {/*    height: 90,*/}
-                  {/*    textAlign: 'center',*/}
-                  {/*    position: 'relative',*/}
-                  {/*    ...(theme.arPageStyles.pageController.scanOtherProductBox)*/}
-                  {/*  })}*/}
-                  {/*  onClick={() => scanButtonHandle()}*/}
-                  {/*  startIcon={<AppCameraSquareIcon sx={theme => ({*/}
-                  {/*    position: 'absolute',*/}
-                  {/*    width: '100%',*/}
-                  {/*    height: '100%',*/}
-                  {/*    top: 0,*/}
-                  {/*    left: 0*/}
-                  {/*  })} />}*/}
-                  {/*>*/}
-                  {/*  {t('ArPageScanOtherProductButtonText')}*/}
-                  {/*</AppButton>*/}
-                </Grid>
                 <Grid>
                   <IconButton
                     sx={{

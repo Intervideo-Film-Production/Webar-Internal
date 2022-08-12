@@ -15,7 +15,6 @@ import { useAppContext } from "src/core/store";
 import { FontLoader } from "src/components/FontLoader";
 import RegisterAframe from "src/A-Frame/RegisterAframe";
 import queryString from "query-string";
-import AppHelmet from "src/components/AppHelmet";
 
 const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED;
@@ -110,9 +109,6 @@ const AppRouter = () => {
 
   return (
     <>
-      {/* set html language attribute */}
-      {/* FIXME */}
-      {/* <AppHelmet /> */}
 
       {/* Register Aframe */}
       {script8thWallDisabled ? null : <RegisterAframe />}
