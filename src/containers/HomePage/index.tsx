@@ -46,7 +46,8 @@ const HomePage = () => {
           bgcolor: "transparent",
           p: 2,
           position: "relative",
-          alignSelf: "stretch"
+          alignSelf: "stretch",
+          background: "radial-gradient(#fbfbfb 20%, #d9d9d9)"
         }}>
           <HomePageBackground source={backgroundVideo} onBackgroundDisplayable={onBackgroundDisplayHandle} />
 

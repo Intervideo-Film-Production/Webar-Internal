@@ -20,20 +20,11 @@ import parse from "html-react-parser";
 import { IQRCodeData } from "src/core/declarations/app";
 import { useAppContext } from "src/core/store";
 
-import Hammer from "hammerjs";
-
 declare let XR8: any;
 declare let XRExtras: any;
-const script8thWallDisabled = false; // process.env.REACT_APP_8THWALL_DISABLED
 
-//
-// const useStyles = makeStyles({
-//   buttonStep: {
-//     width: "150px",
-//     height: "49px",
-//     backgroundImage: "linear-gradient(.25turn, #f00, #00f)"
-//   }
-// });
+// NOTE: for development only
+const script8thWallDisabled = false; // process.env.REACT_APP_8THWALL_DISABLED
 
 // FIXME should check UX for button press behavior
 const ScanPage = () => {
@@ -204,22 +195,6 @@ const ScanPage = () => {
     }
   }, [imageTargets.data]);
 
-  // useEffect(() => {
-  //   const hammer = new Hammer.Manager(productFinderButton.current as HTMLButtonElement, {});
-  //   const singleTap = new Hammer.Tap({ event: "tap" });
-  //   const press = new Hammer.Press({ event: "press", pointers: 1, threshold: 9, time: 300 });
-  //   hammer.add([singleTap, press]);
-  //
-  //   hammer.on('tap', function (e) {
-  //     history.push('/product-finder')
-  //   });
-  //
-  //   hammer.on('press', (e) => {
-  //     history.push('/product-finder?showFullList=true')
-  //   })
-  //
-  // }, [history])
-
   return (
     <>
       <Box
@@ -325,7 +300,7 @@ const ScanPage = () => {
               </>
             )}
           </Typography>
-          <Typography variant="h3">or pick one</Typography>
+          <Typography sx={{opacity: .7}} variant="h3">or pick one</Typography>
           <img
             src="https://ik.imagekit.io/ikmedia/backlit.jpg"
             style={{

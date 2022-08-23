@@ -52,7 +52,6 @@ const ArComponent = memo(() => {
     }
   );
 
-  console.log("++++++++++here is the product id", productId);
   const headlineRef = useRef<HTMLDivElement>(null);
   const [headlineHeight, setHeadlineHeight] = useState(0);
 
