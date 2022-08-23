@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AppBar, IconButton, Toolbar } from '@mui/material';
+import { AppBar, IconButton, Toolbar, Link } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
-import { Link } from 'react-router-dom';
 import { useAppContext } from 'src/core/store';
 import { filter } from 'rxjs';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +50,7 @@ const AppHeader = ({ brandName, logo }: AppHeaderProps) => {
       color="secondary"
     >
       <Toolbar sx={{ paddingLeft: "20px", "paddingRight": "20px" }}>
-        <Link to="/" style={{ height: '24px' }}>
+        <Link sx={theme => ({ ...theme.headerStyles.logo })} href="/">
           <img style={{ height: '100%', width: 'auto' }} src={logo} alt={brandName} />
         </Link>
         <IconButton onClick={() => shareLinkHandle()} sx={theme => ({
@@ -59,7 +58,7 @@ const AppHeader = ({ brandName, logo }: AppHeaderProps) => {
           p: 0,
           ...theme.headerStyles.iconButton
         })}>
-          <ShareIcon />
+          <ShareIcon sx={{ width: "100%", height: "100%" }} />
         </IconButton>
       </Toolbar>
     </AppBar>

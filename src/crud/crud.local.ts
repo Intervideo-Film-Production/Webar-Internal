@@ -49,6 +49,8 @@ export const getLocalQRCodeData = (qrValue: string) => {
         id: qrCode?._id,
         brandId: brandData?._id,
         logo: `./sourceData${brandImage?.localUrl}`,
+        // TODO local data currently not used in Internal so put data empty here
+        categories: [],
         brandName: brandData?.brandName,
         palette: brandData?.palette,
         backgroundColor: brandData?.backgroundColor,

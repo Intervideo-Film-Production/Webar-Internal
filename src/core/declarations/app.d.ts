@@ -15,6 +15,7 @@ declare module '@mui/material/styles' {
 
     headerStyles: {
       root: IComponentStyles;
+      logo: IComponentStyles;
       iconButton: IComponentStyles;
     };
     productCompareBox?: {};
@@ -133,6 +134,7 @@ declare module '@mui/material/styles' {
 
     headerStyles?: {
       root: IComponentStyles;
+      logo: IComponentStyles;
       iconButton: IComponentStyles;
     };
 
@@ -303,10 +305,17 @@ export interface IFont {
   fontUrl: string;
 };
 
+export interface ICategory {
+  id: string;
+  name: string;
+  image: string;
+}
+
 export interface IQRCodeData {
   id: string;
   brandId: string;
   brandName: string;
+  categories: ICategory[];
   logo: string;
   coreTheme: { styles: string, fontFamily: string };
   fontSetting: IFont[];

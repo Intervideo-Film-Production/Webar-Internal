@@ -38,6 +38,11 @@ export const GET_TRANSLATION_QUERY = `*[_type=="translation"]{'brandId': brand->
 // FIXME handle static data for fontSetting
 export const QRCODE_QUERY = `*[_type=="qrCode" && qrValue == $qrValue]{
     'id': _id,
+    "categories": categories[]->{
+      "id":_id,
+      name,
+      "image": image.asset->["url"]
+    },
     ...brand->{
     "logo": logo["asset"]->["url"],
     'brandId': @._id,
