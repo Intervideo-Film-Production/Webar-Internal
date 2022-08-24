@@ -69,3 +69,7 @@ img.lazy {
   max-height: 100vh;
   object-fit: cover;
 }
+
+.prompt-box-8w {
+  z-index: 9999 !important;
+}
