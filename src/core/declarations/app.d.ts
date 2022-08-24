@@ -50,9 +50,8 @@ declare module '@mui/material/styles' {
       };
       pageController: {
         scanOtherProductBox: IComponentStyles;
-        toggleArrowUp: IComponentStyles;
-        toggleArrowDown: IComponentStyles;
-        button: IComponentStyles;
+        productName: IComponentStyles;
+        starsBox: IComponentStyles;
       };
       compareDrawer: {
         root: IComponentStyles;
@@ -383,7 +382,7 @@ export interface IButtonContent {
   hasBeardStyles: boolean;
   animationLooping: boolean;
   popupContent: { [key: string]: any; }[];
-
+  sound: string;
   hasOverlay: boolean;
   androidScreenOverlay: string | { [key: string]: any; };
   iosScreenOverlay: string | { [key: string]: any; };

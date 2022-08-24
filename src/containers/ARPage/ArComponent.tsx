@@ -94,15 +94,17 @@ const ArComponent = memo(() => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [reviewContentOpen, setReviewContentOpen] = useState(false);
   const [showGrandControl, setShowGrandControl] = useState(true);
-  const [showControl, setShowControl] = useState(false);
+  // FIXME remove
+  // const [showControl, setShowControl] = useState(false);
   const [buttonName, setButtonName] = useState("");
   const [compareProductId, setCompareProductId] = useState("");
   const [compareDetailsOpen, setCompareDetailsOpen] = useState(false);
   const [infoMenuOpen, setInfoMenuOpen] = useState(false);
 
-  const showControlHandle = useCallback((shouldControlShow: boolean) => {
-    setShowControl(shouldControlShow);
-  }, []);
+  // FIXME remove
+  // const showControlHandle = useCallback((shouldControlShow: boolean) => {
+  //   setShowControl(shouldControlShow);
+  // }, []);
 
   const handleDrawerToggle = useCallback((shouldDrawerOpen: boolean) => {
     setShowGrandControl(!shouldDrawerOpen);
@@ -117,22 +119,25 @@ const ArComponent = memo(() => {
   const handleReviewToggle = useCallback(
     (shouldReviewOpen: boolean) => {
       setReviewContentOpen(shouldReviewOpen);
-      showControlHandle(false);
+      // showControlHandle(false);
     },
-    [showControlHandle]
+    [
+      // FIXME
+      // showControlHandle
+    ]
   );
 
-  const handleCompareDetailsClose = useCallback(
-    (shouldCloseCompareDrawer?: boolean) => {
-      setCompareDetailsOpen(false);
+  // const handleCompareDetailsClose = useCallback(
+  //   (shouldCloseCompareDrawer?: boolean) => {
+  //     setCompareDetailsOpen(false);
 
-      if (shouldCloseCompareDrawer) {
-        setDrawerOpen(false);
-        setShowGrandControl(true);
-      }
-    },
-    []
-  );
+  //     if (shouldCloseCompareDrawer) {
+  //       setDrawerOpen(false);
+  //       setShowGrandControl(true);
+  //     }
+  //   },
+  //   []
+  // );
 
   const recenterEvent = useMemo(() => new Subject(), []);
   const arButtonToggleEvent = useMemo(() => new Subject<string>(), []);
@@ -168,7 +173,8 @@ const ArComponent = memo(() => {
   const compareDrawerHandle = useCallback(() => {
     setDrawerOpen(true);
     setShowGrandControl(false);
-    setShowControl(false);
+    // FIXME remove
+    // setShowControl(false);
   }, []);
 
   const buttonPopupHandle = useCallback(
@@ -185,7 +191,8 @@ const ArComponent = memo(() => {
       /**
        * data should be used to render popup content somehow
        */
-      setShowControl(false);
+      // FIXME remove
+      // setShowControl(false);
       buttonPopupHandle(arButtonName);
     },
     [buttonPopupHandle]
@@ -225,11 +232,12 @@ const ArComponent = memo(() => {
 
       {/* controller */}
       <ARPageController
-        showControl={showControl}
+        // FIXME remove
+        // showControl={showControl}
         showGrandControl={showGrandControl}
-        onShowControl={(shouldControlDisplay) =>
-          showControlHandle(shouldControlDisplay)
-        }
+        // onShowControl={(shouldControlDisplay) =>
+        //   showControlHandle(shouldControlDisplay)
+        // }
         onInfo={() => infoMenuHandle(true)}
         onRecenter={() => reCenterHandle()}
         onReview={() => handleReviewToggle(true)}
