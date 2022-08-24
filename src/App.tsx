@@ -7,6 +7,7 @@ import { Route, BrowserRouter, Switch, withRouter } from 'react-router-dom';
 import { AppPages } from './routes/routeMap';
 import { getRootSubPath, useTrackBrowserHeight } from './core/helpers';
 import { AppStore, Context, useAppContext } from 'src/core/store';
+// import { ReactQueryDevtools } from 'react-query/devtools';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +72,7 @@ function App() {
             <Wrapper />
           </BrowserRouter>
         </React.Suspense>
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </Context.Provider>
 

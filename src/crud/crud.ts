@@ -18,7 +18,8 @@ import {
   getLocalSearchCriteria,
   getLocalSearchCriteriaValues,
   findLocalMatchingProducts,
-  getLocalFirstProductQRCode
+  getLocalFirstProductQRCode,
+  getAllLocalProductsByQrCode
 } from './crud.local';
 import client from './api';
 
@@ -38,11 +39,6 @@ export const GET_TRANSLATION_QUERY = `*[_type=="translation"]{'brandId': brand->
 // FIXME handle static data for fontSetting
 export const QRCODE_QUERY = `*[_type=="qrCode" && qrValue == $qrValue]{
     'id': _id,
-    "categories": categories[]->{
-      "id":_id,
-      name,
-      "image": image.asset->["url"]
-    },
     ...brand->{
     "logo": logo["asset"]->["url"],
     'brandId': @._id,
@@ -137,6 +133,41 @@ export const PRODUCT_QUERY_BY_ID = `
     },
     productQRCodes
   }
+`;
+
+export const PRODUCT_QUERY_BY_QRCODE = `
+*[_type == "product"
+  && isDisabled != true
+  && _id in *[_type =="qrCode" && @._id == $qrCodeId][0].productList[]._ref
+]{
+  'id': _id,
+  'name': name[$lng],
+  'productClaim': productClaim[$lng],
+  'arObjectUrl': arObject.asset->['url'],
+  'image': productImage.asset->['url'],
+  searchImage,
+  'imageCaption': productImageCaption[$lng],
+  "ratings": *[_type == 'review' && references(^._id)].stars,
+  'comments': *[_type == 'review' && references(^._id)] | order(stars desc)[0..2]{
+    stars,
+    comment
+  },
+  'categoryId': categories->['_id'],
+  'brandId': brand->['_id'],
+  bgColor,
+  fgColor,
+  'productFeaturesDescription': productFeatures.productFeatureDescription[$lng],
+  'productFeatures': productFeatures.productFeatureItem[][$lng],
+  'beardStyles': *[_type == 'beardStyle' && product._ref == ^._id]{
+    'id': @['_id'],
+    'beardImage': beardImage.asset->['url'],
+    'popupIcon': popupIcon.asset->['url'],
+    'popupTitle': popupTitle[$lng],
+    'popupContent': popupContent[$lng],
+    'productButtonName': productButton->['buttonName']
+  },
+  productQRCodes
+}
 `;
 
 export const PRODUCT_REVIEW_QUERY = `
@@ -258,59 +289,80 @@ export const FIRST_PRODUCT_QR_CODE_QUERY = `
   }.qr
 `;
 
+/**
+ * Get a list of supported languages by the system
+ * @returns 
+ */
 export const getSupportLanguages = () => {
   return useLocalData !== 'TRUE'
     ? client.fetch<ISupportLanguage[]>(GET_SUPPORT_LANGUAGES)
     : getLocalSupportLanguages()
 }
 
+/**
+ * get data associated with a `store` QR code
+ * @param qrValue 
+ * @returns 
+ */
 export const getQRCodeData = (qrValue: string) => {
   return useLocalData !== 'TRUE'
     ? client.fetch<IQRCodeData[]>(QRCODE_QUERY, { qrValue: qrValue }).then(res => res[0])
     : getLocalQRCodeData(qrValue);
 }
 
+/**
+ * Get a specific product by associated qr code
+ * @param qrValue 
+ * @param lng 
+ * @param qrCodeId 
+ * @returns 
+ */
 export const getProduct = (qrValue: string, lng: string, qrCodeId: string): Promise<IProduct | null> => {
   return useLocalData !== 'TRUE'
     ? client.fetch<IProduct[]>(PRODUCT_QUERY, { qrValue, lng, qrCodeId }).then(res => res.length === 0 ? null : res[0])
     : getLocalProductByQrCode(qrValue, lng, qrCodeId)
 }
 
+/**
+ * Get a specific product by id
+ * @param productId 
+ * @param lng 
+ * @param qrCodeId 
+ * @returns 
+ */
 export const getProductById = (productId: string, lng: string, qrCodeId: string): Promise<IProduct | null> => {
   return useLocalData !== 'TRUE'
     ? client.fetch<IProduct[]>(PRODUCT_QUERY_BY_ID, { productId, lng, qrCodeId }).then(res => res.length === 0 ? null : res[0])
     : getLocalProductById(productId, lng, qrCodeId);
 }
 
-export const getProductComments = (productId: string) => {
+export const getAllProductsByQRCode = (qrCodeId: string, lng: string): Promise<IProduct[] | null> => {
   return useLocalData !== 'TRUE'
-    ? client.fetch<IComment[]>(PRODUCT_REVIEW_QUERY, { productId })
-    : getLocalProductComments(productId);
+    ? client.fetch<IProduct[]>(PRODUCT_QUERY_BY_QRCODE, { qrCodeId, lng })
+    : getAllLocalProductsByQrCode();
 }
 
+/**
+ * Find products to compare with a specific product
+ * @param productId id of project to compare
+ * @param qrCodeId  
+ * @param categoryId 
+ * @param lng 
+ * @returns list of products of the same category and qrCode
+ */
 export const getCompareProducts = (productId: string, qrCodeId: string, categoryId: string, lng: string): Promise<IProduct[] | null> => {
   return useLocalData !== 'TRUE'
     ? client.fetch<IProduct[]>(COMPARE_PRODUCTS_QUERY, { productId, qrCodeId, categoryId, lng })
     : getLocalCompareProducts(productId, qrCodeId, categoryId, lng);
 }
 
-export const getButtonAnimationContent = (productId: string, lng: string): Promise<IButtonContent[] | null> => {
-  return useLocalData !== 'TRUE'
-    ? client.fetch<IButtonContent[]>(BUTTON_ANIMATION_CONTENT_QUERY, { productId, lng })
-    : getLocalButtonAnimationContent(productId, lng);
-}
-
-export const getSearchCriteria = (lng: string) => {
-  return useLocalData !== 'TRUE'
-    ? client.fetch<ISearchCriteria[]>(SEARCH_CRITERIA_QUERY, { lng })
-    : getLocalSearchCriteria(lng);
-}
-
-export const getSearchCriteriaValues = (lng: string) => {
-  return useLocalData !== 'TRUE'
-    ? client.fetch<ISearchCriteriaValue[]>(CRITERIA_VALUE_QUERY, { lng })
-    : getLocalSearchCriteriaValues(lng);
-}
+/**
+ * Find product lists base on search criteria
+ * @param params 
+ * @param lng 
+ * @param qrCodeId 
+ * @returns 
+ */
 
 export const findMatchingProducts = (params: { questionId: string, answerId: string | string[] }[], lng: string, qrCodeId: string) => {
   // filter empty answers
@@ -327,6 +379,34 @@ export const findMatchingProducts = (params: { questionId: string, answerId: str
       [`questionId${i}`]: b.questionId,
       [`answerId${i}`]: b.answerId,
     }), {}), lng, qrCodeId)
+}
+
+export const getProductComments = (productId: string) => {
+  return useLocalData !== 'TRUE'
+    ? client.fetch<IComment[]>(PRODUCT_REVIEW_QUERY, { productId })
+    : getLocalProductComments(productId);
+}
+
+// AR Button content
+
+export const getButtonAnimationContent = (productId: string, lng: string): Promise<IButtonContent[] | null> => {
+  return useLocalData !== 'TRUE'
+    ? client.fetch<IButtonContent[]>(BUTTON_ANIMATION_CONTENT_QUERY, { productId, lng })
+    : getLocalButtonAnimationContent(productId, lng);
+}
+
+// Search criteria
+
+export const getSearchCriteria = (lng: string) => {
+  return useLocalData !== 'TRUE'
+    ? client.fetch<ISearchCriteria[]>(SEARCH_CRITERIA_QUERY, { lng })
+    : getLocalSearchCriteria(lng);
+}
+
+export const getSearchCriteriaValues = (lng: string) => {
+  return useLocalData !== 'TRUE'
+    ? client.fetch<ISearchCriteriaValue[]>(CRITERIA_VALUE_QUERY, { lng })
+    : getLocalSearchCriteriaValues(lng);
 }
 
 /**

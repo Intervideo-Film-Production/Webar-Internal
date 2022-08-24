@@ -305,17 +305,10 @@ export interface IFont {
   fontUrl: string;
 };
 
-export interface ICategory {
-  id: string;
-  name: string;
-  image: string;
-}
-
 export interface IQRCodeData {
   id: string;
   brandId: string;
   brandName: string;
-  categories: ICategory[];
   logo: string;
   coreTheme: { styles: string, fontFamily: string };
   fontSetting: IFont[];

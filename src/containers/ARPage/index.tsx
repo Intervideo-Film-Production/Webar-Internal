@@ -7,14 +7,19 @@ import LoadingScreen from './LoadingScreen';
 import { Fade } from '@mui/material';
 import { useAppContext } from 'src/core/store';
 import { concat, filter, take } from 'rxjs';
+import { useLocation } from 'react-router-dom';
 
 const ARPage = () => {
   const { appLoadingStateEvent, arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
+  const location = useLocation<{ productId: string }>();
+  const productId = location.state.productId;
 
   const [modelLoading, setModelLoading] = useState(true);
 
   const queryClient = useQueryClient();
-  const productData = queryClient.getQueryData<IProduct>(QueryKeys.product);
+  const productData = !!productId
+    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId])
+    : queryClient.getQueryData<IProduct>(QueryKeys.product);
 
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,9 +53,9 @@ const ARPage = () => {
   return (
     <>
       <ArComponent />
-      {/*<Fade in={modelLoading}>*/}
-      {/*  <LoadingScreen product={productData as IProduct} />*/}
-      {/*</Fade>*/}
+      <Fade in={modelLoading}>
+        <LoadingScreen product={productData as IProduct} />
+      </Fade>
     </>
   )
 }

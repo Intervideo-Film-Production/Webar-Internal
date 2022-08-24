@@ -2,10 +2,10 @@
 // this current version includes image targets will be tackled after the holiday
 
 import { Grid, Typography, Box, Toolbar } from "@mui/material";
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
-import { AppGrid, AppButton } from "src/components";
+import { AppGrid } from "src/components";
 //rxjs installed for testing only
 import {
   qrdisplayPipelineModule,
@@ -19,6 +19,7 @@ import { map, Subject, filter, throttle, interval } from "rxjs";
 import parse from "html-react-parser";
 import { IQRCodeData } from "src/core/declarations/app";
 import { useAppContext } from "src/core/store";
+import ScanPageProductList from './ScanPageProductList';
 
 declare let XR8: any;
 declare let XRExtras: any;
@@ -34,6 +35,7 @@ const ScanPage = () => {
   const history = useHistory();
   const queryClient = useQueryClient();
   const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
+
   const onCameraUpdateEvent = useRef(new Subject<any>());
   const productFinderButton = useRef<HTMLButtonElement | null>(null);
 
@@ -277,7 +279,7 @@ const ScanPage = () => {
         <Grid
           sx={{
             textAlign: "center",
-            marginBottom: 5,
+            marginBottom: 7,
             marginTop: 3,
             position: "absolute",
             bottom: 0,
@@ -300,47 +302,10 @@ const ScanPage = () => {
               </>
             )}
           </Typography>
-          <Typography sx={{opacity: .7}} variant="h3">or pick one</Typography>
-          <img
-            src="https://ik.imagekit.io/ikmedia/backlit.jpg"
-            style={{
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              margin: "2%",
-            }}
-            onClick={() => console.log("+++++here will handle")}
-          />
-          <img
-            src="https://ik.imagekit.io/ikmedia/backlit.jpg"
-            style={{
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              margin: "2%",
-            }}
-            onClick={() => console.log("+++++here will handle")}
-          />{" "}
-          <img
-            src="https://ik.imagekit.io/ikmedia/backlit.jpg"
-            style={{
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              margin: "2%",
-            }}
-            onClick={() => console.log("+++++here will handle")}
-          />{" "}
-          <img
-            src="https://ik.imagekit.io/ikmedia/backlit.jpg"
-            style={{
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              margin: "2%",
-            }}
-            onClick={() => console.log("+++++here will handle")}
-          />
+          <Typography sx={{ opacity: .7, mb: 2 }} variant="h3">or pick one</Typography>
+
+          <ScanPageProductList />
+
           {/*<AppButton*/}
           {/*  ref={productFinderButton}*/}
           {/*  variant="contained"*/}
