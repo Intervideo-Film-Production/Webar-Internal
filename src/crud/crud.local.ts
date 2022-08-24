@@ -49,8 +49,6 @@ export const getLocalQRCodeData = (qrValue: string) => {
         id: qrCode?._id,
         brandId: brandData?._id,
         logo: `./sourceData${brandImage?.localUrl}`,
-        // TODO local data currently not used in Internal so put data empty here
-        categories: [],
         brandName: brandData?.brandName,
         palette: brandData?.palette,
         backgroundColor: brandData?.backgroundColor,
@@ -84,14 +82,14 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
       const arObject = data.find(d => d._type === DataTypes.sanityFileAsset && d._id === product?.arObject.asset._ref);
       const productImage = data.find(d => d._type === DataTypes.sanityImageAsset && d._id === product?.productImage.asset._ref);
       const beardStyles = data.filter(d => d._type === DataTypes.beardStyle && d.product._ref === product?._id)
-      .map(bs => ({
-        id: bs?._id,
-        beardImage: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.beardImage.asset._ref)?.localUrl}`,
-        popupIcon: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.popupIcon.asset._ref)?.localUrl}`,
-        popupTitle: bs?.popupTitle ? bs?.popupTitle[lng] : '',
-        popupContent: bs?.popupContent ? bs?.popupContent[lng] : null,
-        productButtonName: data.find(_d => _d._type === DataTypes.button && _d._id === bs?.productButton._ref)?.buttonName,
-      })) as IBeardStyle[];
+        .map(bs => ({
+          id: bs?._id,
+          beardImage: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.beardImage.asset._ref)?.localUrl}`,
+          popupIcon: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.popupIcon.asset._ref)?.localUrl}`,
+          popupTitle: bs?.popupTitle ? bs?.popupTitle[lng] : '',
+          popupContent: bs?.popupContent ? bs?.popupContent[lng] : null,
+          productButtonName: data.find(_d => _d._type === DataTypes.button && _d._id === bs?.productButton._ref)?.buttonName,
+        })) as IBeardStyle[];
 
       const reviews = data.filter(d => d._type === DataTypes.review && d.product._ref === product?._id);
 
@@ -151,14 +149,14 @@ const getLocalProductList = (predicate: (product: SanityOriginalDataType) => boo
         const arObject = data.find(d => d._type === DataTypes.sanityFileAsset && d._id === product?.arObject.asset._ref);
         const productImage = data.find(d => d._type === DataTypes.sanityImageAsset && d._id === product?.productImage.asset._ref);
         const beardStyles = data.filter(d => d._type === DataTypes.beardStyle && d.product._ref === product?._id)
-        .map(bs => ({
-          id: bs?._id,
-          beardImage: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.beardImage.asset._ref)?.localUrl}`,
-          popupIcon: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.popupIcon.asset._ref)?.localUrl}`,
-          popupTitle: bs?.popupTitle ? bs?.popupTitle[lng] : '',
-          popupContent: bs?.popupContent ? bs?.popupContent[lng] : null,
-          productButtonName: data.find(_d => _d._type === DataTypes.button && _d._id === bs?.productButton._ref)?.buttonName,
-        })) as IBeardStyle[];
+          .map(bs => ({
+            id: bs?._id,
+            beardImage: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.beardImage.asset._ref)?.localUrl}`,
+            popupIcon: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.popupIcon.asset._ref)?.localUrl}`,
+            popupTitle: bs?.popupTitle ? bs?.popupTitle[lng] : '',
+            popupContent: bs?.popupContent ? bs?.popupContent[lng] : null,
+            productButtonName: data.find(_d => _d._type === DataTypes.button && _d._id === bs?.productButton._ref)?.buttonName,
+          })) as IBeardStyle[];
 
         const reviews = data.filter(d => d._type === DataTypes.review && d.product._ref === product?._id);
 
@@ -202,6 +200,10 @@ export const getLocalProductById = (productId: string, lng: string, qrCodeId: st
   lng,
   qrCodeId
 );
+
+export const getAllLocalProductsByQrCode = (): Promise<IProduct[]> => {
+  return new Promise((resolve) => resolve([]));
+};
 
 export const getProductUrlsInCategory = (categoryId: string) => lastValueFrom(
   localDataTransform<Pick<IProduct, 'arObjectUrl' | 'id'>[]>(data => {

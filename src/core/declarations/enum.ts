@@ -11,7 +11,8 @@ export enum QueryKeys {
   searchCriteriaValue = 'searchCriteriaValue',
   productfinder = 'productfinder',
   imageTargetsCodes = 'imageTargetsCodes',
-  homePageContent = 'homePageContent'
+  homePageContent = 'homePageContent',
+  productsListByQRCode = 'productsListByQRCode'
 };
 
 export enum DataTypes {

@@ -28,26 +28,34 @@ import ScreenOverlay from "./ScreenOverlay";
 import { getButtonAnimationContent } from "src/crud/crud";
 import { useTranslation } from "react-i18next";
 import BeardStyleContent from "./BeardStyleContent";
+import { useLocation } from "react-router-dom";
 
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
+  const location = useLocation<{ productId: string }>();
+  const productId = location.state.productId;
 
+  const productData = !!productId
+    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
+    : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
+
+  console.log(productData);
   const {
-    id: productId,
+    id,
     name,
     productClaim,
     arObjectUrl,
     beardStyles,
-  } = queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
+  } = productData;
 
   const { data: buttonData } = useQuery(
     QueryKeys.buttonAnimationContent,
     () => {
-      return getButtonAnimationContent(productId as string, i18n.language);
+      return getButtonAnimationContent(id as string, i18n.language);
     },
     {
-      enabled: !!productId,
+      enabled: !!id,
       notifyOnChangeProps: ["data"],
     }
   );
@@ -261,7 +269,7 @@ const ArComponent = memo(() => {
       <InfoMenu
         open={infoMenuOpen}
         onClose={() => infoMenuHandle(false)}
-        // headlineHeight={headlineHeight}
+      // headlineHeight={headlineHeight}
       />
     </AppGrid>
   );
