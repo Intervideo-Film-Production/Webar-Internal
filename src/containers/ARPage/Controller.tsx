@@ -1,6 +1,5 @@
 import React from "react";
-import { Grid, Fade, IconButton, Collapse } from "@mui/material";
-import { makeStyles, createStyles } from "@mui/styles";
+import { Grid, IconButton, Collapse, Typography } from "@mui/material";
 import {
   ProductInfoIcon,
   ReCenterIcon,
@@ -13,10 +12,11 @@ import { useAppContext } from "src/core/store";
 import { useHistory } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
+import { useLocation } from "react-router-dom";
+import { IProduct } from "src/core/declarations/app";
 
 interface ARPageControllerProps {
-  showControl: boolean;
-  onShowControl?: (shouldControlDisplay: boolean) => any;
+  // onShowControl?: (shouldControlDisplay: boolean) => any;
   showGrandControl?: boolean;
   onInfo?: Function;
   onRecenter?: Function;
@@ -24,41 +24,34 @@ interface ARPageControllerProps {
   onCompare?: Function;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    topRadius: {
-      borderTopLeftRadius: 15,
-      borderTopRightRadius: 15,
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0,
-    },
-    zIndex: {
-      zIndex: 9,
-    },
-  })
-);
-
 const ARPageController = (props: ARPageControllerProps) => {
   const {
-    showControl,
-    onShowControl,
+    // onShowControl,
     showGrandControl,
     onInfo,
     onRecenter,
     onReview,
     onCompare,
   } = props;
-  const classes = useStyles();
   const { t } = useTranslation();
   const { productClaimToggleEvent, appLoadingStateEvent } = useAppContext();
   const history = useHistory();
   const queryClient = useQueryClient();
 
-  const controlHandle = (shouldControlDisplay: boolean) => {
-    if (onShowControl) {
-      onShowControl(shouldControlDisplay);
-    }
-  };
+  // FIXME check location state should be default
+  const location = useLocation<{ productId: string }>();
+  const productId = location.state.productId;
+
+  const productData = !!productId
+    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
+    : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
+
+  // FIXME
+  // const controlHandle = (shouldControlDisplay: boolean) => {
+  //   if (onShowControl) {
+  //     onShowControl(shouldControlDisplay);
+  //   }
+  // };
 
   const infoButtonHandle = () => {
     if (onInfo) {
@@ -122,127 +115,61 @@ const ARPageController = (props: ARPageControllerProps) => {
             <ProductInfoIcon sx={{ fontSize: 42 }} />
           </IconButton>
 
+          <AppButton
+            sx={(theme) => ({
+              backgroundColor: "transparent",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              borderRadius: 0,
+              whiteSpace: "pre-wrap",
+              width: '53px',
+              height: '53px',
+              textAlign: "center",
+              position: "relative",
+              fontSize: "10px",
+              ...theme.arPageStyles.pageController.scanOtherProductBox,
+            })}
+            onClick={() => scanButtonHandle()}
+            startIcon={
+              <AppCameraSquareIcon
+                sx={(theme) => ({
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  top: 0,
+                  left: 0,
+                })}
+              />
+            }
+          >
+            {t("ArPageScanOtherProductButtonText")}
+          </AppButton>
+
           <IconButton
             sx={{ p: 0, zIndex: 2 }}
             onClick={() => reCenterButtonHandle()}
           >
             <ReCenterIcon sx={{ fontSize: 42 }} />
           </IconButton>
-
-          <Grid
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              zIndex: 1,
-            }}
-          >
-            {/* <AppButton
-              className={classes.topRadius}
-              sx={{
-                width: 90,
-                height: 48,
-                marginBottom: "4%",
-                backgroundColor: "#fff",
-                "&:hover": {
-                  backgroundColor: "#fff",
-                },
-              }}
-              onClick={() => controlHandle(true)}
-            >
-            </AppButton> */}
-
-            <AppButton
-                sx={(theme) => ({
-                  backgroundColor: "transparent",
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                  borderRadius: 0,
-                  whiteSpace: "pre-wrap",
-                  width: 65,
-                  height: 70,
-                  textAlign: "center",
-                  position: "relative",
-                  fontSize: "10px",
-                  ...theme.arPageStyles.pageController.scanOtherProductBox,
-                })}
-                onClick={() => scanButtonHandle()}
-                startIcon={
-                  <AppCameraSquareIcon
-                    sx={(theme) => ({
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      top: 0,
-                      left: 0,
-                    })}
-                  />
-                }
-              >
-                {t("ArPageScanOtherProductButtonText")}
-              </AppButton>
-          </Grid>
         </Grid>
 
-        <Collapse in={showControl} classes={{ wrapperInner: classes.zIndex }}>
-          <Grid
-            className={classes.topRadius}
+        <Grid
+          sx={{
+            bgcolor: "#fff",
+          }}
+        >
+          <AppGrid
             sx={{
-              bgcolor: "#fff",
+              gridTemplateColumns: "1fr 1fr",
+              p: "24px",
             }}
           >
-            <Fade in={showControl}>
-              <AppGrid
-                sx={{
-                  gridTemplateColumns: "1fr auto 1fr",
-                  p: "24px",
-                }}
-              >
-                <Grid>
-                  <IconButton
-                    sx={{
-                      transform: "translateY(-20px)",
-                    }}
-                    onClick={() => {
-                      controlHandle(false);
-                    }}
-                  >
-                    <AppArrowUpIcon
-                      sx={(theme) => ({
-                        ...theme.arPageStyles?.pageController.toggleArrowDown,
-                      })}
-                    />
-                  </IconButton>
-                </Grid>
-                <AppGrid
-                  sx={{
-                    rowGap: "10px",
-                  }}
-                >
-                  <AppButton
-                    fullWidth
-                    variant="contained"
-                    sx={(theme) => theme.arPageStyles?.pageController.button}
-                    onClick={() => reviewButtonHandle()}
-                  >
-                    {t("ArPageReviewsButtonText")}
-                  </AppButton>
-                  <AppButton
-                    fullWidth
-                    variant="contained"
-                    sx={(theme) => theme.arPageStyles?.pageController.button}
-                    onClick={() => compareButtonHandle()}
-                  >
-                    {t("ArPageCompareButtonText")}
-                  </AppButton>
-                </AppGrid>
-              </AppGrid>
-            </Fade>
-          </Grid>
-        </Collapse>
+            <Typography>{productData?.name}</Typography>
+            {/* TODO 3d ar name */}
+
+            {/* TODO stars & show review button */}
+          </AppGrid>
+        </Grid>
       </Grid>
     </Collapse>
   );

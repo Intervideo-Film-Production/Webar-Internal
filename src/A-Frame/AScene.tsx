@@ -40,6 +40,11 @@ const sceneGenerator = `
     <span id="overlayVideoWrapper">
     
     </span>
+
+    <span id="soundWrapper">
+    
+    </span>
+    
       <!--box mapping reflections-->
       <img id="posx" src="imgs/HDRs/boxmap/posx.jpg">
       <img id="posy" src="imgs/HDRs/boxmap/posy.jpg">
@@ -67,7 +72,7 @@ interface AFrameComponentProps {
   buttonListSub: Subject<IButtonContent[]>;
   beardStylesSub: Subject<IBeardStyle[]>;
   recenterEvent?: Subject<any>;
-  onButtonClick?: Function;
+  onButtonClick?: (buttonName: string) => any;
   buttonToggleEvent?: Subject<string>;
   beardStyleEvent?: Subject<boolean>;
   switchBeardStyleEvent?: Subject<string>;
@@ -133,17 +138,19 @@ const AScene = memo((props: AFrameComponentProps) => {
 
         // bind entity to ascene
         const modelContainer = document.querySelector('#modelContainer');
-        
+
         // reset parent scale & rotation
         modelContainer?.setAttribute('scale', "1 1 1");
         modelContainer?.setAttribute('rotation', "0 0 0");
         if (!!modelContainer) {
           modelContainer.innerHTML = '';
-
           const entity = document.createElement('a-entity') as AFrameElement;
           entity.setAttribute('id', 'modelEntity');
           entity.setAttribute('gltf-model', '#model');
-          entity.setAttribute('scale', '10 10 10');
+          // FIXME debug only
+          // entity.setAttribute('position', '0 0 .5');
+          // entity.setAttribute('rotation', '-90 0 0');
+          entity.setAttribute('scale', '5 5 5');
           entity.setAttribute('cubemap-static', '')
           entity.setAttribute('shadow', 'receive: false');
           entity.setAttribute('animation-mixer', {
@@ -159,6 +166,33 @@ const AScene = memo((props: AFrameComponentProps) => {
       return () => { subscription.unsubscribe(); }
     }
   }, [productDataSub]);
+
+  useEffect(() => {
+    const soundWrapper = document.querySelector('a-scene span#soundWrapper');
+
+    const subscription = buttonListSub.subscribe((buttons) => {
+      // remove audio
+      const allAudios = document.querySelectorAll('a-scene span#soundWrapper audio');
+      allAudios.forEach(el => el.remove());
+
+      // load sound files
+      buttons.forEach(btn => {
+        if (!!btn.sound) {
+          const audioEl = document.createElement('audio');
+          audioEl.setAttribute('id', `btn-audio-${btn.buttonName}`);
+          const audioSource = document.createElement('source');
+          audioSource.setAttribute('src', btn.sound);
+          audioSource.setAttribute('type', "audio/mp3");
+          audioEl.appendChild(audioSource);
+          soundWrapper?.appendChild(audioEl);
+        }
+
+      })
+    })
+
+    return () => { subscription.unsubscribe(); }
+
+  }, [buttonListSub])
 
   useEffect(() => {
 
@@ -190,6 +224,7 @@ const AScene = memo((props: AFrameComponentProps) => {
           </video>
         `).join(' ');
 
+
         const overlayVideoMeshEl = document.createElement('a-entity') as AFrameElement;
         overlayVideoMeshEl.setAttribute('id', 'overlayVideoMesh');
         overlayVideoMeshEl.setAttribute('visible', 'false');
@@ -213,6 +248,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   }, [buttonListSub])
 
   useEffect(() => {
+    // beard styles
     const subscription = beardStylesSub.subscribe(beardStyles => {
       // remove previous beard styles
       document.querySelectorAll('xrextras-resource.beard-style-xr-resource').forEach(el => {
@@ -235,6 +271,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   }, [beardStylesSub])
 
   useEffect(() => {
+    // AR buttons
     const aFrameComponent = document.querySelector('a-scene') as AFrameElement | null;
 
     aFrameComponentRef.current = aFrameComponent;
@@ -306,6 +343,13 @@ const AScene = memo((props: AFrameComponentProps) => {
                     } else {
                       if (buttonClickHandle) {
                         buttonClickHandle(btnItem.buttonName);
+                        // FIXME temporary if no popup content stop after x seconds
+                        if (!btnItem.popupContent) {
+                          setTimeout(() => {
+                            buttonClickHandle("");
+                          }, 8000)
+                        }
+
                       }
                     }
                   })
@@ -327,7 +371,7 @@ const AScene = memo((props: AFrameComponentProps) => {
         })
 
       const buttonClickHandle = (buttonName: string) => {
-        DisableButtons();
+        if (!!buttonName) DisableButtons();
         if (!buttonHandleEventRef.current) { console.error('something wrong') };
         if (buttonHandleEventRef.current) {
           buttonHandleEventRef.current.next(buttonName);
@@ -342,8 +386,15 @@ const AScene = memo((props: AFrameComponentProps) => {
 
   useEffect(() => {
     if (onButtonClick && buttonHandleEventRef.current) {
-      const subscription = buttonHandleEventRef.current.subscribe((data: unknown) => {
-        onButtonClick(data);
+      const subscription = buttonHandleEventRef.current.subscribe((buttonName: string) => {
+        // trigger content outside
+        onButtonClick(buttonName);
+
+        // play sound if any
+        const buttonAudio = document.querySelector(`#btn-audio-${buttonName}`) as HTMLAudioElement;
+        buttonAudio?.play();
+
+        // TODO stop playing audio when if button content is closed
       })
 
       return () => { subscription.unsubscribe() }
@@ -493,6 +544,8 @@ const AScene = memo((props: AFrameComponentProps) => {
   }, [buttonListSub])
 
   useEffect(() => {
+
+    // TODO
     if (buttonToggleEvent) {
       const subscription = buttonToggleEvent.subscribe(buttonName => {
 

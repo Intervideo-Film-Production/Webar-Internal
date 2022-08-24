@@ -306,6 +306,8 @@ export const getLocalButtonAnimationContent = (productId: string, lng: string) =
           hasAnimation: b.hasAnimation,
           animationLooping: b.animationLooping,
           icon: btnIcon,
+          // TODO
+          sound: '',
           hasOverlay: b.hasOverlay,
           androidScreenOverlay,
           iosScreenOverlay,

@@ -209,6 +209,7 @@ export const BUTTON_ANIMATION_CONTENT_QUERY = `
     hasAnimation,
     animationLooping,
     'icon': icon.asset->url,
+    'sound': sound.asset->["url"],
     hasOverlay,
     'androidScreenOverlay': androidScreenOverlay.asset->['url'],
     'iosScreenOverlay': iosScreenOverlay.asset->['url'],
