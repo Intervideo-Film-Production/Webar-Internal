@@ -1,14 +1,23 @@
-import React, { useMemo, forwardRef, ForwardedRef } from 'react';
-import { Grid, GridTypeMap, Toolbar, Typography, Box, Slide } from '@mui/material';
-import Rating from '@mui/material/Rating';
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { styled } from '@mui/material/styles';
-import { AppGrid, LazyImage } from 'src/components';
-import { makeStyles } from '@mui/styles';
-import { IProduct } from 'src/core/declarations/app';
-import { DefaultComponentProps } from '@mui/material/OverridableComponent';
-import ProductHeadline from './ProductHeadline';
-import { useAppContext } from 'src/core/store';
+import React, { useMemo, forwardRef, ForwardedRef } from "react";
+import {
+  Grid,
+  GridTypeMap,
+  Toolbar,
+  Typography,
+  Box,
+  Slide,
+} from "@mui/material";
+import Rating from "@mui/material/Rating";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
+import { styled } from "@mui/material/styles";
+import { AppGrid, LazyImage } from "src/components";
+import { makeStyles } from "@mui/styles";
+import { IProduct } from "src/core/declarations/app";
+import { DefaultComponentProps } from "@mui/material/OverridableComponent";
+import ProductHeadline from "./ProductHeadline";
+import { useAppContext } from "src/core/store";
 
 interface LoadingScreenProps {
   product: IProduct;
@@ -21,8 +30,10 @@ interface IStyledRatingsProps {
 }
 
 const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  [`& .${linearProgressClasses.bar}`]: { ...theme.arPageStyles?.loadingScreen?.progressLoadingBar },
-}))
+  [`& .${linearProgressClasses.bar}`]: {
+    ...theme.arPageStyles?.loadingScreen?.progressLoadingBar,
+  },
+}));
 
 // const styledRatingsDefaultStyles = {
 //   display: 'inline-flex',
@@ -53,51 +64,63 @@ const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 const useStyles = makeStyles(() => ({
   contentBlock1: {
-    marginTop: 'auto'
+    marginTop: "auto",
   },
   contentBlock2: {
-    marginLeft: 'auto'
+    marginLeft: "auto",
   },
-  contentBlock3: {}
+  contentBlock3: {},
 }));
 
-const LoadingScreen = forwardRef(({ product, ...props }: LoadingScreenProps & DefaultComponentProps<GridTypeMap>, ref: ForwardedRef<HTMLDivElement>) => {
-  const classes = useStyles();
-  const { appTheme } = useAppContext();
-  // const blockClass = (blockIndex: number) => {
-  //   if (blockIndex === 0) return classes.contentBlock1;
-  //   if (blockIndex === 1) return classes.contentBlock2;
-  //   if (blockIndex === 2) return classes.contentBlock3;
-  // }
+const LoadingScreen = forwardRef(
+  (
+    {
+      product,
+      ...props
+    }: LoadingScreenProps & DefaultComponentProps<GridTypeMap>,
+    ref: ForwardedRef<HTMLDivElement>
+  ) => {
+    const classes = useStyles();
+    const { appTheme } = useAppContext();
+    // const blockClass = (blockIndex: number) => {
+    //   if (blockIndex === 0) return classes.contentBlock1;
+    //   if (blockIndex === 1) return classes.contentBlock2;
+    //   if (blockIndex === 2) return classes.contentBlock3;
+    // }
 
-  // const averageRatings = useMemo(() => {
-  //   const _averageRatings = product.ratings.reduce((a: number, b: number) => a + b, 0) / product.ratings.length;
-  //   return Math.floor(_averageRatings * 100) / 100;
-  // }, [product.ratings])
+    // const averageRatings = useMemo(() => {
+    //   const _averageRatings = product.ratings.reduce((a: number, b: number) => a + b, 0) / product.ratings.length;
+    //   return Math.floor(_averageRatings * 100) / 100;
+    // }, [product.ratings])
 
-  return (
-    <AppGrid ref={ref} {...props} sx={(theme: any) => ({
-      gridTemplateRows: 'auto auto 1fr',
-      flexGrow: 1,
-      position: 'fixed',
-      pb: 1,
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: '20px', // minus consent area
-      zIndex: 900,
-      ...theme.arPageStyles?.loadingScreen.root
-    })}>
-      <Toolbar />
-      <Box>
-        <CustomLinearProgress />
-      </Box>
-      <Grid sx={{
-        display: 'grid',
-        gridTemplateRows: 'auto 1fr auto'
-      }}>
-
-        {/* {
+    return (
+      <AppGrid
+        ref={ref}
+        {...props}
+        sx={(theme: any) => ({
+          gridTemplateRows: "auto auto 1fr",
+          flexGrow: 1,
+          position: "fixed",
+          pb: 1,
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: "20px", // minus consent area
+          zIndex: 900,
+          ...theme.arPageStyles?.loadingScreen.root,
+        })}
+      >
+        <Toolbar />
+        <Box>
+          <CustomLinearProgress />
+        </Box>
+        <Grid
+          sx={{
+            display: "grid",
+            gridTemplateRows: "auto 1fr auto",
+          }}
+        >
+          {/* {
           !!appTheme.getValue().arPageStyles.loadingScreen.showProductHeadline
             ? (<ProductHeadline productName={product.name} productClaim={product.productClaim} />)
             : (<Grid sx={theme => ({
@@ -108,9 +131,9 @@ const LoadingScreen = forwardRef(({ product, ...props }: LoadingScreenProps & De
             </Grid>)
         } */}
 
-        {/* TODO Need review how to deal with empty data */}
+          {/* TODO Need review how to deal with empty data */}
 
-        {/* {product.ratings.length > 0 && (
+          {/* {product.ratings.length > 0 && (
           <Slide direction="left" in={true} timeout={{ appear: 300, enter: 500, exit: 1000 }}>
             <Grid sx={{ ml: 'auto', mt: 2, px: 1 }}>
               <StyledRatings averageRatings={averageRatings} mainRatingBox />
@@ -118,9 +141,9 @@ const LoadingScreen = forwardRef(({ product, ...props }: LoadingScreenProps & De
           </Slide>
         )} */}
 
-        {/* TODO Need review how to deal with empty data */}
+          {/* TODO Need review how to deal with empty data */}
 
-        {/* {product.comments.length > 0 ?
+          {/* {product.comments.length > 0 ?
           product.comments.map(({ stars, comment }, idx: number) =>
           (
             <Slide direction={idx % 2 === 0 ? 'right' : 'left'} key={`comment-excerpt-${idx}`} in={true} timeout={{
@@ -138,23 +161,28 @@ const LoadingScreen = forwardRef(({ product, ...props }: LoadingScreenProps & De
           )
           ) : ""
         } */}
-      </Grid>
+        </Grid>
 
-      <LazyImage src={product.image} alt={product.imageCaption} styles={{
-        objectPosition: 'center 22vh',
-        position: 'fixed',
-        zIndex: -1,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        objectFit: 'cover',
-        height: "100%",
-        width: "70%",
-        marginLeft: "9vh"
-      }} />
-    </AppGrid>
-  )
-});
+        <LazyImage
+          src={product.image}
+          alt={product.imageCaption}
+          styles={{
+            objectPosition: "center 5vh",
+            position: "fixed",
+            zIndex: -1,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            objectFit: "cover",
+            height: "100%",
+            width: "100%",
+            marginLeft: "0vh",
+          }}
+        />
+      </AppGrid>
+    );
+  }
+);
 
 export default LoadingScreen;

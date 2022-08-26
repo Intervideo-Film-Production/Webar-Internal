@@ -19,7 +19,7 @@ import { map, Subject, filter, throttle, interval } from "rxjs";
 import parse from "html-react-parser";
 import { IQRCodeData } from "src/core/declarations/app";
 import { useAppContext } from "src/core/store";
-import ScanPageProductList from './ScanPageProductList';
+import ScanPageProductList from "./ScanPageProductList";
 
 declare let XR8: any;
 declare let XRExtras: any;
@@ -302,7 +302,9 @@ const ScanPage = () => {
               </>
             )}
           </Typography>
-          <Typography sx={{ opacity: .7, mb: 2 }} variant="h3">or pick one</Typography>
+          <Typography sx={{ opacity: 0.7, mb: 2 }} variant="h3">
+            direct selection
+          </Typography>
 
           <ScanPageProductList />
 
