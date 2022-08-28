@@ -185,7 +185,6 @@ const ButtonPopupContent = memo(({ buttonName, onToggle, onShowBeardStyle }: IBu
       disableDiscovery={iOS}
     >
       <Grid sx={theme => ({
-        mb: '20px',
         display: 'flex',
         flexDirection: 'column',
         ...theme.arPageStyles?.buttonPopupContent.root

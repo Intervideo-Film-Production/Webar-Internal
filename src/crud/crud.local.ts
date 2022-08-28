@@ -8,7 +8,17 @@
 
 import { DataTypes } from 'src/core/declarations/enum';
 import { map, from, lastValueFrom } from 'rxjs';
-import { SanityOriginalDataType, ISupportLanguage, IQRCodeData, IProduct, IComment, IButtonContent, ISearchCriteria, ISearchCriteriaValue, IFont, IBeardStyle } from 'src/core/declarations/app';
+import {
+  SanityOriginalDataType,
+  ISupportLanguage,
+  IQRCodeData,
+  IProduct,
+  IComment,
+  IButtonContent,
+  ISearchCriteria,
+  ISearchCriteriaValue,
+  IBeardStyle
+} from 'src/core/declarations/app';
 
 const getLocalData = () => {
   return from<Promise<SanityOriginalDataType[]>>(fetch('sourceData/data.json')

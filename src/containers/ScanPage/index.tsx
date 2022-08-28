@@ -6,7 +6,6 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { AppGrid } from "src/components";
-//rxjs installed for testing only
 import {
   qrdisplayPipelineModule,
   qrprocessPipelineModule,
@@ -19,7 +18,7 @@ import { map, Subject, filter, throttle, interval } from "rxjs";
 import parse from "html-react-parser";
 import { IQRCodeData } from "src/core/declarations/app";
 import { useAppContext } from "src/core/store";
-import ScanPageProductList from './ScanPageProductList';
+import ScanPageProductList from "./ScanPageProductList";
 
 declare let XR8: any;
 declare let XRExtras: any;
@@ -173,7 +172,6 @@ const ScanPage = () => {
       //create an empty A-frame scene to dispatch image target events
 
       //add image targets to controller
-      // XR8.XrController.configure({ imageTargets: ['S9Pro', 'Series8', 'Series7', 'Series6', 'Series5', 'SilkEpil', 'SilkExpert', 'Series3', 'Series2', 'Series1'] });
       if (!script8thWallDisabled) {
         XR8.XrController.configure({ imageTargets: imageTargetsText });
       }
@@ -302,18 +300,24 @@ const ScanPage = () => {
               </>
             )}
           </Typography>
-          <Typography sx={{ opacity: .7, mb: 2 }} variant="h3">or pick one</Typography>
 
-          <ScanPageProductList />
+          <Grid sx={{
+            display: !!data ? 'none' : 'block'
+          }}>
+            <Typography sx={{ opacity: 0.7, mb: 2 }} variant="h3">
+              {t("ScanPageDirectSelectionText")}
+            </Typography>
 
-          {/*<AppButton*/}
-          {/*  ref={productFinderButton}*/}
-          {/*  variant="contained"*/}
-          {/*  sx={theme => ({*/}
-          {/*    whiteSpace: 'pre-wrap',*/}
-          {/*    ...theme.scanPageStyles.productFinderButton*/}
-          {/*  })}*/}
-          {/*>{t("ScanPageHelperButtonText")}</AppButton>*/}
+            <ScanPageProductList />
+          </Grid>
+          {/* <AppButton
+            ref={productFinderButton}
+            variant="contained"
+            sx={theme => ({
+              whiteSpace: 'pre-wrap',
+              ...theme.scanPageStyles.productFinderButton
+            })}
+          >{t("ScanPageHelperButtonText")}</AppButton> */}
         </Grid>
       </AppGrid>
     </>

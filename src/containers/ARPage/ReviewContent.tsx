@@ -1,6 +1,6 @@
 import { Toolbar, Dialog, Box, IconButton, Rating, Typography, Divider, DialogTitle, DialogContent } from '@mui/material';
 import React, { memo } from 'react';
-import ProductHeadline from './ProductHeadline';
+// import ProductHeadline from './ProductHeadline';
 import CloseIcon from '@mui/icons-material/Close';
 import { useQuery } from 'react-query';
 import { QueryKeys } from 'src/core/declarations/enum';
@@ -12,11 +12,9 @@ interface IReviewContent {
   productId: string;
   open: boolean;
   onReviewToggle?: Function;
-  name: string;
-  productClaim: string;
 }
 
-const ReviewContent = memo(({ productId, open, onReviewToggle, name, productClaim }: IReviewContent) => {
+const ReviewContent = memo(({ productId, open, onReviewToggle }: IReviewContent) => {
   const { t } = useTranslation();
   const { isLoading, data } = useQuery(QueryKeys.productComments, () => getProductComments(productId))
 
@@ -42,14 +40,13 @@ const ReviewContent = memo(({ productId, open, onReviewToggle, name, productClai
         fontSize: theme => theme.typography.body1.fontSize
       }}>
         <Toolbar />
-        <ProductHeadline productName={name} productClaim={productClaim} />
         <IconButton
           sx={{ marginLeft: 'auto' }}
           onClick={() => handleReviewToggle(false)}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ px: 2, mb: '20px' }} >
+      <DialogContent sx={{ px: 2, mb: '20px', color: theme => theme.palette.text.secondary }} >
         {
           isLoading
             ? (<LoadingBox sx={{ height: '100%' }} />)

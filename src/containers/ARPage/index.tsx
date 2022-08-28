@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 const ARPage = () => {
   const { appLoadingStateEvent, arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
   const location = useLocation<{ productId: string }>();
-  const productId = location.state.productId;
+  const productId = location.state && location.state.productId;
 
   const [modelLoading, setModelLoading] = useState(true);
 

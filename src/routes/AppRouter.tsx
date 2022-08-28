@@ -10,7 +10,7 @@ import createAppTheme from "../core/theme";
 import { useQueryClient } from "react-query";
 import { QueryKeys } from "../core/declarations/enum";
 import { IQRCodeData } from "../core/declarations/app";
-import CookieConsent from "src/components/CookieConsent";
+// import CookieConsent from "src/components/CookieConsent";
 import { useAppContext } from "src/core/store";
 import { FontLoader } from "src/components/FontLoader";
 import RegisterAframe from "src/A-Frame/RegisterAframe";
@@ -46,7 +46,11 @@ const AppRouter = () => {
     {
       loadingScreen:
         arPageStyles && arPageStyles.loadingScreen
-          ? { ...JSON.parse(arPageStyles.loadingScreen.styles), showProductHeadline: arPageStyles.loadingScreen.showProductHeadline }
+          ? {
+              ...JSON.parse(arPageStyles.loadingScreen.styles),
+              showProductHeadline:
+                arPageStyles.loadingScreen.showProductHeadline,
+            }
           : null,
       productClaim:
         arPageStyles && arPageStyles.productClaim
@@ -109,7 +113,6 @@ const AppRouter = () => {
 
   return (
     <>
-
       {/* Register Aframe */}
       {script8thWallDisabled ? null : <RegisterAframe />}
 
@@ -147,7 +150,7 @@ const AppRouter = () => {
           </Switch>
 
           {/* Cookie Consent */}
-          <CookieConsent />
+          {/* <CookieConsent /> */}
         </Container>
       </ThemeProvider>
     </>
@@ -155,4 +158,3 @@ const AppRouter = () => {
 };
 
 export default AppRouter;
-

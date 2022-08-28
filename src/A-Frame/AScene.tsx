@@ -25,11 +25,9 @@ const sceneGenerator = `
     renderer="colorManagement: true"
     xrweb>
 
-    <a-entity light="type:directional; color:white; intensity:0.0f" position="-5 4 10"></a-entity>
- 
     <a-entity id="lights">
-      <a-entity light="type:directional; color:white; intensity:0.5f" position="-5 4 10"></a-entity>
-      <a-entity light="type:directional; castShadow:true; color:white; intensity:0.35f" position="5 4 10"></a-entity>
+      <a-entity light="type:directional; color:white; intensity:0.8f" position="-5 4 10"></a-entity>
+      <a-entity light="type:directional; castShadow:true; color:white; intensity:0.5f" position="5 4 10"></a-entity>
     </a-entity>
 
     <a-camera position="0 2 2" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
@@ -58,7 +56,7 @@ const sceneGenerator = `
 
     <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale>
 
-      <a-entity light="type:point; color:white; intensity:0.25f" position="0 10 1"></a-entity>
+      <a-entity light="type:point; color:white; intensity:0.5f" position="0 10 1"></a-entity>
     </a-entity>
 
     <!-- face effects -->
@@ -318,7 +316,8 @@ const AScene = memo((props: AFrameComponentProps) => {
                   const target = new THREE.Vector3();
                   child.getWorldPosition(target);
                   newEl.setAttribute('position', target);
-                  newEl.setAttribute('scale', { x: 0.25, y: 0.25, z: 0.25 });
+                  // check sizes of other models buttons
+                  newEl.setAttribute('scale', { x: .25, y: .25, z: .25 });
                   newEl.setAttribute('transparency', true);
                   newEl.setAttribute('data-disabled', 'false');
                   newEl.setAttribute('opacity', 0);

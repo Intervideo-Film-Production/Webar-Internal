@@ -43,8 +43,7 @@ const AllowScanPage = () => {
 						color: theme => theme.palette.text.secondary,
 						textAlign: 'center'
 					}}>
-						AR requires access to <br />
-						device motion sensors.
+						{t("AllowScanPageDeviceMotionAccess")}
 					</Typography>
 					<Grid container columns={16} sx={{
 						display: 'flex',
@@ -55,11 +54,11 @@ const AllowScanPage = () => {
 						<Button variant="outlined" style={{ borderRadius: 0, width: "40%" }}
 							onClick={() => { history.push('/'); }}
 
-						>Cancel</Button>
+						>{t("AllowScanPageCancelButton")}</Button>
 						<Button variant="contained" style={{ borderRadius: 0, width: "40%" }}
 							onClick={() => { history.push('/scan-page'); }}
 
-						>Allow</Button>
+						>{t("AllowScanPageAllowButton")}</Button>
 					</Grid>
 				</Grid>
 			</Grid>
