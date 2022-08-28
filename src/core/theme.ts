@@ -4,10 +4,6 @@ import { IFont } from "./declarations/app";
 
 const isMobileOrMac = typeof navigator !== 'undefined' && /iPad|iPhone|iPod|Android|Mac OS/gi.test(navigator.userAgent);
 
-// FIXME need to check selected font
-// var legacyFontFamily = "'Helvetica Neue LT Pro', 'Roboto', 'Helvetica', 'Arial', sans-serif";
-const selectedFont = '"Helvetica Neue LT Pro"';
-// const fallbackFonts = ['"Roboto"', '"Helvetica"', '"Arial"', 'sans-serif'];
 type ICoreTheme = (fontFamily: string) => ThemeOptions;
 const coreTheme: ICoreTheme = (fontFamily) => ({
   background: {
@@ -106,10 +102,10 @@ const coreTheme: ICoreTheme = (fontFamily) => ({
     MuiRating: {
       styleOverrides: {
         root: {
-          fontSize: '22px',
+          fontSize: '24px',
+          color: '#ea9d27',
           '& .MuiRating-iconEmpty': {
-            visibility: 'hidden',
-            display: 'none'
+            color: '#ea9d27',
           }
         },
       }

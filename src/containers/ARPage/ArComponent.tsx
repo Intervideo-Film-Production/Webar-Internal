@@ -9,11 +9,10 @@ import React, {
 import ARPageController from "./Controller";
 import { AppGrid } from "src/components";
 import { Grid, Toolbar } from "@mui/material";
-import ProductHeadline from "./ProductHeadline";
 import { AScene } from "src/A-Frame/AScene";
 import { BehaviorSubject, filter, Subject } from "rxjs";
 import ReviewContent from "./ReviewContent";
-import CompareDrawer from "./CompareDrawer";
+// import CompareDrawer from "./CompareDrawer";
 import ButtonPopupContent from "./ButtonPopupContent";
 import {
   IProduct,
@@ -22,29 +21,28 @@ import {
 } from "src/core/declarations/app";
 import { useQuery, useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
-import CompareDetails from "./CompareDetails";
+// import CompareDetails from "./CompareDetails";
 import InfoMenu from "./InfoMenu";
 import ScreenOverlay from "./ScreenOverlay";
 import { getButtonAnimationContent } from "src/crud/crud";
 import { useTranslation } from "react-i18next";
-import BeardStyleContent from "./BeardStyleContent";
+// import BeardStyleContent from "./BeardStyleContent";
 import { useLocation } from "react-router-dom";
 
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
   const location = useLocation<{ productId: string }>();
-  const productId = location.state.productId;
+  const productId = location.state && location.state && location.state.productId;
 
   const productData = !!productId
     ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
     : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
 
-  console.log(productData);
   const {
     id,
     name,
-    productClaim,
+    // productClaim,
     arObjectUrl,
     beardStyles,
   } = productData;
@@ -97,8 +95,8 @@ const ArComponent = memo(() => {
   // FIXME remove
   // const [showControl, setShowControl] = useState(false);
   const [buttonName, setButtonName] = useState("");
-  const [compareProductId, setCompareProductId] = useState("");
-  const [compareDetailsOpen, setCompareDetailsOpen] = useState(false);
+  // const [compareProductId, setCompareProductId] = useState("");
+  // const [compareDetailsOpen, setCompareDetailsOpen] = useState(false);
   const [infoMenuOpen, setInfoMenuOpen] = useState(false);
 
   // FIXME remove
@@ -106,15 +104,15 @@ const ArComponent = memo(() => {
   //   setShowControl(shouldControlShow);
   // }, []);
 
-  const handleDrawerToggle = useCallback((shouldDrawerOpen: boolean) => {
-    setShowGrandControl(!shouldDrawerOpen);
-    setDrawerOpen(shouldDrawerOpen);
-  }, []);
+  // const handleDrawerToggle = useCallback((shouldDrawerOpen: boolean) => {
+  //   setShowGrandControl(!shouldDrawerOpen);
+  //   setDrawerOpen(shouldDrawerOpen);
+  // }, []);
 
-  const handleCompareDetails = useCallback((compareProductId: string) => {
-    setCompareProductId(compareProductId);
-    setCompareDetailsOpen(true);
-  }, []);
+  // const handleCompareDetails = useCallback((compareProductId: string) => {
+  //   setCompareProductId(compareProductId);
+  //   setCompareDetailsOpen(true);
+  // }, []);
 
   const handleReviewToggle = useCallback(
     (shouldReviewOpen: boolean) => {
@@ -212,9 +210,6 @@ const ArComponent = memo(() => {
     >
       <Toolbar />
 
-      {/* headline */}
-      {/* <ProductHeadline ref={headlineRef} productName={name} productClaim={productClaim} /> */}
-
       {/* ar model */}
       <Grid>
         <AScene
@@ -235,28 +230,17 @@ const ArComponent = memo(() => {
         // FIXME remove
         // showControl={showControl}
         showGrandControl={showGrandControl}
-        // onShowControl={(shouldControlDisplay) =>
-        //   showControlHandle(shouldControlDisplay)
-        // }
         onInfo={() => infoMenuHandle(true)}
         onRecenter={() => reCenterHandle()}
         onReview={() => handleReviewToggle(true)}
-        onCompare={() => compareDrawerHandle()}
       />
 
-      {/* compare list */}
-      {/*<CompareDrawer drawerOpen={drawerOpen} onDrawerToggle={handleDrawerToggle} onCompareDetails={handleCompareDetails} />*/}
-
-      {/* Compare Details */}
-      {/*<CompareDetails open={compareDetailsOpen} compareProductId={compareProductId} onCompareDetailsClose={handleCompareDetailsClose} />*/}
-
       {/* Expand Content */}
-      {/*<ReviewContent*/}
-      {/*  productId={productId}*/}
-      {/*  open={reviewContentOpen}*/}
-      {/*  onReviewToggle={handleReviewToggle}*/}
-      {/*  name={name}*/}
-      {/*  productClaim={productClaim} />*/}
+      <ReviewContent
+        productId={productId ?? id}
+        open={reviewContentOpen}
+        onReviewToggle={handleReviewToggle}
+      />
 
       {/* Button Popup Content */}
       {/* FIXME */}
@@ -265,14 +249,6 @@ const ArComponent = memo(() => {
         onToggle={buttonPopupHandle}
         onShowBeardStyle={handleShowBeardStyle}
       />
-
-      {/*<BeardStyleContent*/}
-      {/*  beardStyleEvent={beardStyleEvent}*/}
-      {/*  switchBeardStyleEvent={switchBeardStyleEvent}*/}
-      {/*  beardStyles={beardStyles}*/}
-      {/*  headlineHeight={headlineHeight}*/}
-      {/*  onShowButtonContent={buttonName => buttonPopupHandle(buttonName)}*/}
-      {/*/>*/}
 
       <InfoMenu
         open={infoMenuOpen}
