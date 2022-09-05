@@ -117,7 +117,7 @@ const AScene = memo((props: AFrameComponentProps) => {
         newAssetEl.setAttribute('src', arObjectUrl || "");
         assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
 
-        if (cubemap && Object.keys(cubemap).length === 6) {
+        if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
           Object.keys(cubemap).forEach((key) => {
 
             const cubemapImg = document.createElement("img");
