@@ -7,7 +7,7 @@ import React, { memo, useEffect, useMemo, useRef } from 'react';
 import parse from 'html-react-parser';
 import { Box } from '@mui/material';
 import { filter, map, skip, Subject, withLatestFrom, zip } from 'rxjs';
-import { AFrameElement, IBeardStyle, IButtonContent } from 'src/core/declarations/app';
+import { AFrameElement, IBeardStyle, IButtonContent, IProduct } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
 import { modelRef } from 'src/core/declarations/enum';
 // declare const AFRAME: any;
@@ -15,6 +15,10 @@ import { modelRef } from 'src/core/declarations/enum';
 let modelButtons: any[] = []; //keep track of buttons in the 3D model for enabling/disabling on tap
 declare const THREE: any;
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
+
+// default light
+{/* <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
+<a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> */}
 
 const sceneGenerator = `
   <a-scene
@@ -25,9 +29,6 @@ const sceneGenerator = `
     renderer="colorManagement: true"
     xrweb="allowedDevices: any">
 
-    <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
-    <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity>
-
     <a-camera id="camera" position="0 8 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
     <a-assets id="assetContainer" timeout="30000">
@@ -35,16 +36,7 @@ const sceneGenerator = `
 
       <span id="overlayVideoWrapper"></span>
       <span id="soundWrapper"></span>
-      
-    </span>
-    
-      <!--box mapping reflections-->
-      <img id="posx" src="imgs/HDRs/boxmap/posx.jpg">
-      <img id="posy" src="imgs/HDRs/boxmap/posy.jpg">
-      <img id="posz" src="imgs/HDRs/boxmap/posz.jpg">
-      <img id="negx" src="imgs/HDRs/boxmap/negx.jpg">
-      <img id="negy" src="imgs/HDRs/boxmap/negy.jpg">
-      <img id="negz" src="imgs/HDRs/boxmap/negz.jpg">
+
     </a-assets>
 
     <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale></a-entity>
@@ -57,7 +49,7 @@ const sceneGenerator = `
 `;
 
 interface AFrameComponentProps {
-  productDataSub: Subject<string>;
+  productDataSub: Subject<Partial<IProduct>>;
   buttonListSub: Subject<IButtonContent[]>;
   beardStylesSub: Subject<IBeardStyle[]>;
   recenterEvent?: Subject<any>;
@@ -114,7 +106,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   useEffect(() => {
     if (!!productDataSub) {
 
-      const subscription = productDataSub.subscribe(productLink => {
+      const subscription = productDataSub.subscribe(({ arObjectUrl, cubemap }) => {
         const assetContainer = document.querySelector('#assetContainer');
 
         const assetItemEl = document.querySelector('a-scene a-asset-item#model');
@@ -122,8 +114,20 @@ const AScene = memo((props: AFrameComponentProps) => {
 
         const newAssetEl = document.createElement('a-asset-item');
         newAssetEl.setAttribute('id', 'model');
-        newAssetEl.setAttribute('src', productLink);
-        assetContainer?.insertAdjacentElement('beforebegin', newAssetEl);
+        newAssetEl.setAttribute('src', arObjectUrl || "");
+        assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
+
+        if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
+          Object.keys(cubemap).forEach((key) => {
+
+            const cubemapImg = document.createElement("img");
+            cubemapImg.setAttribute("id", key);
+            cubemapImg.setAttribute("crossorigin", "anonymous");
+            cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
+
+            assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
+          })
+        }
 
         // bind entity to ascene
         const modelContainer = document.querySelector('#modelContainer');
@@ -139,7 +143,7 @@ const AScene = memo((props: AFrameComponentProps) => {
           // FIXME debug only
           // entity.setAttribute('position', '0 0 .5');
           // entity.setAttribute('rotation', '-90 0 0');
-          entity.setAttribute('scale', '5 5 5');
+          // entity.setAttribute('scale', '5 5 5');
           entity.setAttribute('cubemap-static', '')
           entity.setAttribute('shadow', 'receive: false');
           entity.setAttribute('animation-mixer', {

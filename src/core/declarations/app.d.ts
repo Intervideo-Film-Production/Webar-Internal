@@ -370,6 +370,14 @@ export interface IProduct {
   fgColor: string;
   productFeaturesDescription: string;
   productFeatures: object[][];
+  cubemap: {
+    negx: string;
+    negy: string;
+    negz: string;
+    posx: string;
+    posy: string;
+    posz: string;
+  };
   beardStyles: IBeardStyle[];
   productQRCodes?: string[];
 }
