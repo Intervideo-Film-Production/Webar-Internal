@@ -139,6 +139,14 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
         fgColor: product?.fgColor,
         productFeaturesDescription: product?.productFeatures?.productFeatureDescription ? product?.productFeatures?.productFeatureDescription[lng] : '',
         productFeatures: productFeatures,
+        cubemap: {
+          negx: '',
+          negy: '',
+          negz: '',
+          posx: '',
+          posy: '',
+          posz: '',
+        },
         beardStyles: beardStyles,
         productQRCodes: product?.productQRCodes
       }
@@ -192,7 +200,15 @@ const getLocalProductList = (predicate: (product: SanityOriginalDataType) => boo
           fgColor: product?.fgColor,
           productFeaturesDescription: product?.productFeatures?.productFeatureDescription ? product?.productFeatures?.productFeatureDescription[lng] : '',
           productFeatures: product?.productFeatures?.productFeatureItem?.map((pfi: any) => pfi[lng]),
-          beardStyles: beardStyles
+          beardStyles: beardStyles,
+          cubemap: {
+            negx: '',
+            negy: '',
+            negz: '',
+            posx: '',
+            posy: '',
+            posz: '',
+          },
         }
       })
     })

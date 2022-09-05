@@ -12,7 +12,6 @@ import { Grid, Toolbar } from "@mui/material";
 import { AScene } from "src/A-Frame/AScene";
 import { BehaviorSubject, filter, Subject } from "rxjs";
 import ReviewContent from "./ReviewContent";
-// import CompareDrawer from "./CompareDrawer";
 import ButtonPopupContent from "./ButtonPopupContent";
 import {
   IProduct,
@@ -21,12 +20,10 @@ import {
 } from "src/core/declarations/app";
 import { useQuery, useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
-// import CompareDetails from "./CompareDetails";
 import InfoMenu from "./InfoMenu";
 import ScreenOverlay from "./ScreenOverlay";
 import { getButtonAnimationContent } from "src/crud/crud";
 import { useTranslation } from "react-i18next";
-// import BeardStyleContent from "./BeardStyleContent";
 import { useLocation } from "react-router-dom";
 
 const ArComponent = memo(() => {
@@ -41,9 +38,6 @@ const ArComponent = memo(() => {
 
   const {
     id,
-    name,
-    // productClaim,
-    arObjectUrl,
     beardStyles,
   } = productData;
 
@@ -61,15 +55,18 @@ const ArComponent = memo(() => {
   const headlineRef = useRef<HTMLDivElement>(null);
   const [headlineHeight, setHeadlineHeight] = useState(0);
 
-  const arModelUrlSub = useMemo(() => new Subject<string>(), []);
+  const arModelUrlSub = useMemo(() => new Subject<Partial<IProduct>>(), []);
   const buttonListSub = useMemo(() => new Subject<IButtonContent[]>(), []);
   const beardStylesSub = useMemo(() => new Subject<IBeardStyle[]>(), []);
 
   useEffect(() => {
-    if (!!arObjectUrl) {
-      arModelUrlSub.next(arObjectUrl);
+    if (!!productData) {
+      const { arObjectUrl, cubemap } = productData;
+      arModelUrlSub.next({
+        arObjectUrl, cubemap
+      });
     }
-  }, [arModelUrlSub, arObjectUrl]);
+  }, [arModelUrlSub, productData]);
 
   useEffect(() => {
     if (!!buttonData) {
@@ -92,50 +89,13 @@ const ArComponent = memo(() => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [reviewContentOpen, setReviewContentOpen] = useState(false);
   const [showGrandControl, setShowGrandControl] = useState(true);
-  // FIXME remove
-  // const [showControl, setShowControl] = useState(false);
   const [buttonName, setButtonName] = useState("");
-  // const [compareProductId, setCompareProductId] = useState("");
-  // const [compareDetailsOpen, setCompareDetailsOpen] = useState(false);
   const [infoMenuOpen, setInfoMenuOpen] = useState(false);
-
-  // FIXME remove
-  // const showControlHandle = useCallback((shouldControlShow: boolean) => {
-  //   setShowControl(shouldControlShow);
-  // }, []);
-
-  // const handleDrawerToggle = useCallback((shouldDrawerOpen: boolean) => {
-  //   setShowGrandControl(!shouldDrawerOpen);
-  //   setDrawerOpen(shouldDrawerOpen);
-  // }, []);
-
-  // const handleCompareDetails = useCallback((compareProductId: string) => {
-  //   setCompareProductId(compareProductId);
-  //   setCompareDetailsOpen(true);
-  // }, []);
 
   const handleReviewToggle = useCallback(
     (shouldReviewOpen: boolean) => {
       setReviewContentOpen(shouldReviewOpen);
-      // showControlHandle(false);
-    },
-    [
-      // FIXME
-      // showControlHandle
-    ]
-  );
-
-  // const handleCompareDetailsClose = useCallback(
-  //   (shouldCloseCompareDrawer?: boolean) => {
-  //     setCompareDetailsOpen(false);
-
-  //     if (shouldCloseCompareDrawer) {
-  //       setDrawerOpen(false);
-  //       setShowGrandControl(true);
-  //     }
-  //   },
-  //   []
-  // );
+    }, []);
 
   const recenterEvent = useMemo(() => new Subject(), []);
   const arButtonToggleEvent = useMemo(() => new Subject<string>(), []);
@@ -171,8 +131,6 @@ const ArComponent = memo(() => {
   const compareDrawerHandle = useCallback(() => {
     setDrawerOpen(true);
     setShowGrandControl(false);
-    // FIXME remove
-    // setShowControl(false);
   }, []);
 
   const buttonPopupHandle = useCallback(
@@ -186,11 +144,6 @@ const ArComponent = memo(() => {
 
   const arButtonHandle = useCallback(
     (arButtonName: string) => {
-      /**
-       * data should be used to render popup content somehow
-       */
-      // FIXME remove
-      // setShowControl(false);
       buttonPopupHandle(arButtonName);
     },
     [buttonPopupHandle]
@@ -227,8 +180,6 @@ const ArComponent = memo(() => {
 
       {/* controller */}
       <ARPageController
-        // FIXME remove
-        // showControl={showControl}
         showGrandControl={showGrandControl}
         onInfo={() => infoMenuHandle(true)}
         onRecenter={() => reCenterHandle()}
@@ -243,7 +194,6 @@ const ArComponent = memo(() => {
       />
 
       {/* Button Popup Content */}
-      {/* FIXME */}
       <ButtonPopupContent
         buttonName={buttonName}
         onToggle={buttonPopupHandle}
@@ -253,7 +203,6 @@ const ArComponent = memo(() => {
       <InfoMenu
         open={infoMenuOpen}
         onClose={() => infoMenuHandle(false)}
-      // headlineHeight={headlineHeight}
       />
     </AppGrid>
   );
