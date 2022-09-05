@@ -23,24 +23,19 @@ const sceneGenerator = `
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true"
-    xrweb>
+    xrweb="allowedDevices: any">
 
-    <a-entity id="lights">
-      <a-entity light="type:directional; color:white; intensity:0.8f" position="-5 4 10"></a-entity>
-      <a-entity light="type:directional; castShadow:true; color:white; intensity:0.5f" position="5 4 10"></a-entity>
-    </a-entity>
+    <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
+    <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity>
 
-    <a-camera position="0 2 2" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+    <a-camera id="camera" position="0 8 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
     <a-assets id="assetContainer" timeout="30000">
-    <a-asset-item id="model" src=""></a-asset-item>
+      <a-asset-item id="model" src=""></a-asset-item>
 
-    <span id="overlayVideoWrapper">
-    
-    </span>
-
-    <span id="soundWrapper">
-    
+      <span id="overlayVideoWrapper"></span>
+      <span id="soundWrapper"></span>
+      
     </span>
     
       <!--box mapping reflections-->
@@ -52,16 +47,12 @@ const sceneGenerator = `
       <img id="negz" src="imgs/HDRs/boxmap/negz.jpg">
     </a-assets>
 
-    <a-plane height="10" width="10" rotation="-90 0 0" position="0 0 0" material="shader: shadow; opacity: 0.2" shadow></a-plane>
-
-    <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale>
-
-      <a-entity light="type:point; color:white; intensity:0.5f" position="0 10 1"></a-entity>
-    </a-entity>
+    <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale></a-entity>
 
     <!-- face effects -->
     <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
 
+    <a-plane id="ground" position="0 0 0" rotation="-90 0 0" height="50" width="50"  material="shader: shadow" shadow></a-plane>
   </a-scene>
 `;
 
