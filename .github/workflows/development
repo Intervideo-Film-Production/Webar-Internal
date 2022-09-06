@@ -1,0 +1,39 @@
+name: webar-client
+
+on: 
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    # if: github.event.pull_request.merged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@v2
+
+    - name: Setup nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.17.6
+
+    - name: install dependencies and build application
+      run: |
+        npm install
+        npm run build
+      env:
+        CI: false
+        REACT_APP_STATIC_DATA: 'FALSE'
+        REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
+        REACT_APP_DATASET: "development"
+        REACT_APP_CONSENT_OVERLAY_ID: ${{ secrets.REACT_APP_CONSENT_OVERLAY_ID }}
+
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@main
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SOURCE: "./build/"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.REMOTE_DEVELOPMENT_TARGET }}
