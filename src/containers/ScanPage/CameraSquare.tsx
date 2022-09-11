@@ -1,25 +1,17 @@
+import { Grid, Typography } from '@mui/material';
 import React, { memo, useEffect, useState } from 'react';
-import { Observable } from 'rxjs';
+import { useTranslation } from 'react-i18next';
+import { map, Observable } from 'rxjs';
+import { useAppContext } from 'src/core/store';
 
 interface CameraSquareProps {
+  found: boolean;
   color: string;
   foundColor: string;
   cameraUpdateEvent?: Observable<boolean>;
 }
 
-const CameraSquare = memo(({ cameraUpdateEvent, color, foundColor, ...props }: CameraSquareProps & React.SVGAttributes<SVGSVGElement>) => {
-
-  const [found, setFound] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (cameraUpdateEvent) {
-      const subscription = cameraUpdateEvent.subscribe(isFound => {
-        setFound(isFound);
-      })
-
-      return () => { subscription.unsubscribe(); }
-    }
-  }, [cameraUpdateEvent])
+const CameraSquare = memo(({ found, color, foundColor, ...props }: CameraSquareProps & React.SVGAttributes<SVGSVGElement>) => {
 
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="265" height="265" viewBox="0 0 265 265">
@@ -33,4 +25,65 @@ const CameraSquare = memo(({ cameraUpdateEvent, color, foundColor, ...props }: C
   )
 })
 
-export default CameraSquare;
+interface ICameraSquareWrapperProps {
+  cameraQRCodeEvent: Observable<string>;
+}
+
+const CameraSquareWrapper: React.FC<ICameraSquareWrapperProps> = memo(({ cameraQRCodeEvent }) => {
+  const { appTheme } = useAppContext();
+  const { t } = useTranslation();
+  const [found, setFound] = useState(false);
+
+  useEffect(() => {
+    if (cameraQRCodeEvent) {
+      const subscription = cameraQRCodeEvent.pipe(
+        map((v) => v !== "")
+      ).subscribe(isFound => {
+        setFound(isFound);
+      })
+
+      return () => { subscription.unsubscribe(); }
+    }
+  }, [cameraQRCodeEvent])
+
+  return (
+    <Grid
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 4,
+      }}
+    >
+      <Grid
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          position: "absolute",
+          top: "130px",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={(theme) => theme.scanPageStyles.qrBoxText}
+        >
+          {t("ScanPageScanQRCode")}
+        </Typography>
+
+        <CameraSquare
+          found={found}
+          color={appTheme.getValue().scanPageStyles.color}
+          foundColor={appTheme.getValue().scanPageStyles.foundColor}
+          style={{ width: "202px", height: "202px" }}
+        />
+      </Grid>
+    </Grid>
+  )
+})
+
+export default CameraSquareWrapper;

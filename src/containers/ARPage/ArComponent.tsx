@@ -29,8 +29,9 @@ import { useLocation } from "react-router-dom";
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
   const queryClient = useQueryClient();
-  const location = useLocation<{ productId: string }>();
-  const productId = location.state && location.state && location.state.productId;
+  // FIXME useLocation not typed
+  const location = useLocation();
+  const productId = location.state && (location.state as any).productId;
 
   const productData = !!productId
     ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct

@@ -3,14 +3,15 @@
 // // loaded if something other than the automatically loaded set is wanted. Passing
 // // DISABLE_IMAGE_TARGETS will prevent any image targets from loading, including ones that would
 // // otherwise enabled automatically.
-import React, { memo, useEffect, useMemo, useRef } from 'react';
-import parse from 'html-react-parser';
+import React, { memo, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import { filter, map, skip, Subject, withLatestFrom, zip } from 'rxjs';
 import { AFrameElement, IBeardStyle, IButtonContent, IProduct } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
 import { modelRef } from 'src/core/declarations/enum';
-// declare const AFRAME: any;
+import arView from "src/views/ar.view.html";
+import { AFrameScene } from './aframeScene';
+declare const AFRAME: any;
 
 let modelButtons: any[] = []; //keep track of buttons in the 3D model for enabling/disabling on tap
 declare const THREE: any;
@@ -19,34 +20,6 @@ const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 // default light
 {/* <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
 <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> */}
-
-const sceneGenerator = `
-  <a-scene
-    id='ascene' 
-    xrextras-gesture-detector
-    xrextras-loading
-    xrextras-runtime-error
-    renderer="colorManagement: true"
-    xrweb="allowedDevices: any">
-
-    <a-camera id="camera" position="0 8 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
-
-    <a-assets id="assetContainer" timeout="30000">
-      <a-asset-item id="model" src=""></a-asset-item>
-
-      <span id="overlayVideoWrapper"></span>
-      <span id="soundWrapper"></span>
-
-    </a-assets>
-
-    <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale></a-entity>
-
-    <!-- face effects -->
-    <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
-
-    <a-plane id="ground" position="0 0 0" rotation="-90 0 0" height="50" width="50"  material="shader: shadow" shadow></a-plane>
-  </a-scene>
-`;
 
 interface AFrameComponentProps {
   productDataSub: Subject<Partial<IProduct>>;
@@ -93,10 +66,6 @@ const AScene = memo((props: AFrameComponentProps) => {
     beardStyleEvent,
     switchBeardStyleEvent
   } = props;
-
-  const aframeComponent = useMemo(() => {
-    return parse(sceneGenerator);
-  }, []);
 
   const aFrameComponentRef = useRef<AFrameElement | null>(null);
   const buttonHandleEventRef = useRef(new Subject<string>());
@@ -572,7 +541,9 @@ const AScene = memo((props: AFrameComponentProps) => {
         height: window.innerHeight,
         width: window.innerWidth
       }}>
-        {script8thWallDisabled ? null : aframeComponent}
+        {script8thWallDisabled 
+        ? null 
+        : (<AFrameScene sceneHtml={arView} />)}
       </Box>
     </>
   )

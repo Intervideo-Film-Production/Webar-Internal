@@ -6,8 +6,6 @@ import {
   ButtonGroup,
   SwipeableDrawer
 } from "@mui/material";
-// @ts-ignore
-// import SwipeableViews from "react-swipeable-views";
 import { makeStyles } from "@mui/styles";
 import { AppButton } from "src/components";
 import { deepCopyObject } from "src/core/helpers";

@@ -27,6 +27,6 @@
   ],
   "files": [
     "src/core/declarations/block-content-to-react.d.ts",
-    "src/core/declarations/system.d.ts",
-  ],
+    "src/core/declarations/system.d.ts"
+  ]
 }

@@ -1,0 +1,41 @@
+<a-scene id='ascene' 
+    xrextras-gesture-detector 
+    xrextras-loading 
+    xrextras-runtime-error 
+    renderer="colorManagement: true"
+    xrweb="allowedDevices: any;
+        defaultEnvironmentFogIntensity: 0.5; 
+        defaultEnvironmentFloorTexture: #groundTex; 
+        defaultEnvironmentFloorColor: #FFF;
+        defaultEnvironmentSkyBottomColor: #B4C4CC; 
+        defaultEnvironmentSkyTopColor: #5ac8fa;
+        defaultEnvironmentSkyGradientStrength: 0.5;
+        scale: absolute">
+    <a-camera
+        id="camera"
+        position="0 8 8"
+        raycaster="objects: .cantap"
+        cursor="fuse: false; rayOrigin: mouse;">
+    </a-camera>
+
+    <a-assets id="assetContainer" timeout="30000">
+        <a-asset-item id="model" src=""></a-asset-item>
+        <!-- overlay assets-->
+        <span id="overlayVideoWrapper"></span>
+        <!-- sound assets -->
+        <span id="soundWrapper"></span>
+    </a-assets>
+
+    <a-entity 
+        id="modelContainer" 
+        visible="true" 
+        xrextras-one-finger-rotate 
+        xrextras-pinch-scale>
+    </a-entity>
+
+    <!-- face effects -->
+    <!-- <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource> -->
+
+    <a-plane id="ground" position="0 0 0" rotation="-90 0 0" height="50" width="50" material="shader: shadow" shadow>
+    </a-plane>
+</a-scene>

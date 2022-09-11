@@ -20,24 +20,23 @@ export const AppPages = {
 const routeMaps: IAppRoute[] = [
   {
     path: AppPages.HomePage,
-    exact: true,
-    component: HomePage
+    element: <HomePage />
   },
   {
     path: AppPages.ScanPage,
-    component: ScanPage
+    element: <ScanPage />
   },
   {
     path: AppPages.ARPage,
-    component: ARPage
+    element: <ARPage />
   },
   {
     path: AppPages.ProductFinderPage,
-    component: ProductFinder
+    element: <ProductFinder />
   },
   {
     path: AppPages.AllowScanPage,
-    component: AllowScanPage
+    element: <AllowScanPage />
   }
 ];
 

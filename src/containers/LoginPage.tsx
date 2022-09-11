@@ -7,7 +7,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useQueryClient } from 'react-query';
 import { IProduct, IQRCodeData } from 'src/core/declarations/app';
 import { QueryKeys } from 'src/core/declarations/enum';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from 'src/core/store';
 
 const LoginPage = () => {
@@ -15,13 +15,13 @@ const LoginPage = () => {
 
   const qrCodeData = queryClient.getQueryData(QueryKeys.qrCode) as IQRCodeData;
   const productData = queryClient.getQueryData(QueryKeys.product) as IProduct;
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { appCredential } = useAppContext();
 
   useEffect(() => {
     if (!qrCodeData) {
-      history.push('/initialize');
+      navigate('/initialize');
     }
   });
 
@@ -43,9 +43,9 @@ const LoginPage = () => {
   const handleSubmit = () => {
     appCredential.next(credential);
     if (!productData) {
-      history.push('/');
+      navigate('/');
     } else {
-      history.push('/ar-page');
+      navigate('/ar-page');
     }
   }
 

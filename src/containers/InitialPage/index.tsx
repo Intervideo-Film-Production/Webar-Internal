@@ -7,7 +7,7 @@ import { useAppContext } from 'src/core/store';
 import { useQuery } from 'react-query';
 import { QueryKeys } from '../../core/declarations/enum';
 import { getProduct, getQRCodeData } from '../../crud/crud';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { LoadingBox } from 'src/components';
 import { getDataExportDate } from 'src/crud/crud.local';
 import PermissionsDialog from './PermissionDialog';
@@ -152,11 +152,11 @@ const InitialPage = () => {
       </>
     )
     : (!!qrCodeData && !productqr)
-      ? (<Redirect to="/" />)
+      ? (<Navigate to="/" />)
       : (
         <>
           <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} />
-          {(!iOS || !!permissionStatus) && (<Redirect to="/ar-page" />)}
+          {(!iOS || !!permissionStatus) && (<Navigate to="/ar-page" />)}
         </>
 
       )

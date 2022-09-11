@@ -2,7 +2,7 @@
 import { Grid, Typography, Toolbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { AppGrid, AppButton, LoadingBox } from 'src/components';
 import { useQueryClient } from 'react-query';
@@ -11,7 +11,7 @@ import { IQRCodeData } from 'src/core/declarations/app';
 
 const HomePage = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [appLoading, setAppLoading] = useState(true);
   const queryClient = useQueryClient();
   const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
@@ -73,7 +73,7 @@ const HomePage = () => {
             <AppButton
               sx={(theme) => ({ ...theme.homePageStyles.startButton })}
               variant="contained"
-              onClick={() => { history.push("/allow-scan"); }}
+              onClick={() => { navigate("/allow-scan"); }}
             >
               {t('HomePageButtonText')}
             </AppButton>

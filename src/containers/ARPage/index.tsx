@@ -11,8 +11,9 @@ import { useLocation } from 'react-router-dom';
 
 const ARPage = () => {
   const { appLoadingStateEvent, arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
-  const location = useLocation<{ productId: string }>();
-  const productId = location.state && location.state.productId;
+  // FIXME
+  const location = useLocation(); //<{ productId: string }>
+  const productId = location.state && (location.state as any).productId;
 
   const [modelLoading, setModelLoading] = useState(true);
 

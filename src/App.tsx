@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import AppRouter from './routes/AppRouter';
-import { InitialPage } from './containers';
+import { InitialPage, LoginPage } from './containers';
 import { LoadingBox } from './components';
-import { Route, BrowserRouter, Switch, withRouter } from 'react-router-dom';
-import { AppPages } from './routes/routeMap';
+import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import routeMaps, { AppPages } from './routes/routeMap';
 import { getRootSubPath, useTrackBrowserHeight } from './core/helpers';
 import { AppStore, Context, useAppContext } from 'src/core/store';
-// import { ReactQueryDevtools } from 'react-query/devtools';
+import RouteWithRedirect from './routes/PrivateRoute';
+import { ReactQueryDevtools } from 'react-query/devtools';
+
+const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +23,7 @@ const queryClient = new QueryClient({
 const appStore = new AppStore();
 
 
-const Wrapper = withRouter(() => {
+const Wrapper = () => {
   const { appLoadingStateEvent } = useAppContext();
   const [isAppLoading, setIsAppLoading] = useState(false);
 
@@ -38,11 +41,18 @@ const Wrapper = withRouter(() => {
 
   return (
     <>
-      <Switch>
-        <Route path={AppPages.InitialPage} component={InitialPage} />
-        <AppRouter />
-
-      </Switch>
+      <Routes>
+        <Route path={AppPages.InitialPage} element={<InitialPage />} />
+        <Route path="/" element={<AppRouter />}>
+          {routeMaps.map((route, idx) => <Route key={`route-${idx}`}
+            path={route.path}
+            element={<RouteWithRedirect element={route.element} />}
+          />)}
+          {loginEnabled && (
+            <Route path={AppPages.LoginPage} element={<LoginPage />} />
+          )}
+        </Route>
+      </Routes>
 
       {isAppLoading && (<LoadingBox sx={{
         height: '100%',
@@ -57,7 +67,7 @@ const Wrapper = withRouter(() => {
 
     </>
   )
-});
+};
 
 function App() {
   const currentRootPath = useMemo(() => getRootSubPath(), []);
@@ -72,7 +82,7 @@ function App() {
             <Wrapper />
           </BrowserRouter>
         </React.Suspense>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Context.Provider>
 
