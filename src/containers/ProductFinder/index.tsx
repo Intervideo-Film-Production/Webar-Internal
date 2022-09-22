@@ -8,15 +8,13 @@ import {
 	ListItemButton,
 	Toolbar
 } from '@mui/material';
-// @ts-ignore
-// import SwipeableViews from "react-swipeable-views";
 import { useQueries, useQuery, useQueryClient } from 'react-query';
 import { useTranslation } from 'react-i18next';
 import { getSearchCriteria, getSearchCriteriaValues, findMatchingProducts } from 'src/crud/crud';
 import { AppGrid } from '../../components';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { LoadingBox, AppButton, TabPanel, CompareProductContent } from 'src/components';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ProductFinderSettingIcon, AppArrowLeftSquareIcon } from 'src/components/icons';
 import { IProduct, IQRCodeData, ISearchCriteria, ISearchCriteriaValue } from 'src/core/declarations/app';
 import { deepCopyObject, sortFunction } from 'src/core/helpers';
@@ -47,7 +45,7 @@ const ProductFinderPage = () => {
 	const [lastQuestion, setLastQuestion] = useState<ISearchCriteria | null>(null);
 	const { t, i18n } = useTranslation();
 	const breadcrumnbsRef = useRef<HTMLUListElement | null>(null);
-	const history = useHistory();
+	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
 	const location = useLocation();
@@ -129,8 +127,8 @@ const ProductFinderPage = () => {
 	}, [firstQuestion, refetch])
 
 	const handleSelectProduct = (product: IProduct) => {
-		queryClient.setQueryData(QueryKeys.product, () => product);
-		history.push('/ar-page')
+		queryClient.setQueryData([QueryKeys.product], () => product);
+		navigate('/ar-page');
 	}
 
 	const handleBackToStart = () => {
@@ -215,7 +213,7 @@ const ProductFinderPage = () => {
 				sx={theme => ({ ...theme.productFinderStyles?.backToScannerButton })}
 				onClick={() => {
 					queryClient.resetQueries(QueryKeys.productfinder);
-					history.push('/scan-page')
+					navigate('/scan-page')
 				}}
 				startIcon={<AppArrowLeftSquareIcon sx={{ fontSize: '1.25rem' }} />}
 			>

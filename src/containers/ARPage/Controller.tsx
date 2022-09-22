@@ -8,11 +8,12 @@ import {
 import { useTranslation } from "react-i18next";
 import { AppButton } from "src/components";
 import { useAppContext } from "src/core/store";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
 import { useLocation } from "react-router-dom";
 import { IProduct } from "src/core/declarations/app";
+import { useReactQueryData } from "src/hooks";
 
 interface ARPageControllerProps {
   showGrandControl?: boolean;
@@ -31,16 +32,15 @@ const ARPageController = (props: ARPageControllerProps) => {
   } = props;
   const { t } = useTranslation();
   const { appLoadingStateEvent } = useAppContext();
-  const history = useHistory();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // FIXME check location state should be default
-  const location = useLocation<{ productId: string }>();
-  const productId = location.state && location.state.productId;
+  console.log(showGrandControl);
 
-  const productData = !!productId
-    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
-    : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
+  // FIXME check location state should be default
+  const location = useLocation();
+  
+  const productData = useReactQueryData<IProduct>(QueryKeys.product);
 
   const averageRatings = useMemo(() => {
     if (!productData || productData.ratings.length === 0) return null;
@@ -71,7 +71,7 @@ const ARPageController = (props: ARPageControllerProps) => {
     queryClient.removeQueries(QueryKeys.productfinder, { exact: true });
     queryClient.removeQueries(QueryKeys.imageTargetsCodes, { exact: true });
     appLoadingStateEvent.next(true);
-    history.push("/scan-page");
+    navigate("/scan-page");
   };
 
   const reviewButtonHandle = () => {

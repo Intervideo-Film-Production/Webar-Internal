@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { AppHeader, LoginPage } from "../containers";
 
 import routeMaps, { AppPages } from "./routeMap";
@@ -47,10 +47,10 @@ const AppRouter = () => {
       loadingScreen:
         arPageStyles && arPageStyles.loadingScreen
           ? {
-              ...JSON.parse(arPageStyles.loadingScreen.styles),
-              showProductHeadline:
-                arPageStyles.loadingScreen.showProductHeadline,
-            }
+            ...JSON.parse(arPageStyles.loadingScreen.styles),
+            showProductHeadline:
+              arPageStyles.loadingScreen.showProductHeadline,
+          }
           : null,
       productClaim:
         arPageStyles && arPageStyles.productClaim
@@ -108,13 +108,14 @@ const AppRouter = () => {
       localStorage.setItem("productqr", productqr);
     }
 
-    if (!!localStorage.getItem("storeID")) return <Redirect to="/initialize" />;
+    if (!!localStorage.getItem("storeID")) return <Navigate to="/initialize" />;
   }
 
   return (
     <>
+      {/* FIXME */}
       {/* Register Aframe */}
-      {script8thWallDisabled ? null : <RegisterAframe />}
+      {/* {script8thWallDisabled ? null : <RegisterAframe />} */}
 
       <ThemeProvider theme={theme}>
         {/* Css normalise */}
@@ -132,23 +133,8 @@ const AppRouter = () => {
         >
           {/* Header */}
           <AppHeader brandName={brandName} logo={logo} />
-
-          <Switch>
-            {routeMaps.map((route, idx) => {
-              return (
-                <PrivateRoute
-                  key={`route-${idx}`}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.component}
-                />
-              );
-            })}
-            {loginEnabled && (
-              <Route path={AppPages.LoginPage} component={LoginPage} />
-            )}
-          </Switch>
-
+          {/* nested route outlet */}
+          <Outlet />
           {/* Cookie Consent */}
           {/* <CookieConsent /> */}
         </Container>

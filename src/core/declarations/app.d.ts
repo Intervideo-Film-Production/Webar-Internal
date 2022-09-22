@@ -264,7 +264,7 @@ declare module '@mui/material/Button' {
 
 export interface IAppRoute {
   path: string;
-  component: React.FC<any>;
+  element: JSX.Element;
   name?: string;
   exact?: boolean;
 }
