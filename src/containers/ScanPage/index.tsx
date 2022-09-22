@@ -5,7 +5,7 @@ import { Grid, Typography, Box, Toolbar } from "@mui/material";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
-import { AppGrid } from "src/components";
+import { AppButton, AppGrid } from "src/components";
 import {
   qrdisplayPipelineModule,
   qrprocessPipelineModule,
@@ -301,7 +301,7 @@ const ScanPage = () => {
             )}
           </Typography>
 
-          <Grid sx={{
+          {/* <Grid sx={{
             display: !!data ? 'none' : 'block'
           }}>
             <Typography sx={{ opacity: 0.7, mb: 2 }} variant="h3">
@@ -309,15 +309,16 @@ const ScanPage = () => {
             </Typography>
 
             <ScanPageProductList />
-          </Grid>
-          {/* <AppButton
+          </Grid> */}
+          <AppButton
+            onClick={() => { history.push('/product-finder') }}
             ref={productFinderButton}
             variant="contained"
             sx={theme => ({
               whiteSpace: 'pre-wrap',
               ...theme.scanPageStyles.productFinderButton
             })}
-          >{t("ScanPageHelperButtonText")}</AppButton> */}
+          >{t("ScanPageHelperButtonText")}</AppButton>
         </Grid>
       </AppGrid>
     </>
