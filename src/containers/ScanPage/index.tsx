@@ -1,30 +1,29 @@
 // FIXME temporary use the previous version with QR code scanning only
 // this current version includes image targets will be tackled after the holiday
 
-import { Toolbar } from "@mui/material";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { Box, Toolbar } from "@mui/material";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppGrid, LoadingBox } from "src/components";
 import {
   qrdisplayPipelineModule,
   qrprocessPipelineModule,
 } from "./qrprocessPipelineModule";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
-import { getProduct, getFirstProductQRCodes } from "src/crud/crud";
-import { Subject, filter, throttle, interval } from "rxjs";
+import { getFirstProductQRCodes } from "src/crud/crud";
+import { Subject } from "rxjs";
 import { IQRCodeData } from "src/core/declarations/app";
-import { useAppContext } from "src/core/store";
-import { AframeComponent, AFrameScene, DISABLE_IMAGE_TARGETS } from "src/A-Frame/aframeScene";
+import { AframeComponent, AFrameScene } from "src/A-Frame/aframeScene";
 import qrScanPage from '../../views/qr-scan.view.html';
 import BackgroundMask from "./BackgroundMask";
 import CameraSquareWrapper from "./CameraSquare";
 import ScanPageDetails from "./ScanPageDetails";
 import useProductQRValue from "./useProductQRValue";
+import { useReactQueryData } from "src/hooks";
+
 declare let XR8: any;
 declare let XRExtras: any;
-
 interface ICompopentGenerator {
   (
     onQrScan: (productText: string) => void,
@@ -72,7 +71,10 @@ const components: ICompopentGenerator =
 
           XR8.clearCameraPipelineModules();
           XR8.XrController.configure({ imageTargets: ["case"] });
-          this.el.sceneEl.removeEventListener("xrimagefound");
+          this.el.sceneEl.removeEventListener(
+            "xrimagefound",
+            showImageTarget as (e: unknown) => void
+          );
           XR8.stop();
         }
       }
@@ -81,9 +83,8 @@ const components: ICompopentGenerator =
 
 const ScanPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
 
+  const qrCodeData = useReactQueryData<IQRCodeData>(QueryKeys.qrCode)
   const onCameraUpdateEvent = useRef(new Subject<string>());
 
   const { isFetched: imageTargetsFetched, data: imageTargetData } = useQuery(QueryKeys.imageTargetsCodes, () =>
@@ -100,21 +101,24 @@ const ScanPage = () => {
     onCameraUpdateEvent.current.next(detail.name || "");
   }, []);
 
+  // FIXME test model only
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     onCameraUpdateEvent.current.next("KTM");
+  //   }, 5000)
+  // }, [])
+
   const registerComponents = useMemo(() => {
     return components(qrScanHandler, imageTargetData, showImage)
   }, [qrScanHandler, imageTargetData, showImage])
 
-  const { isFetching, isError, productName, productQrText } = useProductQRValue(onCameraUpdateEvent.current);
+  const { isFetching, isError, productName } = useProductQRValue(onCameraUpdateEvent.current);
 
   useEffect(() => {
     if (!!productName) {
-      navigate("/ar-page", {
-        state: {
-          productId: productQrText
-        }
-      });
+      navigate("/ar-page");
     }
-  }, [productName, productQrText])
+  }, [productName, navigate])
 
   if (!imageTargetsFetched) {
     return (<LoadingBox />)
@@ -123,7 +127,17 @@ const ScanPage = () => {
   return (
     <>
       {/* qr code scanner aframe */}
-      <AFrameScene sceneHtml={qrScanPage} components={registerComponents} />
+      <Box
+        id="scanPageWrapper"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: window.innerHeight,
+          width: window.innerWidth
+        }}>
+        <AFrameScene sceneHtml={qrScanPage} components={registerComponents} wrapperId="scanPageWrapper" />
+      </Box>
 
       {/* content */}
       <AppGrid

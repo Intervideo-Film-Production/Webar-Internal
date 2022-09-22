@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useQueryClient } from 'react-query';
-import { IProduct } from 'src/core/declarations/app';
+import React, { memo, useEffect, useState } from 'react';
+import { QueryObserver, useQueryClient } from 'react-query';
+import { IProduct, IQRCodeData } from 'src/core/declarations/app';
 import { QueryKeys } from 'src/core/declarations/enum';
 import ArComponent from './ArComponent';
 import LoadingScreen from './LoadingScreen';
 import { Fade } from '@mui/material';
 import { useAppContext } from 'src/core/store';
 import { concat, filter, take } from 'rxjs';
-import { useLocation } from 'react-router-dom';
 
 const ARPage = () => {
   const { appLoadingStateEvent, arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
-  // FIXME
-  const location = useLocation(); //<{ productId: string }>
-  const productId = location.state && (location.state as any).productId;
 
   const [modelLoading, setModelLoading] = useState(true);
-
-  const queryClient = useQueryClient();
-  const productData = !!productId
-    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId])
-    : queryClient.getQueryData<IProduct>(QueryKeys.product);
-
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -38,10 +28,10 @@ const ARPage = () => {
 
   useEffect(() => {
     if (arResourcesLoadEvent) {
-      const subscription = concat(
+      const subscription = concat( 
         arResourcesLoadEvent.pipe(filter(v => !!v), take(1)),
         aFrameModelLoadedEvent
-      ).subscribe(v => {
+      ).subscribe(() => {
         setModelLoading(false);
       });
 
@@ -55,7 +45,7 @@ const ARPage = () => {
     <>
       <ArComponent />
       <Fade in={modelLoading}>
-        <LoadingScreen product={productData as IProduct} />
+        <LoadingScreen />
       </Fade>
     </>
   )

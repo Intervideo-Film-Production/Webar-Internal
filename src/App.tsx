@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { QueryCache, QueryClient, QueryClientProvider, useQueryClient } from 'react-query';
 import AppRouter from './routes/AppRouter';
 import { InitialPage, LoginPage } from './containers';
 import { LoadingBox } from './components';

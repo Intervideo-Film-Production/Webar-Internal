@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { filter, interval, Observable, throttle } from "rxjs";
 import { IQRCodeData } from "src/core/declarations/app";
 import { QueryKeys } from "src/core/declarations/enum";
-import { getProduct } from "src/crud/crud";
+import { getProduct, getProductById } from "src/crud/crud";
 
 const useProductQRValue = (cameraEvent: Observable<string>) => {
 	const { i18n } = useTranslation();
@@ -15,7 +15,7 @@ const useProductQRValue = (cameraEvent: Observable<string>) => {
 
 	// FIXME not sure if language changed this query will be updated
 	const { isFetching, data, isError } = useQuery(
-		[QueryKeys.product, productQrText, i18n.language, qrCodeData?.id],
+		[QueryKeys.product],
 		() => getProduct(productQrText, i18n.language, qrCodeData?.id as string),
 		{
 			enabled: !!productQrText,

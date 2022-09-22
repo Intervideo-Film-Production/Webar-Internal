@@ -20,7 +20,7 @@ const dataset: string = process.env.REACT_APP_DATASET as string;
 interface IButtonPopupContentProps {
   buttonName: string;
   onToggle?: (buttonName: string) => any;
-  onShowBeardStyle?: (beardStyle: string) => void;
+  // onShowBeardStyle?: (beardStyle: string) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -50,12 +50,15 @@ const getButtonContent = (buttonName: string, buttonContentList: IButtonContent[
   return buttonContent;
 }
 
-const ButtonPopupContent = memo(({ buttonName, onToggle, onShowBeardStyle }: IButtonPopupContentProps) => {
+const ButtonPopupContent = memo(({ buttonName, onToggle,
+  // FIXME need this?
+  // onShowBeardStyle
+}: IButtonPopupContentProps) => {
   const classes = useStyles();
   const [isVideoMaxSize, setVideoMaxSize] = useState(false);
   const queryClient = useQueryClient();
   const buttonData = queryClient.getQueryData<IButtonContent[]>(QueryKeys.buttonAnimationContent);
-  const beardStyles = queryClient.getQueryData<IProduct>(QueryKeys.product)?.beardStyles;
+  const beardStyles = queryClient.getQueryData<IProduct>([QueryKeys.product])?.beardStyles;
   const { t } = useTranslation();
 
   const toggleHandle = useCallback((buttonName: string) => {
@@ -96,23 +99,24 @@ const ButtonPopupContent = memo(({ buttonName, onToggle, onShowBeardStyle }: IBu
     },
   }), [onVideoMaxSizeHandle]);
 
-  const handleOpenBeardStyle = useCallback((beardStyleId: string) => {
-    toggleHandle('');
-    if (onShowBeardStyle) onShowBeardStyle(beardStyleId);
-  }, [onShowBeardStyle, toggleHandle]);
+  // const handleOpenBeardStyle = useCallback((beardStyleId: string) => {
+  //   toggleHandle('');
+  //   if (onShowBeardStyle) onShowBeardStyle(beardStyleId);
+  // }, [onShowBeardStyle, toggleHandle]);
 
   const contentAndSerializers = useMemo(() => {
     if (relatedBeardStyle) {
 
-      const beardFeatureButtonREnder = (props: any) => {
-        return (<span
-          style={{ textDecoration: 'underline' }}
-          onClick={() => handleOpenBeardStyle(relatedBeardStyle)}
-        >{props.children}</span>)
-      }
-      if (!!serializers) {
-        serializers.marks = { beardFeatureButton: beardFeatureButtonREnder }
-      }
+      // FIXME check if needed
+      // const beardFeatureButtonRender = (props: any) => {
+      //   return (<span
+      //     style={{ textDecoration: 'underline' }}
+      //     onClick={() => handleOpenBeardStyle(relatedBeardStyle)}
+      //   >{props.children}</span>)
+      // }
+      // if (!!serializers) {
+      //   serializers.marks = { beardFeatureButton: beardFeatureButtonRender }
+      // }
 
       const blockChild = buttonContent?.popupContent?.find(pc => pc['_type'] === 'block');
       if (blockChild && blockChild.children.length > 0) {
@@ -160,7 +164,7 @@ const ButtonPopupContent = memo(({ buttonName, onToggle, onShowBeardStyle }: IBu
       serializers
     };
 
-  }, [buttonContent, relatedBeardStyle, serializers, t, handleOpenBeardStyle])
+  }, [buttonContent, relatedBeardStyle, serializers, t])
 
   return (
     <SwipeableDrawer
@@ -219,12 +223,12 @@ const ButtonPopupContent = memo(({ buttonName, onToggle, onShowBeardStyle }: IBu
             {
               !!contentAndSerializers.content && (<ThemedBlockContent>
                 <BlockContent
-                    className={`${classes.blockContent} ${isVideoMaxSize ? classes.blockContentVideoMaxSize : ''}`}
-                    serializers={contentAndSerializers.serializers}
-                    blocks={contentAndSerializers.content}
-                    imageOptions={{ w: 400, auto: 'format', fit: 'max' }}
-                    projectId={projectId}
-                    dataset={dataset}
+                  className={`${classes.blockContent} ${isVideoMaxSize ? classes.blockContentVideoMaxSize : ''}`}
+                  serializers={contentAndSerializers.serializers}
+                  blocks={contentAndSerializers.content}
+                  imageOptions={{ w: 400, auto: 'format', fit: 'max' }}
+                  projectId={projectId}
+                  dataset={dataset}
                 />
               </ThemedBlockContent>)
             }

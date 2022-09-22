@@ -10,7 +10,6 @@ declare const AFRAME: any;
 declare const XR8: any;
 export interface AframeComponent {
     name: string;
-    // FIXME any
     val: any;
 }
 
@@ -25,7 +24,7 @@ const registerComponents = (components: Array<AframeComponent>) => components.fo
 // Helper function to make sure that aframe systems are only registered once, since they can't
 // be cleanly unregistered.
 
-interface AframeSystem {
+export interface AframeSystem {
     name: string;
     // FIXME
     val: any;
@@ -72,9 +71,10 @@ interface IAframeSceneProps {
     components?: Array<AframeComponent>;
     systems?: Array<AframeSystem>;
     primitives?: Array<AframePrimitive>;
+    wrapperId: string;
 }
 
-const AFrameScene: React.FC<IAframeSceneProps> = memo(({ sceneHtml, imageTargets, components, systems, primitives }) => {
+const AFrameScene: React.FC<IAframeSceneProps> = memo(({ sceneHtml, imageTargets, components, systems, primitives,wrapperId }) => {
     useEffect(() => {
         if (imageTargets) {
             XR8.XrController.configure({ imageTargets })
@@ -90,7 +90,9 @@ const AFrameScene: React.FC<IAframeSceneProps> = memo(({ sceneHtml, imageTargets
         }
         const html = document.getElementsByTagName('html')[0]
         const origHtmlClass = html.className;
-        document.body.insertAdjacentHTML('beforeend', sceneHtml);
+        const arSceneWrapper = document.getElementById(wrapperId) as HTMLElement;
+
+        arSceneWrapper.insertAdjacentHTML('beforeend', sceneHtml);
 
         // Cleanup
         return () => {

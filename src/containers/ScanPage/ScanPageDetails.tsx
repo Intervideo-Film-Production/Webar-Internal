@@ -1,7 +1,7 @@
 import { Skeleton, IconButton, Grid, Typography } from '@mui/material';
 import React, { memo, useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
-import { LazyImage } from 'src/components';
+import { AppButton, LazyImage } from 'src/components';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { getAllProductsByQRCode, getProductById } from 'src/crud/crud';
 import { useTranslation } from "react-i18next";
@@ -77,6 +77,8 @@ interface IScanPageDetailsProps {
 const ScanPageDetails: React.FC<IScanPageDetailsProps> = (props) => {
   const { isFetching, isError, itemName } = props;
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
 
   return (
     <Grid
@@ -106,7 +108,7 @@ const ScanPageDetails: React.FC<IScanPageDetailsProps> = (props) => {
         )}
       </Typography>
 
-      <Grid sx={{
+      {/* <Grid sx={{
         display: !!itemName ? 'none' : 'block'
       }}>
         <Typography sx={{ opacity: 0.7, mb: 2 }} variant="h3">
@@ -114,15 +116,16 @@ const ScanPageDetails: React.FC<IScanPageDetailsProps> = (props) => {
         </Typography>
 
         <ScanPageProductList />
-      </Grid>
-      {/* <AppButton
-            ref={productFinderButton}
-            variant="contained"
-            sx={theme => ({
-              whiteSpace: 'pre-wrap',
-              ...theme.scanPageStyles.productFinderButton
-            })}
-          >{t("ScanPageHelperButtonText")}</AppButton> */}
+      </Grid> */}
+
+      <AppButton
+        onClick={() => { navigate('/product-finder') }}
+        variant="contained"
+        sx={theme => ({
+          whiteSpace: 'pre-wrap',
+          ...theme.scanPageStyles.productFinderButton
+        })}
+      >{t("ScanPageHelperButtonText")}</AppButton>
     </Grid>
   )
 }

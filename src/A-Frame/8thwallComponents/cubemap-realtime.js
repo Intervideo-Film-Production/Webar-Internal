@@ -29,23 +29,23 @@ const cubeMapRealtimeComponent = {
 	init() {
 		const { data } = this
 		const scene = this.el.sceneEl
-		const camTexture_ = new THREE.Texture()
-		const refMat = new THREE.MeshBasicMaterial({
-			side: THREE.DoubleSide,
+		const camTexture_ = new window.THREE.Texture()
+		const refMat = new window.THREE.MeshBasicMaterial({
+			side: window.THREE.DoubleSide,
 			color: 0xffffff,
 			map: camTexture_,
 		})
-		const renderTarget = new THREE.WebGLCubeRenderTarget(256, {
-			format: THREE.RGBFormat,
+		const renderTarget = new window.THREE.WebGLCubeRenderTarget(256, {
+			format: window.THREE.RGBFormat,
 			generateMipmaps: true,
-			minFilter: THREE.LinearMipmapLinearFilter,
-			encoding: THREE.sRGBEncoding,
+			minFilter: window.THREE.LinearMipmapLinearFilter,
+			encoding: window.THREE.sRGBEncoding,
 		})
 		// cubemap scene
-		const cubeMapScene = new THREE.Scene()
-		const cubeCamera = new THREE.CubeCamera(1, 1000, renderTarget)
-		const sphere = new THREE.SphereGeometry(100, 15, 15)
-		const sphereMesh = new THREE.Mesh(sphere, refMat)
+		const cubeMapScene = new window.THREE.Scene()
+		const cubeCamera = new window.THREE.CubeCamera(1, 1000, renderTarget)
+		const sphere = new window.THREE.SphereGeometry(100, 15, 15)
+		const sphereMesh = new window.THREE.Mesh(sphere, refMat)
 		sphereMesh.scale.set(-1, 1, 1)
 		sphereMesh.rotation.set(Math.PI, -Math.PI / 2, 0)
 		cubeMapScene.add(sphereMesh)

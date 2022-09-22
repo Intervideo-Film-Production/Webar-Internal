@@ -7,16 +7,18 @@ import { QueryKeys } from 'src/core/declarations/enum';
 import { LoadingBox } from 'src/components';
 import { getProductComments } from 'src/crud/crud';
 import { useTranslation } from 'react-i18next';
+import { useReactQueryData } from 'src/hooks';
+import { IProduct } from 'src/core/declarations/app';
 
 interface IReviewContent {
-  productId: string;
   open: boolean;
   onReviewToggle?: Function;
 }
 
-const ReviewContent = memo(({ productId, open, onReviewToggle }: IReviewContent) => {
+const ReviewContent = memo(({ open, onReviewToggle }: IReviewContent) => {
   const { t } = useTranslation();
-  const { isLoading, data } = useQuery(QueryKeys.productComments, () => getProductComments(productId))
+  const { id } = useReactQueryData<IProduct>([QueryKeys.product]);
+  const { isLoading, data } = useQuery(QueryKeys.productComments, () => getProductComments(id))
 
   const handleReviewToggle = (shouldOpen: boolean) => {
     if (onReviewToggle) {

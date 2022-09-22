@@ -13,6 +13,7 @@ import { useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
 import { useLocation } from "react-router-dom";
 import { IProduct } from "src/core/declarations/app";
+import { useReactQueryData } from "src/hooks";
 
 interface ARPageControllerProps {
   showGrandControl?: boolean;
@@ -34,14 +35,12 @@ const ARPageController = (props: ARPageControllerProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  console.log(showGrandControl);
+
   // FIXME check location state should be default
   const location = useLocation();
-  // FIXME cannot define state interface in useLocation
-  const productId = location.state && (location.state as any).productId;
-
-  const productData = !!productId
-    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
-    : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
+  
+  const productData = useReactQueryData<IProduct>(QueryKeys.product);
 
   const averageRatings = useMemo(() => {
     if (!productData || productData.ratings.length === 0) return null;

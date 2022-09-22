@@ -127,8 +127,8 @@ const ProductFinderPage = () => {
 	}, [firstQuestion, refetch])
 
 	const handleSelectProduct = (product: IProduct) => {
-		queryClient.setQueryData(QueryKeys.product, () => product);
-		navigate('/ar-page')
+		queryClient.setQueryData([QueryKeys.product], () => product);
+		navigate('/ar-page');
 	}
 
 	const handleBackToStart = () => {
