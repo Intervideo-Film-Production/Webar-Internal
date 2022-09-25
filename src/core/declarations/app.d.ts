@@ -443,4 +443,5 @@ export type AFrameElement = HTMLElement & {
   material: any;
   emit: Function;
   click: Function;
+  [key: string]: any;
 }

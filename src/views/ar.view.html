@@ -1,23 +1,12 @@
 <!-- // default light -->
 <!-- <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
 <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> -->
-    <!-- coaching-overlay -->
-
-    <!-- responsive-immersive -->
-
-    <!-- defaultEnvironmentFogIntensity: 0.5; 
-    defaultEnvironmentFloorTexture: #groundTex; 
-    defaultEnvironmentFloorColor: #FFF;
-    defaultEnvironmentSkyBottomColor: #B4C4CC; 
-    defaultEnvironmentSkyTopColor: #5ac8fa;
-    defaultEnvironmentSkyGradientStrength: 0.5;
-    scale: absolute -->
-
 
 <a-scene id='ascene' 
 	ar-view-initializer
 	responsive-immersive
 	coaching-overlay
+	landing-page
 	xrextras-gesture-detector 
 	xrextras-loading 
 	xrextras-runtime-error 
@@ -79,5 +68,11 @@
 		>
 	</a-entity>
 
-	<a-plane id="ground" rotation="-90 0 0" height="50" width="50" material="shader: shadow" shadow></a-plane>
+	<a-plane 
+		id="ground" 
+		rotation="-90 0 0" 
+		height="50" 
+		width="50"
+		material="shader: shadow" shadow>
+</a-plane>
 </a-scene>

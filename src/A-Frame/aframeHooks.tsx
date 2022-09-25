@@ -83,11 +83,11 @@ export const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {
 				// entity.setAttribute('position', '0 0 .5');
 				// entity.setAttribute('rotation', '-90 0 0');
 				// entity.setAttribute('scale', '5 5 5');
-				entity.setAttribute('xrextras-hold-drag','rise-height: 0');
-				entity.setAttribute('xrextras-two-finger-rotate','');
+				entity.setAttribute('xrextras-hold-drag', 'rise-height: 0');
+				entity.setAttribute('xrextras-two-finger-rotate', '');
 				entity.setAttribute('cubemap-static', '')
 				// FIXME absolute scale proximity settings
-				entity.setAttribute('proximity','');
+				entity.setAttribute('proximity', '');
 				// FIXME change model color feature
 				// entity.setAttribute('change-color', '')
 				entity.setAttribute('shadow', 'receive: false');
@@ -245,10 +245,18 @@ export const useInsertButtons = (
 									newEl.setAttribute('color', 'red');
 									document.querySelector('#modelContainer')?.appendChild(newEl);
 									const target = new THREE.Vector3();
+									var box = new THREE.Box3().setFromObject(child);
+									const boxMin = box.min;
+									const boxMax = box.max;
+									const meshX = boxMax.x - boxMin.x,
+										meshY = boxMax.y - boxMin.y,
+										meshZ = boxMax.z - boxMin.z;
+
+									// const testSize = child.getSize();
 									child.getWorldPosition(target);
 									newEl.setAttribute('position', target);
 									// check sizes of other models buttons
-									newEl.setAttribute('scale', { x: .25, y: .25, z: .25 });
+									newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
 									newEl.setAttribute('transparency', true);
 									newEl.setAttribute('data-disabled', 'false');
 									newEl.setAttribute('opacity', 1);
