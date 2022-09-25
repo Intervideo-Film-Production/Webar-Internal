@@ -64,10 +64,7 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "watch": "cra-build-watch",
-    "serve:windows": "cd serve/bin && serve.bat -d ../../build -p 7777 -i WiFi",
-    "serve:windowsIframe": "cd serve/bin && serve.bat -d ../../test-iframe -p 7778 -i WiFi",
-    "serve:mac": "./serve/bin/serve -n -d .build/ -p 7777"
+    "watch": "cra-build-watch"
   },
   "version": "0.1.0"
 }

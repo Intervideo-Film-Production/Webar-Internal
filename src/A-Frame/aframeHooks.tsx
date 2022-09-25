@@ -73,7 +73,7 @@ export const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {
 			const modelContainer = document.querySelector('#modelContainer');
 			// reset parent scale & rotation
 			// modelContainer?.setAttribute('scale', "1 1 1");
-			modelContainer?.setAttribute('rotation', "0 0 0");
+			// modelContainer?.setAttribute('rotation', "0 0 0");
 			if (!!modelContainer) {
 				modelContainer.innerHTML = '';
 				const entity = document.createElement('a-entity') as AFrameElement;
@@ -83,8 +83,13 @@ export const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {
 				// entity.setAttribute('position', '0 0 .5');
 				// entity.setAttribute('rotation', '-90 0 0');
 				// entity.setAttribute('scale', '5 5 5');
+				entity.setAttribute('xrextras-hold-drag','rise-height: 0');
+				entity.setAttribute('xrextras-two-finger-rotate','');
 				entity.setAttribute('cubemap-static', '')
-				entity.setAttribute('change-color', '')
+				// FIXME absolute scale proximity settings
+				entity.setAttribute('proximity','');
+				// FIXME change model color feature
+				// entity.setAttribute('change-color', '')
 				entity.setAttribute('shadow', 'receive: false');
 				entity.setAttribute('animation-mixer', {
 					clip: 'none',
