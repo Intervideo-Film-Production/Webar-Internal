@@ -308,14 +308,22 @@ const AScene = memo((props: AFrameComponentProps) => {
 
                   newEl.setAttribute('color', 'red');
                   document.querySelector('#modelContainer')?.appendChild(newEl);
+
+                  var box = new THREE.Box3().setFromObject(child);
+									const boxMin = box.min;
+									const boxMax = box.max;
+									const meshX = boxMax.x - boxMin.x,
+										meshY = boxMax.y - boxMin.y,
+										meshZ = boxMax.z - boxMin.z;
+
                   const target = new THREE.Vector3();
                   child.getWorldPosition(target);
                   newEl.setAttribute('position', target);
                   // check sizes of other models buttons
-                  newEl.setAttribute('scale', { x: .25, y: .25, z: .25 });
+                  newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
                   newEl.setAttribute('transparency', true);
                   newEl.setAttribute('data-disabled', 'false');
-                  newEl.setAttribute('opacity', 0);
+                  newEl.setAttribute('opacity', 1);
                   newEl.setAttribute('class', 'model-button cantap');
 
                   newEl.setAttribute('id', 'guiButton' + btnItem.buttonName);
