@@ -323,7 +323,7 @@ const AScene = memo((props: AFrameComponentProps) => {
                   newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
                   newEl.setAttribute('transparency', true);
                   newEl.setAttribute('data-disabled', 'false');
-                  newEl.setAttribute('opacity', 1);
+                  newEl.setAttribute('opacity', 0);
                   newEl.setAttribute('class', 'model-button cantap');
 
                   newEl.setAttribute('id', 'guiButton' + btnItem.buttonName);
