@@ -8,15 +8,26 @@ import { Subject } from 'rxjs';
 import { IButtonContent, IProduct } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
 import { modelRef } from 'src/core/declarations/enum';
-import arView from "src/views/ar.view.html";
+import arView from "./views/ar.view.html";
 import { AframeComponent, AFrameScene, AframeSystem } from './aframeScene';
-import { useEnableButtonsFromExternalEvent, useInsertButtonOverlays, useInsertButtons, useInsertButtonSound, useInsertModel, useMaxTouchPoints, useTriggerExternalEffectAndSound, useTriggerOverLay, useWatchRecenterEvent } from './aframeHooks';
 import { cubeEnvMapComponent } from './8thwallComponents/cubemap-static';
 import { changeColorComponent, annotationComponent, absPinchScaleComponent, proximityComponent, gltfMorphComponent, ignoreRaycast } from './8thwallComponents/absoluteScalesComponent';
 import { cubeMapRealtimeComponent } from './8thwallComponents/cubemap-realtime';
 import { responsiveImmersiveComponent } from './8thwallComponents/responsive-immersive';
 import { xrLightComponent, xrLightSystem } from './8thwallComponents/xrlight';
-import { Box, Grid } from '@mui/material';
+import { Box } from '@mui/material';
+import {
+  useEnableButtonsFromExternalEvent,
+  useInsertButtonOverlays,
+  useInsertButtons,
+  useInsertButtonSound,
+  useInsertModel,
+  useMaxTouchPoints,
+  useTriggerExternalEffectAndSound,
+  useTriggerOverLay,
+  useWatchRecenterEvent
+} from './hooks';
+
 
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 
@@ -94,30 +105,6 @@ const systems: AframeSystem[] = [
     val: xrLightSystem
   }
 ];
-
-// AFRAME.registerComponent('change-color',
-//   changeColorComponent)
-// AFRAME.registerComponent('annotation',
-//   annotationComponent)
-// AFRAME.registerComponent('absolute-pinch-scale',
-//   absPinchScaleComponent)
-// AFRAME.registerComponent('proximity',
-//   proximityComponent)
-// AFRAME.registerComponent('gltf-morph',
-//   gltfMorphComponent)
-// AFRAME.registerComponent('ignore-raycast',
-//   ignoreRaycast)
-// AFRAME.registerComponent('cubemap-realtime',
-//   cubeMapRealtimeComponent)
-// AFRAME.registerComponent('cubemap-static',
-//   cubeEnvMapComponent)
-// AFRAME.registerComponent('responsive-immersive',
-//   responsiveImmersiveComponent)
-// AFRAME.registerComponent('xr-light',
-//   xrLightComponent)
-// AFRAME.registerSystem('xr-light',
-//   xrLightSystem)
-
 
 interface AFrameComponentProps {
   productDataSub: Subject<Partial<IProduct>>;

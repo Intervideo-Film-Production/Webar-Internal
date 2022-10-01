@@ -15,7 +15,7 @@ import { getFirstProductQRCodes } from "src/crud/crud";
 import { Subject } from "rxjs";
 import { IQRCodeData } from "src/core/declarations/app";
 import { AframeComponent, AFrameScene } from "src/A-Frame/aframeScene";
-import qrScanPage from '../../views/qr-scan.view.html';
+import qrScanPage from 'src/A-Frame/views/qr-scan.view.html';
 import BackgroundMask from "./BackgroundMask";
 import CameraSquareWrapper from "./CameraSquare";
 import ScanPageDetails from "./ScanPageDetails";
