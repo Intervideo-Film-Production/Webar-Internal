@@ -1,3 +1,4 @@
+// FIXME
 const changeColorComponent = {
 	init() {
 		// FIXME color buttons
@@ -77,6 +78,8 @@ const changeColorComponent = {
 		this.offset += 0.002
 	},
 }
+
+// FIXME
 const annotationComponent = {
 	schema: {
 		text: { default: 'text here' },  // text label displays
@@ -237,6 +240,8 @@ const annotationComponent = {
 	},
 }
 
+// FIXME
+// for car model only
 const targets = ['Front-Driver', 'Back-Driver', 'Front-Pass', 'Back-Pass']
 const proximityComponent = {
 	schema: {
@@ -288,6 +293,7 @@ const proximityComponent = {
 		}
 	},
 }
+
 const absPinchScaleComponent = {
 	schema: {
 		min: { default: 0.1 },
@@ -377,6 +383,8 @@ const absPinchScaleComponent = {
 		this.runTimer()
 	},
 }
+
+// FIXME checking if need adjustment
 const gltfMorphComponent = {
 	multiple: true,
 	schema: {
@@ -401,11 +409,15 @@ const gltfMorphComponent = {
 		})
 	},
 }
+
+// FIXME checking if need adjustment
 const shortCircutRaycast = (obj3d) => {
 	obj3d.traverse((node) => {
 		node.raycast = () => { }
 	})
 }
+
+// FIXME checking if need adjustment
 const ignoreRaycast = {
 	init() {
 		const { object3D } = this.el

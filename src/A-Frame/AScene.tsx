@@ -93,7 +93,7 @@ const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEv
     { name: 'ignore-raycast', val: ignoreRaycast },
     { name: 'cubemap-realtime', val: cubeMapRealtimeComponent },
     { name: 'cubemap-static', val: cubeEnvMapComponent },
-    { name: 'responsive-immersive', val: responsiveImmersiveComponent },
+    { name: 'responsive-immersive', val: responsiveImmersiveComponent(modelLoadedEvent) },
     { name: 'xr-light', val: xrLightComponent },
   ]
 }

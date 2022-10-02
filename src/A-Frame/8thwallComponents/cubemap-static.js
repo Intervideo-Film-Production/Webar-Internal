@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-
 const ensureMaterialArray = (material) => {
   if (!material) {
     return []
@@ -61,12 +59,12 @@ const cubeEnvMapComponent = {
   init() {
     const { data } = this
 
-    this.texture = new THREE.CubeTextureLoader().load([
+    this.texture = new window.THREE.CubeTextureLoader().load([
       toUrl(data.posx), toUrl(data.negx),
       toUrl(data.posy), toUrl(data.negy),
       toUrl(data.posz), toUrl(data.negz),
     ])
-    this.texture.format = THREE[data.format]
+    this.texture.format = window.THREE[data.format]
 
     this.object3dsetHandler = () => {
       const mesh = this.el.getObject3D('mesh')

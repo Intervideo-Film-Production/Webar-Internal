@@ -1,5 +1,6 @@
 // This component is an example of how to separate behavior by device category
 import { Subject, Subscription } from "rxjs"
+import { AFrameElement } from "src/core/declarations/app";
 
 declare let XR8: any;
 
@@ -10,7 +11,6 @@ const responsiveImmersiveComponent = (modelLoadedEvent: Subject<any>) => {
 		init() {
 			const onAttach = ({ sessionAttributes }: any) => {
 				subscription = modelLoadedEvent.subscribe(modelEntityEl => {
-					// const modelEntityEl = document.getElementById('ar-model')
 					const hotspots = document.getElementById('hotspot-group')
 					const s = sessionAttributes
 					if (
@@ -67,14 +67,19 @@ const responsiveImmersiveComponent = (modelLoadedEvent: Subject<any>) => {
 						// FIXME color changer wrapper
 						// const container = document.getElementById('container') as HTMLElement;
 						window.addEventListener('xrtrackingstatus', (e: any) => {
+							console.log("xrtrackingstatus", e.detail.status);
 							if (e.detail.status === 'LIMITED' && e.detail.reason === 'INITIALIZING') {
-								modelEntityEl.object3D.scale.set(0.001, 0.001, 0.001)
+								const modelContainer = (modelEntityEl as AFrameElement).parentElement as AFrameElement;
+								modelContainer.object3D.scale.set(0.001, 0.001, 0.001);
+								// FIXME color changer container
 								// container.style.display = 'none'
 							}
 							if (e.detail.status === 'NORMAL') {
+								// FIXME color changer container
 								// container.style.display = 'block'
-								modelEntityEl.object3D.scale.set(1, 1, 1)
-								modelEntityEl.setAttribute('absolute-pinch-scale', '')
+								const modelContainer = (modelEntityEl as AFrameElement).parentElement as AFrameElement;
+								modelContainer.object3D.scale.set(1, 1, 1);
+								modelContainer.setAttribute('absolute-pinch-scale', '');
 							}
 						})
 						const addComponents = () => {

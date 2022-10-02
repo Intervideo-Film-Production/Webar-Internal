@@ -17,7 +17,9 @@
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
   <!-- We've included a slightly modified version of A-Frame, which fixes some polish concerns -->
-  <script src="//cdn.8thwall.com/web/aframe/8frame-1.3.0.min.js"></script>
+  <!-- CSS2DRenderer is not compatitable with aframe 1.3.0 temporary using v1.2.0 instead -->
+  <!-- <script src="//cdn.8thwall.com/web/aframe/8frame-1.3.0.min.js"></script> -->
+  <script src="//cdn.8thwall.com/web/aframe/8frame-1.2.0.min.js"></script>
   <script crossorigin="anonymous" src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
 
   <!-- <script defer src="./8frame/8frame-1.2.0.js"></script> -->
@@ -37,8 +39,8 @@
   <script crossorigin="anonymous" src="//cdn.8thwall.com/web/coaching-overlay/coaching-overlay.js"></script>
 
   <!-- FIXME not able to load AFRAME -->
-  <!-- <script defer async src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/js/renderers/CSS2DRenderer.js"></script> -->
-  <script src="./8frame/CSS2DRenderer.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r123/examples/js/renderers/CSS2DRenderer.js"></script>
+  <!-- <script src="./8frame/CSS2DRenderer.js"></script> -->
   <script crossorigin="anonymous" src="//cdn.8thwall.com/web/landing-page/landing-page.js"></script>
 
   <title>Web AR</title>

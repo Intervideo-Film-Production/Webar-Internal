@@ -45,8 +45,8 @@ const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {
 				// entity.setAttribute('position', '0 0 .5');
 				// entity.setAttribute('rotation', '-90 0 0');
 				// entity.setAttribute('scale', '5 5 5');
-				entity.setAttribute('xrextras-hold-drag', 'rise-height: 0');
-				entity.setAttribute('xrextras-two-finger-rotate', '');
+				// entity.setAttribute('xrextras-hold-drag', 'rise-height: 0');
+				// entity.setAttribute('xrextras-two-finger-rotate', '');
 				entity.setAttribute('cubemap-static', '')
 				// FIXME absolute scale proximity settings
 				entity.setAttribute('proximity', '');
