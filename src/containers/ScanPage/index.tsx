@@ -11,7 +11,7 @@ import {
 } from "./qrprocessPipelineModule";
 import { useQuery } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
-import { getFirstProductQRCodes } from "src/crud/crud";
+import { getFirstProductQRCodes } from "src/crud";
 import { Subject } from "rxjs";
 import { IQRCodeData } from "src/core/declarations/app";
 import { AframeComponent, AFrameScene } from "src/A-Frame/aframeScene";

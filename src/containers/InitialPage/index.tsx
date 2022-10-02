@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import { useAppContext } from 'src/core/store';
 import { useQuery } from 'react-query';
 import { QueryKeys } from '../../core/declarations/enum';
-import { getProduct, getQRCodeData } from '../../crud/crud';
+import { getProduct, getQRCodeData } from '../../crud';
 import { Navigate } from 'react-router-dom';
 import { LoadingBox } from 'src/components';
 import { getDataExportDate } from 'src/crud/crud.local';

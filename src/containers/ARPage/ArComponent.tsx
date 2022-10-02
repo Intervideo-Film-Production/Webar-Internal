@@ -23,7 +23,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
 import InfoMenu from "./InfoMenu";
 import ScreenOverlay from "./ScreenOverlay";
-import { getButtonAnimationContent } from "src/crud/crud";
+import { getButtonAnimationContent } from "src/crud";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { useReactQueryData } from "src/hooks";
