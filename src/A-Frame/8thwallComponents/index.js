@@ -1,0 +1,10 @@
+export { absPinchScaleComponent } from './absPinchScaleComponent';
+export { annotationComponent } from './annotationComponent';
+export { changeColorComponent } from './changeColorComponent';
+export { cubeEnvMapComponent } from './cubemapStatic';
+export { cubeMapRealtimeComponent } from './cubeMapRealtimeComponent';
+export { gltfMorphComponent } from './gltfMorphComponent';
+export { ignoreRaycast } from './ignoreRaycast';
+export { proximityComponent } from './proximityComponent';
+export { responsiveImmersiveComponent } from './responsiveImmersiveComponent';
+export { xrLightComponent, xrLightSystem } from './xrlight';

@@ -13,7 +13,7 @@ import { IQRCodeData } from "../core/declarations/app";
 // import CookieConsent from "src/components/CookieConsent";
 import { useAppContext } from "src/core/store";
 import { FontLoader } from "src/components/FontLoader";
-import RegisterAframe from "src/A-Frame/RegisterAframe";
+// import RegisterAframe from "src/A-Frame/RegisterAframe";
 import queryString from "query-string";
 
 const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";

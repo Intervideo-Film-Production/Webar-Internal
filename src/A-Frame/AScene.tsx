@@ -10,11 +10,7 @@ import { useAppContext } from 'src/core/store';
 import { modelRef } from 'src/core/declarations/enum';
 import arView from "./views/ar.view.html";
 import { AframeComponent, AFrameScene, AframeSystem } from './aframeScene';
-import { cubeEnvMapComponent } from './8thwallComponents/cubemap-static';
-import { changeColorComponent, annotationComponent, absPinchScaleComponent, proximityComponent, gltfMorphComponent, ignoreRaycast } from './8thwallComponents/absoluteScalesComponent';
-import { cubeMapRealtimeComponent } from './8thwallComponents/cubemap-realtime';
-import { responsiveImmersiveComponent } from './8thwallComponents/responsive-immersive';
-import { xrLightComponent, xrLightSystem } from './8thwallComponents/xrlight';
+
 import { Box } from '@mui/material';
 import {
   useEnableButtonsFromExternalEvent,
@@ -27,7 +23,19 @@ import {
   useTriggerOverLay,
   useWatchRecenterEvent
 } from './hooks';
-
+import {
+  cubeEnvMapComponent,
+  changeColorComponent,
+  absPinchScaleComponent,
+  proximityComponent,
+  gltfMorphComponent,
+  ignoreRaycast,
+  responsiveImmersiveComponent,
+  xrLightComponent,
+  xrLightSystem,
+  annotationComponent,
+  cubeMapRealtimeComponent
+} from './8thwallComponents';
 
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 
