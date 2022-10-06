@@ -1,3 +1,4 @@
+import { Entity } from "aframe";
 import { useEffect } from "react"
 import { Subject, zip } from "rxjs";
 import { AFrameElement, IButtonContent } from "src/core/declarations/app";
@@ -35,7 +36,8 @@ export const useInsertButtons = (
 
 	useEffect(() => {
 		// AR buttons
-		const aFrameComponent = document.querySelector('a-scene') as AFrameElement | null;
+		const aFrameComponent = document.querySelector('a-scene');
+		// const aFrameComponent = document.querySelector('a-scene') as AFrameElement | null;
 
 		const buttonClickHandle = (buttonName: string) => {
 			if (!!buttonName) disableButtons();
@@ -81,7 +83,7 @@ export const useInsertButtons = (
 									child.castShadow = false;
 									modelButtons.push(child); //add to array
 
-									const newEl = document.createElement('a-box') as AFrameElement;
+									const newEl = document.createElement('a-box');
 
 									newEl.setAttribute('color', 'red');
 									document.querySelector('#modelContainer')?.appendChild(newEl);
@@ -171,13 +173,14 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 
 					// disable all overlay as well when button should be displayed since this means a specific button animation ends
 					document.querySelector('#overlayVideoMesh')?.setAttribute('visible', 'false');
-					const videoEls = document.querySelectorAll<HTMLVideoElement>('.alpha-video');
+					const videoEls = document.querySelectorAll('.alpha-video') as NodeListOf<HTMLVideoElement>;
 					videoEls.forEach((el: HTMLVideoElement) => {
 						el.pause();
 						el.currentTime = 0;
 					});
 				} else {
-					const arButton = document.querySelector(`#guiButton${buttonName}`) as AFrameElement;
+					const arButton = document.querySelector(`#guiButton${buttonName}`) as Entity;
+					// const arButton = document.querySelector(`#guiButton${buttonName}`) as AFrameElement;
 					if (!!arButton) arButton.click();
 				}
 			})

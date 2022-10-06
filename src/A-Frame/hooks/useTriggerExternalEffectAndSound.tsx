@@ -1,3 +1,4 @@
+import { Entity } from "aframe";
 import { useEffect } from "react";
 import { Subject } from "rxjs";
 
@@ -9,7 +10,7 @@ const useTriggerExternalEffectAndSound = (onButtonClick: (buttonName: string) =>
 				onButtonClick(buttonName);
 
 				// play sound if any
-				const buttonAudio = document.querySelector(`#btn-audio-${buttonName}`) as HTMLAudioElement;
+				const buttonAudio = document.querySelector(`#btn-audio-${buttonName}`) as Entity<HTMLAudioElement>;
 				buttonAudio?.play();
 
 				// TODO stop playing audio when if button content is closed

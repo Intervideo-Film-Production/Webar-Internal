@@ -1,6 +1,10 @@
 import styled from '@emotion/styled';
 import { IconButton, Menu, MenuItem } from '@mui/material';
-import React, { useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { PaletteIcon } from 'src/components/icons';
+import { IProduct, IProductColor } from 'src/core/declarations/app';
+import { ProductColorTypes, QueryKeys } from 'src/core/declarations/enum';
+import { useReactQueryData } from 'src/hooks';
 
 const ColorChangerIcon = styled.div({
 	position: "relative",
@@ -45,12 +49,46 @@ const ColorChangerIcon = styled.div({
 	}
 });
 
-const ColorPicker: React.FC = () => {
+const ColorSelection = styled.span({
+	margin: "5px",
+	display: "inline-block",
+	width: "30px",
+	height: "30px",
+	borderRadius: "50%",
+	padding: "0px",
+	border: "2px solid #fff",
+});
+
+interface IColorPickerProps {
+	onSelectColor?: (color: IProductColor) => void;
+}
+
+const ColorPicker: React.FC<IColorPickerProps> = memo(({ onSelectColor }) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
+
+	const { arObjectColors } = useReactQueryData<IProduct>([QueryKeys.product]);
+
+	useEffect(() => {
+		// select first color by default
+		if (!!onSelectColor && !!arObjectColors && !!arObjectColors[0]) onSelectColor(arObjectColors[0]);
+	}, [onSelectColor])
+
+
+	const colors = useMemo(() => {
+		if (!arObjectColors) return [];
+		const arrayColorList = new Array(Math.ceil(arObjectColors.length / 3))
+			.fill(null)
+			.map((_, i) => arObjectColors.slice(3 * i, 3 * i + 3));
+		return arrayColorList;
+	}, [arObjectColors]);
+
+	useEffect(() => {
+		console.log("colors", colors);
+	}, [colors])
 
 	const handleClose = () => {
 		setAnchorEl(null);
@@ -64,17 +102,18 @@ const ColorPicker: React.FC = () => {
 				sx={{
 					p: 0,
 					zIndex: 2,
-					width: '36px',
-					height: '36px'
+					width: '42px',
+					height: '42px',
+					position: "absolute",
+					top: '-50px'
 				}}
 				onClick={handleClick}
 			>
-				{/* <ColorPickerIcon sx={{fontSize: '30px', fill: '#fff'}} /> */}
-				{/* <PaletteIcon sx={{ fontSize: '32px', fill: 'white', opacity: '.8' }} /> */}
-				<ColorChangerIcon>
+				<PaletteIcon sx={{ fontSize: '32px', fill: 'white', opacity: '.8' }} />
+				{/* <ColorChangerIcon>
 					<div></div>
 					<div></div>
-				</ColorChangerIcon>
+				</ColorChangerIcon> */}
 				{/* <ColorSelection sx={{ background: beardColor }} /> */}
 			</IconButton>
 
@@ -104,7 +143,7 @@ const ColorPicker: React.FC = () => {
 				}}
 			>
 				{/* FIXME need implementing colors */}
-				{/* {beardColorList.map((subArr, arrIdx) => (
+				{colors.map((subColors, arrIdx) => (
 					<MenuItem
 						sx={{
 							padding: "5px",
@@ -114,21 +153,26 @@ const ColorPicker: React.FC = () => {
 						disableTouchRipple
 						key={`itemList-${arrIdx}`}
 					>
-						{subArr.map((color, colorIdx) => (
+						{subColors.map((color, colorIdx) => (
 							<ColorSelection
 								key={`item-color-${arrIdx}-${colorIdx}`}
-								sx={{ background: color }}
+								style={
+									(color.type === ProductColorTypes.pattern
+										? { backgroundImage: `url("${color.icon}")` }
+										: { background: color.value }
+									)
+								}
 								onClick={() => {
-									beardColorEvent.next(color);
+									if (!!onSelectColor) onSelectColor(color);
 									handleClose();
 								}}
 							/>
 						))}
 					</MenuItem>
-				))} */}
+				))}
 			</Menu>
 		</>
 	)
-}
+})
 
 export default ColorPicker;

@@ -5,7 +5,7 @@
 // // otherwise enabled automatically.
 import { memo, useMemo, useRef } from 'react';
 import { Subject } from 'rxjs';
-import { IButtonContent, IProduct } from 'src/core/declarations/app';
+import { IButtonContent, IProduct, IProductColor } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
 import { modelRef } from 'src/core/declarations/enum';
 import arView from "./views/ar.view.html";
@@ -43,10 +43,12 @@ interface IARAsceneComponentsGenerator {
   (
     realityReadyEvent: Subject<boolean>,
     modelLoadedEvent: Subject<boolean>,
+    productColorSub: Subject<IProductColor>
+
   ): Array<AframeComponent>;
 }
 
-const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEvent, modelLoadedEvent) => {
+const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEvent, modelLoadedEvent, productColorSub) => {
   let readyReadyHandler: Function;
   let modelLoadedHandler: Function;
 
@@ -93,7 +95,7 @@ const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEv
       val: cubeEnvMapComponent
     },
     // 8thwall absolute scale component
-    { name: 'change-color', val: changeColorComponent },
+    { name: 'change-color', val: changeColorComponent(productColorSub) },
     { name: 'annotation', val: annotationComponent },
     { name: 'absolute-pinch-scale', val: absPinchScaleComponent },
     { name: 'proximity', val: proximityComponent },
@@ -121,6 +123,7 @@ interface AFrameComponentProps {
   recenterEvent?: Subject<any>;
   onButtonClick: (buttonName: string) => any;
   buttonToggleEvent?: Subject<string>;
+  productColorSub: Subject<IProductColor>;
   // beardStyleEvent?: Subject<boolean>;
   // switchBeardStyleEvent?: Subject<string>;
 }
@@ -132,6 +135,7 @@ const AScene = memo((props: AFrameComponentProps) => {
     recenterEvent,
     buttonToggleEvent,
     onButtonClick,
+    productColorSub
     // beardStylesSub,
     // beardStyleEvent,
     // switchBeardStyleEvent
@@ -141,7 +145,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   const { arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
 
   const registerComponents = useMemo(
-    () => arSceneComponentsGenerator(arResourcesLoadEvent, aFrameModelLoadedEvent),
+    () => arSceneComponentsGenerator(arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub),
     [arResourcesLoadEvent, aFrameModelLoadedEvent]
   );
   useMaxTouchPoints();

@@ -1,3 +1,4 @@
+import { Scene } from "aframe";
 import { useEffect } from "react";
 import { Subject } from "rxjs";
 import { IProduct, AFrameElement } from "src/core/declarations/app";
@@ -38,7 +39,8 @@ const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {
 			// modelContainer?.setAttribute('rotation', "0 0 0");
 			if (!!modelContainer) {
 				modelContainer.innerHTML = '';
-				const entity = document.createElement('a-entity') as AFrameElement;
+				const entity = document.createElement('a-entity') as Scene;
+				// const entity = document.createElement('a-entity') as AFrameElement;
 				entity.setAttribute('id', 'modelEntity');
 				entity.setAttribute('gltf-model', '#model');
 				// FIXME debug only

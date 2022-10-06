@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Grid, IconButton, Collapse, Typography, Rating, Button } from "@mui/material";
 import {
   ProductInfoIcon,
@@ -11,15 +11,17 @@ import { useAppContext } from "src/core/store";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";
-import { useLocation } from "react-router-dom";
-import { IProduct } from "src/core/declarations/app";
+import { IProduct, IProductColor } from "src/core/declarations/app";
 import { useReactQueryData } from "src/hooks";
+import ColorPicker from "./ColorPicker";
+import { Subject } from "rxjs";
 
 interface ARPageControllerProps {
   showGrandControl?: boolean;
   onInfo?: Function;
   onRecenter?: Function;
   onReview?: Function;
+  productColorSub?: Subject<IProductColor>;
 }
 
 const ARPageController = (props: ARPageControllerProps) => {
@@ -29,17 +31,13 @@ const ARPageController = (props: ARPageControllerProps) => {
     onInfo,
     onRecenter,
     onReview,
+    productColorSub
   } = props;
   const { t } = useTranslation();
   const { appLoadingStateEvent } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  console.log(showGrandControl);
-
-  // FIXME check location state should be default
-  const location = useLocation();
-  
   const productData = useReactQueryData<IProduct>(QueryKeys.product);
 
   const averageRatings = useMemo(() => {
@@ -47,6 +45,11 @@ const ARPageController = (props: ARPageControllerProps) => {
     const _averageRatings = productData.ratings.reduce((a: number, b: number) => a + b, 0) / productData.ratings.length;
     return Math.floor(_averageRatings * 100) / 100;
   }, [productData])
+
+  const handleSelectColor = useCallback((color: IProductColor) => {
+    if (!!productColorSub) productColorSub.next(color);
+  }, [productColorSub]);
+
 
   const infoButtonHandle = () => {
     if (onInfo) {
@@ -97,12 +100,16 @@ const ARPageController = (props: ARPageControllerProps) => {
             p: "0px 20px 10px",
           }}
         >
-          <IconButton
-            sx={{ p: 0, zIndex: 2 }}
-            onClick={() => infoButtonHandle()}
-          >
-            <ProductInfoIcon sx={{ fontSize: 42 }} />
-          </IconButton>
+          <Grid sx={{ position: 'relative' }}>
+            {productData.arObjectColors && (<ColorPicker onSelectColor={handleSelectColor} />)}
+
+            <IconButton
+              sx={{ p: 0, zIndex: 2 }}
+              onClick={() => infoButtonHandle()}
+            >
+              <ProductInfoIcon sx={{ fontSize: 42 }} />
+            </IconButton>
+          </Grid>
 
           <AppButton
             sx={(theme) => ({

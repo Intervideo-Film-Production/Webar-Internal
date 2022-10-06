@@ -46,6 +46,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@types/aframe": "^1.2.0",
     "cra-build-watch": "^3.4.0",
     "react-app-rewired": "^2.2.1"
   },

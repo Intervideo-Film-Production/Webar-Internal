@@ -42,6 +42,24 @@ const PRODUCT_FINDER_QUERY = (searchParamsCount: number) => `
     'popupTitle': popupTitle[$lng],
     'popupContent': popupContent[$lng],
     'productButtonName': productButton->['buttonName']
+  },
+  'arObjectColors': arObjectColors[]{
+    'type': @._type,
+    @._type == "color" => {
+      'value': @.value
+    },
+    @._type == "pattern" => {
+      'value': @.value.asset->['url'],
+      'icon': @.icon.asset->['url']
+    }
+  },
+  'cubemap':{
+    'negx': productCubemap.negx.asset->["url"],
+    'negy': productCubemap.negy.asset->["url"],
+    'negz': productCubemap.negz.asset->["url"],
+    'posx': productCubemap.posx.asset->["url"],
+    'posy': productCubemap.posy.asset->["url"],
+    'posz': productCubemap.posz.asset->["url"]
   }
 }
  `;

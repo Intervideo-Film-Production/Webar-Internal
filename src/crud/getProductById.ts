@@ -44,7 +44,17 @@ const PRODUCT_QUERY_BY_ID = `
     'popupContent': popupContent[$lng],
     'productButtonName': productButton->['buttonName']
   },
-  productQRCodes
+  productQRCodes,
+  'arObjectColors': arObjectColors[]{
+    'type': @._type,
+    @._type == "color" => {
+      'value': @.value
+    },
+    @._type == "pattern" => {
+      'value': @.value.asset->['url'],
+      'icon': @.icon.asset->['url']
+    }
+  }
 }
 `;
 

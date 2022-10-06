@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataTypes } from "./enum";
+import { DataTypes, ProductColorTypes } from "./enum";
 
 interface IComponentStyles {
   [key: string]: string | number;
@@ -354,6 +354,12 @@ export interface IComment {
   comment: string;
 }
 
+export interface IProductColor {
+  type: ProductColorTypes;
+  value: string;
+  icon?: string;
+}
+
 export interface IProduct {
   id: string;
   name: string;
@@ -380,6 +386,7 @@ export interface IProduct {
   };
   beardStyles: IBeardStyle[];
   productQRCodes?: string[];
+  arObjectColors: IProductColor[];
 }
 
 export interface IButtonContent {

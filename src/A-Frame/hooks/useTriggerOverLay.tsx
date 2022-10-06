@@ -1,3 +1,4 @@
+import { Entity } from "aframe";
 import { useEffect } from "react";
 import { Subject, withLatestFrom } from "rxjs";
 import { IButtonContent } from "src/core/declarations/app";
@@ -16,7 +17,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 				const arModelOverlayPlaytime = btnData?.arModelOverlayPlaytime || 0;
 				const chromaColor = btnData?.arModelOverlayBgColor || '0 0 0';
 				if (!!btnName) {
-					const videoEl = document.querySelector(`#overlayVideo${btnName}`) as HTMLVideoElement;
+					const videoEl = document.querySelector(`#overlayVideo${btnName}`) as Entity<HTMLVideoElement>;
 					if (!!videoEl) {
 						setTimeout(() => {
 							try {

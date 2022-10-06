@@ -35,7 +35,25 @@ const PRODUCT_QUERY_BY_QRCODE = `
     'popupContent': popupContent[$lng],
     'productButtonName': productButton->['buttonName']
   },
-  productQRCodes
+  productQRCodes,
+  'arObjectColors': arObjectColors[]{
+    'type': @._type,
+    @._type == "color" => {
+      'value': @.value
+    },
+    @._type == "pattern" => {
+      'value': @.value.asset->['url'],
+      'icon': @.icon.asset->['url']
+    }
+  },
+  'cubemap':{
+    'negx': productCubemap.negx.asset->["url"],
+    'negy': productCubemap.negy.asset->["url"],
+    'negz': productCubemap.negz.asset->["url"],
+    'posx': productCubemap.posx.asset->["url"],
+    'posy': productCubemap.posy.asset->["url"],
+    'posz': productCubemap.posz.asset->["url"]
+  }
 }
 `;
 
