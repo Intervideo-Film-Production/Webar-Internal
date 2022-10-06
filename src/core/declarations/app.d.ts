@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataTypes } from "./enum";
+import { DataTypes, ProductColorTypes } from "./enum";
 
 interface IComponentStyles {
   [key: string]: string | number;
@@ -354,6 +354,31 @@ export interface IComment {
   comment: string;
 }
 
+export interface IProductColor {
+  type: ProductColorTypes;
+  value: string;
+  icon?: string;
+}
+
+export interface IProductHotspot {
+  id: string;
+  position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  labelDistance?: number;
+  hsdistance?: number;
+  offsetY?: number;
+  text: string;
+}
+/**
+ * If IProduct is updated, it is likely that the following queries should be updated
+ * findMatchingProducts
+ * getProduct
+ * getProductById
+ * getAllProductsByQRCode
+*/
 export interface IProduct {
   id: string;
   name: string;
@@ -380,6 +405,8 @@ export interface IProduct {
   };
   beardStyles: IBeardStyle[];
   productQRCodes?: string[];
+  arObjectColors: IProductColor[];
+  hotspots: IProductHotspot[];
 }
 
 export interface IButtonContent {
@@ -443,4 +470,5 @@ export type AFrameElement = HTMLElement & {
   material: any;
   emit: Function;
   click: Function;
+  [key: string]: any;
 }

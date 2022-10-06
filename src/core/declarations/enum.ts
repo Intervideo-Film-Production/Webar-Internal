@@ -41,4 +41,9 @@ export enum DataTypes {
   homePageContent = 'homePageContent',
 }
 
+export enum ProductColorTypes {
+  color = 'color',
+  pattern = 'pattern'
+}
+
 export const modelRef = 'ar-model';

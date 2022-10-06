@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { filter, interval, Observable, throttle } from "rxjs";
 import { IQRCodeData } from "src/core/declarations/app";
 import { QueryKeys } from "src/core/declarations/enum";
-import { getProduct, getProductById } from "src/crud/crud";
+import { getProduct, getProductById } from "src/crud";
 
 const useProductQRValue = (cameraEvent: Observable<string>) => {
 	const { i18n } = useTranslation();

@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from 'react';
 import { modelRef } from 'src/core/declarations/enum';
 import { useAppContext } from 'src/core/store';
-import { cubeEnvMapComponent } from './8thwallComponents/cubemap-static';
+import { cubeEnvMapComponent } from './8thwallComponents/cubemapStatic';
 
 declare let AFRAME: any;
 

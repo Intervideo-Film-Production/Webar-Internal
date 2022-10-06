@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useQuery } from 'react-query';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { LoadingBox } from 'src/components';
-import { getProductComments } from 'src/crud/crud';
+import { getProductComments } from 'src/crud';
 import { useTranslation } from 'react-i18next';
 import { useReactQueryData } from 'src/hooks';
 import { IProduct } from 'src/core/declarations/app';

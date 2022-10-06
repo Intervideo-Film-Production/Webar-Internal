@@ -3,7 +3,7 @@ import React, { memo, useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { AppButton, LazyImage } from 'src/components';
 import { QueryKeys } from 'src/core/declarations/enum';
-import { getAllProductsByQRCode, getProductById } from 'src/crud/crud';
+import { getAllProductsByQRCode, getProductById } from 'src/crud';
 import { useTranslation } from "react-i18next";
 import { IQRCodeData } from 'src/core/declarations/app';
 import { useNavigate } from 'react-router-dom';

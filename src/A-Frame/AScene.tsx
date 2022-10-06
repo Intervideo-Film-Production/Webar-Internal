@@ -5,18 +5,39 @@
 // // otherwise enabled automatically.
 import { memo, useMemo, useRef } from 'react';
 import { Subject } from 'rxjs';
-import { IButtonContent, IProduct } from 'src/core/declarations/app';
+import { IButtonContent, IProduct, IProductColor } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
-import { modelRef } from 'src/core/declarations/enum';
-import arView from "src/views/ar.view.html";
+import { modelRef, QueryKeys } from 'src/core/declarations/enum';
+import arView from "./views/ar.view.html";
 import { AframeComponent, AFrameScene, AframeSystem } from './aframeScene';
-import { useEnableButtonsFromExternalEvent, useInsertButtonOverlays, useInsertButtons, useInsertButtonSound, useInsertModel, useMaxTouchPoints, useTriggerExternalEffectAndSound, useTriggerOverLay, useWatchRecenterEvent } from './aframeHooks';
-import { cubeEnvMapComponent } from './8thwallComponents/cubemap-static';
-import { changeColorComponent, annotationComponent, absPinchScaleComponent, proximityComponent, gltfMorphComponent, ignoreRaycast } from './8thwallComponents/absoluteScalesComponent';
-import { cubeMapRealtimeComponent } from './8thwallComponents/cubemap-realtime';
-import { responsiveImmersiveComponent } from './8thwallComponents/responsive-immersive';
-import { xrLightComponent, xrLightSystem } from './8thwallComponents/xrlight';
-import { Box, Grid } from '@mui/material';
+
+import { Box } from '@mui/material';
+import {
+  useEnableButtonsFromExternalEvent,
+  useInsertButtonOverlays,
+  useInsertButtons,
+  useInsertButtonSound,
+  useInsertHotspots,
+  useInsertModel,
+  useMaxTouchPoints,
+  useTriggerExternalEffectAndSound,
+  useTriggerOverLay,
+  useWatchRecenterEvent
+} from './hooks';
+import {
+  cubeEnvMapComponent,
+  changeColorComponent,
+  absPinchScaleComponent,
+  proximityComponent,
+  gltfMorphComponent,
+  ignoreRaycast,
+  responsiveImmersiveComponent,
+  xrLightComponent,
+  xrLightSystem,
+  annotationComponent,
+  cubeMapRealtimeComponent
+} from './8thwallComponents';
+import { useReactQueryData } from 'src/hooks';
 
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 
@@ -24,10 +45,12 @@ interface IARAsceneComponentsGenerator {
   (
     realityReadyEvent: Subject<boolean>,
     modelLoadedEvent: Subject<boolean>,
+    productColorSub: Subject<IProductColor>
+
   ): Array<AframeComponent>;
 }
 
-const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEvent, modelLoadedEvent) => {
+const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEvent, modelLoadedEvent, productColorSub) => {
   let readyReadyHandler: Function;
   let modelLoadedHandler: Function;
 
@@ -74,7 +97,7 @@ const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEv
       val: cubeEnvMapComponent
     },
     // 8thwall absolute scale component
-    { name: 'change-color', val: changeColorComponent },
+    { name: 'change-color', val: changeColorComponent(productColorSub) },
     { name: 'annotation', val: annotationComponent },
     { name: 'absolute-pinch-scale', val: absPinchScaleComponent },
     { name: 'proximity', val: proximityComponent },
@@ -82,7 +105,7 @@ const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEv
     { name: 'ignore-raycast', val: ignoreRaycast },
     { name: 'cubemap-realtime', val: cubeMapRealtimeComponent },
     { name: 'cubemap-static', val: cubeEnvMapComponent },
-    { name: 'responsive-immersive', val: responsiveImmersiveComponent },
+    { name: 'responsive-immersive', val: responsiveImmersiveComponent(modelLoadedEvent) },
     { name: 'xr-light', val: xrLightComponent },
   ]
 }
@@ -95,30 +118,6 @@ const systems: AframeSystem[] = [
   }
 ];
 
-// AFRAME.registerComponent('change-color',
-//   changeColorComponent)
-// AFRAME.registerComponent('annotation',
-//   annotationComponent)
-// AFRAME.registerComponent('absolute-pinch-scale',
-//   absPinchScaleComponent)
-// AFRAME.registerComponent('proximity',
-//   proximityComponent)
-// AFRAME.registerComponent('gltf-morph',
-//   gltfMorphComponent)
-// AFRAME.registerComponent('ignore-raycast',
-//   ignoreRaycast)
-// AFRAME.registerComponent('cubemap-realtime',
-//   cubeMapRealtimeComponent)
-// AFRAME.registerComponent('cubemap-static',
-//   cubeEnvMapComponent)
-// AFRAME.registerComponent('responsive-immersive',
-//   responsiveImmersiveComponent)
-// AFRAME.registerComponent('xr-light',
-//   xrLightComponent)
-// AFRAME.registerSystem('xr-light',
-//   xrLightSystem)
-
-
 interface AFrameComponentProps {
   productDataSub: Subject<Partial<IProduct>>;
   buttonListSub: Subject<IButtonContent[]>;
@@ -126,6 +125,7 @@ interface AFrameComponentProps {
   recenterEvent?: Subject<any>;
   onButtonClick: (buttonName: string) => any;
   buttonToggleEvent?: Subject<string>;
+  productColorSub: Subject<IProductColor>;
   // beardStyleEvent?: Subject<boolean>;
   // switchBeardStyleEvent?: Subject<string>;
 }
@@ -137,6 +137,7 @@ const AScene = memo((props: AFrameComponentProps) => {
     recenterEvent,
     buttonToggleEvent,
     onButtonClick,
+    productColorSub
     // beardStylesSub,
     // beardStyleEvent,
     // switchBeardStyleEvent
@@ -144,10 +145,11 @@ const AScene = memo((props: AFrameComponentProps) => {
 
   const buttonHandleEventRef = useRef(new Subject<string>());
   const { arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
+  const { hotspots } = useReactQueryData<IProduct>(QueryKeys.product);
 
   const registerComponents = useMemo(
-    () => arSceneComponentsGenerator(arResourcesLoadEvent, aFrameModelLoadedEvent),
-    [arResourcesLoadEvent, aFrameModelLoadedEvent]
+    () => arSceneComponentsGenerator(arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub),
+    [arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub]
   );
   useMaxTouchPoints();
   useInsertModel(productDataSub);
@@ -158,6 +160,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   useTriggerExternalEffectAndSound(onButtonClick, buttonHandleEventRef.current);
   useEnableButtonsFromExternalEvent(buttonToggleEvent);
   useWatchRecenterEvent(recenterEvent);
+  useInsertHotspots(aFrameModelLoadedEvent, hotspots);
 
   return script8thWallDisabled
     ? <></>

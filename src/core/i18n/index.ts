@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getSupportLanguages,
   GET_TRANSLATION_QUERY
-} from 'src/crud/crud';
+} from 'src/crud';
 import { useQuery } from "react-query";
 import { QueryKeys } from "../declarations/enum";
 import { ISupportLanguage } from "../declarations/app";

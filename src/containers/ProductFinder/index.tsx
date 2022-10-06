@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useQueries, useQuery, useQueryClient } from 'react-query';
 import { useTranslation } from 'react-i18next';
-import { getSearchCriteria, getSearchCriteriaValues, findMatchingProducts } from 'src/crud/crud';
+import { getSearchCriteria, getSearchCriteriaValues, findMatchingProducts } from 'src/crud';
 import { AppGrid } from '../../components';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { LoadingBox, AppButton, TabPanel, CompareProductContent } from 'src/components';
