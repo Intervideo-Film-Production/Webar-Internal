@@ -54,6 +54,10 @@ const PRODUCT_QUERY = `
     'posx': productCubemap.posx.asset->["url"],
     'posy': productCubemap.posy.asset->["url"],
     'posz': productCubemap.posz.asset->["url"]
+  },
+  'hotspots': hotspots[]{
+    ...,
+    'text': @.text[$lng]
   }
 }
 `;

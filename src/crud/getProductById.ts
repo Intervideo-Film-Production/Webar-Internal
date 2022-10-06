@@ -54,6 +54,10 @@ const PRODUCT_QUERY_BY_ID = `
       'value': @.value.asset->['url'],
       'icon': @.icon.asset->['url']
     }
+  },
+  'hotspots': hotspots[]{
+    ...,
+    'text': @.text[$lng]
   }
 }
 `;
