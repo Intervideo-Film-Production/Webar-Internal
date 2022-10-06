@@ -7,7 +7,7 @@ import { memo, useMemo, useRef } from 'react';
 import { Subject } from 'rxjs';
 import { IButtonContent, IProduct, IProductColor } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
-import { modelRef } from 'src/core/declarations/enum';
+import { modelRef, QueryKeys } from 'src/core/declarations/enum';
 import arView from "./views/ar.view.html";
 import { AframeComponent, AFrameScene, AframeSystem } from './aframeScene';
 
@@ -17,6 +17,7 @@ import {
   useInsertButtonOverlays,
   useInsertButtons,
   useInsertButtonSound,
+  useInsertHotspots,
   useInsertModel,
   useMaxTouchPoints,
   useTriggerExternalEffectAndSound,
@@ -36,6 +37,7 @@ import {
   annotationComponent,
   cubeMapRealtimeComponent
 } from './8thwallComponents';
+import { useReactQueryData } from 'src/hooks';
 
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 
@@ -143,10 +145,11 @@ const AScene = memo((props: AFrameComponentProps) => {
 
   const buttonHandleEventRef = useRef(new Subject<string>());
   const { arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
+  const { hotspots } = useReactQueryData<IProduct>(QueryKeys.product);
 
   const registerComponents = useMemo(
     () => arSceneComponentsGenerator(arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub),
-    [arResourcesLoadEvent, aFrameModelLoadedEvent]
+    [arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub]
   );
   useMaxTouchPoints();
   useInsertModel(productDataSub);
@@ -157,6 +160,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   useTriggerExternalEffectAndSound(onButtonClick, buttonHandleEventRef.current);
   useEnableButtonsFromExternalEvent(buttonToggleEvent);
   useWatchRecenterEvent(recenterEvent);
+  useInsertHotspots(aFrameModelLoadedEvent, hotspots);
 
   return script8thWallDisabled
     ? <></>

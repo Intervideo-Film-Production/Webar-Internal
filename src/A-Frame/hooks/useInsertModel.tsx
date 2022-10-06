@@ -1,7 +1,7 @@
 import { Scene } from "aframe";
 import { useEffect } from "react";
 import { Subject } from "rxjs";
-import { IProduct, AFrameElement } from "src/core/declarations/app";
+import { IProduct } from "src/core/declarations/app";
 import { modelRef } from "src/core/declarations/enum";
 
 const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {

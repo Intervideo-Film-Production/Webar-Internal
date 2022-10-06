@@ -56,6 +56,7 @@ const PRODUCT_QUERY_BY_ID = `
     }
   },
   'hotspots': hotspots[]{
+    'id': @._id,
     ...,
     'text': @.text[$lng]
   }

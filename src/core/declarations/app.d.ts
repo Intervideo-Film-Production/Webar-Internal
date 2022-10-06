@@ -361,6 +361,7 @@ export interface IProductColor {
 }
 
 export interface IProductHotspot {
+  id: string;
   position: {
     x: number;
     y: number;

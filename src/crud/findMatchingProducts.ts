@@ -62,6 +62,7 @@ const PRODUCT_FINDER_QUERY = (searchParamsCount: number) => `
     'posz': productCubemap.posz.asset->["url"]
   },
   'hotspots': hotspots[]{
+    'id': @._id,
     ...,
     'text': @.text[$lng]
   }

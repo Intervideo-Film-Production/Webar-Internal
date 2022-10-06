@@ -6,3 +6,4 @@ export { default as useTriggerExternalEffectAndSound } from './useTriggerExterna
 export { default as useTriggerOverLay } from './useTriggerOverLay';
 export { default as useWatchRecenterEvent } from './useWatchRecenterEvent';
 export { useInsertButtons, useEnableButtonsFromExternalEvent } from './useInsertButtons';
+export { default as useInsertHotspots } from './useInsertHotspots';

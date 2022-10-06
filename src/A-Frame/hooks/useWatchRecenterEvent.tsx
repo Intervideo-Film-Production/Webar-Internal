@@ -1,14 +1,11 @@
-import { Scene } from "aframe";
 import { useEffect } from "react";
 import { Subject } from "rxjs";
-import { AFrameElement } from "src/core/declarations/app";
 
 const useWatchRecenterEvent = (recenterEvent?: Subject<any>) => {
 	useEffect(() => {
 		// recenter event
 		if (recenterEvent) {
-			const aFrameComponent = document.querySelector('a-scene') as Scene;
-			// const aFrameComponent = document.querySelector('a-scene') as AFrameElement | null;
+			const aFrameComponent = document.querySelector('a-scene');
 
 			const subscription = recenterEvent.subscribe(() => {
 

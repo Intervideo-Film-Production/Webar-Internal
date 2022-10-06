@@ -10,7 +10,6 @@ interface ExtendedObject3D extends THREE.Object3D<THREE.Event> {
     material?: any;
 }
 
-
 // FIXME check when implementing change ar model color
 interface ColorComponent extends Partial<Component> {
     offset?: number;

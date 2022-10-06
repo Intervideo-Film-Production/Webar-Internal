@@ -55,6 +55,7 @@ const PRODUCT_QUERY_BY_QRCODE = `
     'posz': productCubemap.posz.asset->["url"]
   },
   'hotspots': hotspots[]{
+    'id': @._id,
     ...,
     'text': @.text[$lng]
   }
