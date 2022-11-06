@@ -57,7 +57,7 @@
     ]
   },
   "homepage": "./",
-  "name": "braunwebar",
+  "name": "intervideo-webar",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",

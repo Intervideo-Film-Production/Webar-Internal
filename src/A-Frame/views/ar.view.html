@@ -2,6 +2,9 @@
 <!-- <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
 <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> -->
 
+<!-- scale: absolute -->
+
+
 <a-scene id='ascene' 
 	ar-view-initializer
 	responsive-immersive
@@ -18,8 +21,7 @@
 		defaultEnvironmentFloorColor: #FFF;
 		defaultEnvironmentSkyBottomColor: #B4C4CC; 
 		defaultEnvironmentSkyTopColor: #5ac8fa;
-		defaultEnvironmentSkyGradientStrength: 0.5;
-		scale: absolute">
+		defaultEnvironmentSkyGradientStrength: 0.5;scale: absolute;">
    
 	<a-assets id="assetContainer" timeout="30000">
 		<a-asset-item id="model" src=""></a-asset-item>
@@ -62,6 +64,8 @@
 
 	<!--
 		xrextras-pinch-scale -->
+		<!-- absolute-pinch-scale -->
+
 	<a-entity 
 		id="modelContainer" 
 		visible="true" 

@@ -427,6 +427,8 @@ export interface IButtonContent {
   arModelOverlay: string;
   arModelOverlayPlaytime: number;
   arModelOverlayBgColor: string;
+  overlayHideModel: boolean;
+  arOverlayPosition: boolean;
 }
 
 export interface ISearchCriteria {
