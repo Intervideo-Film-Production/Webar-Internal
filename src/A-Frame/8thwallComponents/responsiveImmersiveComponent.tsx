@@ -66,8 +66,8 @@ const responsiveImmersiveComponent = (modelLoadedEvent: Subject<any>) => {
 					) {  // Mobile-specific behavior goes here
 						// FIXME color changer wrapper
 						// const container = document.getElementById('container') as HTMLElement;
+						// FIXME toggle absolute scale
 						window.addEventListener('xrtrackingstatus', (e: any) => {
-							console.log("xrtrackingstatus", e.detail.status);
 							if (e.detail.status === 'LIMITED' && e.detail.reason === 'INITIALIZING') {
 								const modelContainer = (modelEntityEl as AFrameElement).parentElement as AFrameElement;
 								modelContainer.object3D.scale.set(0.001, 0.001, 0.001);

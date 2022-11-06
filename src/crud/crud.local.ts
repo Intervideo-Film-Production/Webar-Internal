@@ -345,7 +345,9 @@ export const getLocalButtonAnimationContent = (productId: string, lng: string) =
           modelOverlayObjectname: b.modelOverlayObjectname,
           arModelOverlay,
           arModelOverlayPlaytime: b.arModelOverlayPlaytime,
-          arModelOverlayBgColor: b.arModelOverlayBgColor
+          arModelOverlayBgColor: b.arModelOverlayBgColor,
+          overlayHideModel: b.overlayHideModel,
+          arOverlayPosition:  b.arOverlayPosition
         }
       })
     )

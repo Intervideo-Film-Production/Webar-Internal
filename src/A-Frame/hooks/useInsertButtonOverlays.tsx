@@ -22,10 +22,10 @@ const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
 			if (!!overlayVideoWrapperEl && arModelOverlays.length > 0) {
 				overlayVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
 				<video
+					playsinline
 					id="overlayVideo${buttonName}"
 					class="alpha-video"
 					preload="auto"
-					loop="true"
 					src="${arModelOverlay}" 
 					type="video/mp4"
 					crossorigin="anonymous"
@@ -33,16 +33,10 @@ const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
 				</video>
 				`).join(' ');
 
+				// TODO need calculate video ratio
 				const overlayVideoMeshEl = `<a-entity 
 					id="overlayVideoMesh" 
 					visible="false" 
-					geometry="primitive:plane; height: 2; width: 2;"
-					xrextras-play-video="${arModelOverlays.length > 0 ? `video: #overlayVideo${arModelOverlays[0].buttonName}` : ''}"
-					material="shader: chromakey;
-						src: ${arModelOverlays.length > 0 ? `#overlayVideo${arModelOverlays[0].buttonName}` : ''};
-						color: 0 0 0; 
-						side: double; 
-						depthTest: true;"
 					></a-entity>`
 
 				// NOTE back up

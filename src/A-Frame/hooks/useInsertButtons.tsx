@@ -173,6 +173,10 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 
 					// disable all overlay as well when button should be displayed since this means a specific button animation ends
 					document.querySelector('#overlayVideoMesh')?.setAttribute('visible', 'false');
+					// display ar model if hidden before
+					const modelContainer = document.querySelector("#modelContainer");
+					modelContainer?.setAttribute("visible", "true");
+					
 					const videoEls = document.querySelectorAll('.alpha-video') as NodeListOf<HTMLVideoElement>;
 					videoEls.forEach((el: HTMLVideoElement) => {
 						el.pause();
