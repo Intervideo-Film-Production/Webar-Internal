@@ -38,7 +38,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 								})
 								setTimeout(() => {
 									overlayVideoMesh?.setAttribute('visible', 'true'); //disable water video
-								}, 200);
+								}, 350);
 
 							} catch (ex) {
 								console.error(ex);
