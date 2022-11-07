@@ -211,6 +211,7 @@ const AScene = memo((props: AFrameComponentProps) => {
         overlayVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
           <video
             id="overlayVideo${buttonName}"
+            playsinline
             class="alpha-video"
             preload="auto"
             src="${arModelOverlay}" 
