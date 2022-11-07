@@ -106,7 +106,7 @@ const AScene = memo((props: AFrameComponentProps) => {
   useEffect(() => {
     if (!!productDataSub) {
 
-      const subscription = productDataSub.subscribe(({ arObjectUrl, cubemap }) => {
+      const subscription = productDataSub.subscribe(({ arObjectUrl, arModelScale, cubemap }) => {
         const assetContainer = document.querySelector('#assetContainer');
 
         const assetItemEl = document.querySelector('a-scene a-asset-item#model');
@@ -131,7 +131,7 @@ const AScene = memo((props: AFrameComponentProps) => {
 
         // bind entity to ascene
         const modelContainer = document.querySelector('#modelContainer');
-
+        const arObjectScale = arModelScale || "1 1 1";
         // reset parent scale & rotation
         modelContainer?.setAttribute('scale', "1 1 1");
         modelContainer?.setAttribute('rotation', "0 0 0");
@@ -143,7 +143,7 @@ const AScene = memo((props: AFrameComponentProps) => {
           // FIXME debug only
           // entity.setAttribute('position', '0 0 .5');
           // entity.setAttribute('rotation', '-90 0 0');
-          // entity.setAttribute('scale', '5 5 5');
+          entity.setAttribute('scale', arObjectScale);
           entity.setAttribute('cubemap-static', '')
           entity.setAttribute('shadow', 'receive: false');
           entity.setAttribute('animation-mixer', {
@@ -173,6 +173,7 @@ const AScene = memo((props: AFrameComponentProps) => {
         if (!!btn.sound) {
           const audioEl = document.createElement('audio');
           audioEl.setAttribute('id', `btn-audio-${btn.buttonName}`);
+          audioEl.className = "ar-button-audio";
           const audioSource = document.createElement('source');
           audioSource.setAttribute('src', btn.sound);
           audioSource.setAttribute('type', "audio/mp3");
@@ -583,6 +584,13 @@ const AScene = memo((props: AFrameComponentProps) => {
             el.pause();
             el.currentTime = 0;
           });
+
+          // stop all playing audio
+          const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;
+          buttonAudios.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+          })
         } else {
           const arButton = document.querySelector(`#guiButton${buttonName}`) as AFrameElement;
           if (!!arButton) arButton.click();

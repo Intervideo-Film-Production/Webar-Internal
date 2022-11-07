@@ -61,9 +61,9 @@ const ArComponent = memo(() => {
 
   useEffect(() => {
     if (!!productData) {
-      const { arObjectUrl, cubemap } = productData;
+      const { arObjectUrl, cubemap, arModelScale } = productData;
       arModelUrlSub.next({
-        arObjectUrl, cubemap
+        arObjectUrl, cubemap, arModelScale
       });
     }
   }, [arModelUrlSub, productData]);

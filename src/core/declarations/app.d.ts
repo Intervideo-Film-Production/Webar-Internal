@@ -359,6 +359,7 @@ export interface IProduct {
   name: string;
   productClaim: string;
   arObjectUrl: string;
+  arModelScale: string;
   image: string | { [key: string]: any; };
   searchImage: string | { [key: string]: any; };
   imageCaption: string;
