@@ -532,7 +532,6 @@ const AScene = memo((props: AFrameComponentProps) => {
           if (!!videoEl) {
             setTimeout(() => {
               try {
-                videoEl.play();
                 const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
                 overlayVideoMesh?.removeAttribute("xrextras-play-video");
                 overlayVideoMesh?.removeAttribute("material");
@@ -543,6 +542,7 @@ const AScene = memo((props: AFrameComponentProps) => {
                 overlayVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
                 overlayVideoMesh?.setAttribute("position", overlayPosition);
                 overlayVideoMesh?.setAttribute("scale", overlayScale);
+                videoEl.play();
 
                 overlayVideoMesh?.setAttribute('geometry', 'primitive: plane; height: 1; width: 1.78;');
                 setTimeout(() => {
