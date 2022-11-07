@@ -73,3 +73,7 @@ img.lazy {
 .prompt-box-8w {
   z-index: 9999 !important;
 }
+
+.alpha-video {
+  visibility: hidden;
+}

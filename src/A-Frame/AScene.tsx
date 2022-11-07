@@ -19,17 +19,19 @@ const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 // default light
 {/* <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
 <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> */}
-
+// <!-- face effects -->
+//     <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
 const sceneGenerator = `
   <a-scene
     id='ascene' 
+    responsive-immersive
     xrextras-gesture-detector
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true"
     xrweb="allowedDevices: any">
 
-    <a-camera id="camera" position="0 8 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+    <a-camera id="camera" position="0 5 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
     <a-assets id="assetContainer" timeout="30000">
       <a-asset-item id="model" src=""></a-asset-item>
@@ -41,10 +43,11 @@ const sceneGenerator = `
 
     <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale></a-entity>
 
-    <!-- face effects -->
-    <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
+    <a-entity id="overlayVideoMeshContainer" visible="true" xrextras-pinch-scale>
+      <a-entity id="overlayVideoMesh" visible="false" geometry="primitive: plane; height: 1; width: 1.78;"></a-entity>
+    </a-entity>
 
-    <a-plane id="ground" position="0 0 0" rotation="-90 0 0" height="50" width="50"  material="shader: shadow" shadow></a-plane>
+    <a-plane id="ground" rotation="-90 0 0" height="1000" width="1000"  material="shader: shadow" shadow></a-plane>
   </a-scene>
 `;
 
@@ -200,7 +203,6 @@ const AScene = memo((props: AFrameComponentProps) => {
 
       // clear previous product data
 
-      document.querySelector('a-entity#overlayVideoMesh')?.remove();
       if (!!overlayVideoWrapperEl) overlayVideoWrapperEl.innerHTML = '';
 
       // append current product data
@@ -218,22 +220,13 @@ const AScene = memo((props: AFrameComponentProps) => {
           </video>
         `).join(' ');
 
-
-        const overlayVideoMeshEl = document.createElement('a-entity') as AFrameElement;
-        overlayVideoMeshEl.setAttribute('id', 'overlayVideoMesh');
-        overlayVideoMeshEl.setAttribute('visible', 'false');
-        overlayVideoMeshEl.setAttribute('geometry', {
-          primitive: 'plane',
-          height: 1,
-          width: 1.78
-        })
-
-        // overlayVideoMeshEl.setAttribute('xrextras-play-video', arModelOverlays.length > 0 ? `video: #overlayVideo${arModelOverlays[0].buttonName}` : '');
-        // overlayVideoMeshEl.setAttribute('material', `shader: chromakey; src: '${arModelOverlays.length > 0 ? `#overlayVideo${arModelOverlays[0].buttonName}` : ''
-        //   }'; color: 0 0 0; side: double; depthTest: true;`)
-
-        const sceneEl = document.querySelector('a-scene#ascene');
-        if (!!sceneEl) sceneEl.insertAdjacentElement('beforeend', overlayVideoMeshEl);
+        // testing only
+        setTimeout(() => {
+          const alVideos = document.querySelectorAll(".alpha-video");
+          alVideos.forEach(video => (video as HTMLVideoElement).addEventListener('play', (e) => {
+            console.log("playyyy");
+          }))
+        }, 300);
       }
     });
 
@@ -531,23 +524,18 @@ const AScene = memo((props: AFrameComponentProps) => {
         if (!!btnName) {
           const videoEl = document.querySelector(`#overlayVideo${btnName}`) as HTMLVideoElement;
           if (!!videoEl) {
-            videoEl.play();
             setTimeout(() => {
               try {
                 const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
-                overlayVideoMesh?.removeAttribute("xrextras-play-video");
+                overlayVideoMesh?.removeAttribute("play-video");
                 overlayVideoMesh?.removeAttribute("material");
                 overlayVideoMesh?.removeAttribute("position");
 
                 overlayVideoMesh?.removeAttribute("scale");
-                overlayVideoMesh?.removeAttribute("geometry");
-                overlayVideoMesh?.setAttribute('xrextras-play-video', `video: #overlayVideo${btnName}`);
+                overlayVideoMesh?.setAttribute('play-video', `video: #overlayVideo${btnName}`);
                 overlayVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
                 overlayVideoMesh?.setAttribute("position", overlayPosition);
                 overlayVideoMesh?.setAttribute("scale", overlayScale);
-                overlayVideoMesh?.setAttribute("xrextras-pinch-scale", "");
-
-                overlayVideoMesh?.setAttribute('geometry', 'primitive: plane; height: 1; width: 1.78;');
                 setTimeout(() => {
                   overlayVideoMesh?.setAttribute('visible', 'true'); //disable water video
                 }, 500)
@@ -587,11 +575,10 @@ const AScene = memo((props: AFrameComponentProps) => {
           if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
           const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
           if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
-          const videoEls = document.querySelectorAll<HTMLVideoElement>('.alpha-video');
-          videoEls.forEach((el: HTMLVideoElement) => {
-            el.pause();
-            el.currentTime = 0;
-          });
+        
+          const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
+          overlayVideoMesh?.removeAttribute("play-video");
+          overlayVideoMesh?.removeAttribute("material");
 
           // stop all playing audio
           const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;

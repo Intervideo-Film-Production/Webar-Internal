@@ -2,6 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { modelRef } from 'src/core/declarations/enum';
 import { useAppContext } from 'src/core/store';
 import { cubeEnvMapComponent } from './cubemap-static';
+import { playVideoComponent } from './play-video';
 
 declare let AFRAME: any;
 
@@ -39,6 +40,8 @@ const RegisterAframe = memo(() => {
     });
 
     AFRAME.registerComponent('cubemap-static', cubeEnvMapComponent);
+    AFRAME.registerComponent('play-video', playVideoComponent);
+
   })
 
   return (<></>)
