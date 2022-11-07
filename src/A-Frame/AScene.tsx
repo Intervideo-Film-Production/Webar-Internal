@@ -531,19 +531,21 @@ const AScene = memo((props: AFrameComponentProps) => {
         if (!!btnName) {
           const videoEl = document.querySelector(`#overlayVideo${btnName}`) as HTMLVideoElement;
           if (!!videoEl) {
+            videoEl.play();
             setTimeout(() => {
               try {
                 const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
                 overlayVideoMesh?.removeAttribute("xrextras-play-video");
                 overlayVideoMesh?.removeAttribute("material");
                 overlayVideoMesh?.removeAttribute("position");
+
                 overlayVideoMesh?.removeAttribute("scale");
                 overlayVideoMesh?.removeAttribute("geometry");
                 overlayVideoMesh?.setAttribute('xrextras-play-video', `video: #overlayVideo${btnName}`);
                 overlayVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
                 overlayVideoMesh?.setAttribute("position", overlayPosition);
                 overlayVideoMesh?.setAttribute("scale", overlayScale);
-                videoEl.play();
+                overlayVideoMesh?.setAttribute("xrextras-pinch-scale", "");
 
                 overlayVideoMesh?.setAttribute('geometry', 'primitive: plane; height: 1; width: 1.78;');
                 setTimeout(() => {
@@ -557,6 +559,8 @@ const AScene = memo((props: AFrameComponentProps) => {
 
           if (!!btnData?.overlayHideModel) {
             const modelContainer = document.querySelector("#modelContainer");
+            modelContainer?.removeAttribute("xrextras-one-finger-rotate");
+            modelContainer?.removeAttribute("xrextras-pinch-scale");
             modelContainer?.setAttribute("visible", "false");
           }
         }
@@ -579,6 +583,10 @@ const AScene = memo((props: AFrameComponentProps) => {
           // display ar model if hidden before
           const modelContainer = document.querySelector("#modelContainer");
           modelContainer?.setAttribute("visible", "true");
+          const fingerRotateAttr = modelContainer?.getAttribute("xrextras-one-finger-rotate");
+          if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
+          const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
+          if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
           const videoEls = document.querySelectorAll<HTMLVideoElement>('.alpha-video');
           videoEls.forEach((el: HTMLVideoElement) => {
             el.pause();
