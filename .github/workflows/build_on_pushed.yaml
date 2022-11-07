@@ -12,10 +12,14 @@ jobs:
     - name: 'Checkout Github Action'
       uses: actions/checkout@v3
 
+
     - name: Setup nodejs
       uses: actions/setup-node@v3
       with:
         node-version: 14.17.6
+
+    - id: get_version
+      uses: battila7/get-version-action@v2
 
     - name: install dependencies and build application
       run: |
@@ -27,6 +31,7 @@ jobs:
         REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
         REACT_APP_DATASET: "production"
         REACT_APP_CONSENT_OVERLAY_ID: ${{ secrets.REACT_APP_CONSENT_OVERLAY_ID }}
+        REACT_APP_VERSION: ${{ steps.get_version.outputs.version-without-v }}
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
