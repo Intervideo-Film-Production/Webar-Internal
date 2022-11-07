@@ -400,6 +400,9 @@ export interface IButtonContent {
   arModelOverlay: string;
   arModelOverlayPlaytime: number;
   arModelOverlayBgColor: string;
+  overlayHideModel: boolean;
+  arOverlayPosition: string;
+  arOverlayScale: string;
 }
 
 export interface ISearchCriteria {

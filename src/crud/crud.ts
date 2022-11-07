@@ -225,7 +225,10 @@ export const BUTTON_ANIMATION_CONTENT_QUERY = `
     modelOverlayObjectname,
     'arModelOverlay': arModelOverlay.asset->['url'],
     arModelOverlayPlaytime,
-    arModelOverlayBgColor
+    arModelOverlayBgColor,
+    overlayHideModel,
+    arOverlayPosition,
+    arOverlayScale
   }
 `;
 
