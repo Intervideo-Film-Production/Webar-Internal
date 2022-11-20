@@ -19,8 +19,6 @@ const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 // default light
 {/* <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
 <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> */}
-// <!-- face effects -->
-//     <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
 const sceneGenerator = `
   <a-scene
     id='ascene' 
@@ -33,8 +31,15 @@ const sceneGenerator = `
 
     <a-camera id="camera" position="0 5 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
 
+    <!-- face effects -->
+    <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
+
     <a-assets id="assetContainer" timeout="30000">
+
       <a-asset-item id="model" src=""></a-asset-item>
+
+      <!-- face effect head -->
+      <a-asset-item id="head-occluder" src="./models/head-occluder.glb"></a-asset-item>
 
       <span id="overlayVideoWrapper"></span>
       <span id="soundWrapper"></span>
@@ -59,7 +64,7 @@ interface AFrameComponentProps {
   onButtonClick?: (buttonName: string) => any;
   buttonToggleEvent?: Subject<string>;
   beardStyleEvent?: Subject<boolean>;
-  switchBeardStyleEvent?: Subject<string>;
+  switchBeardStyleEvent?: Subject<IBeardStyle>;
 }
 
 function DisableButtons() {
@@ -247,11 +252,23 @@ const AScene = memo((props: AFrameComponentProps) => {
         el.remove();
       })
 
-      document.querySelector('a-scene')?.insertAdjacentHTML('beforeend', beardStyles.map(({ id, beardImage }, beardIdx) => `
-        <xrextras-resource class="beard-style-xr-resource" id="beard-${id}" src="${beardImage}"></xrextras-resource>
-        <xrextras-basic-material class="beard-style-basic-material" id="paint-${id}" tex="#beard-${id}" alpha="#alpha-soft-eyes" opacity="0.9"></xrextras-basic-material>
-      `).join(' '));
+      beardStyles.forEach(({ id, beardImage, faceEffectModel }) => {
 
+        // inject image based face effect
+        if (!!beardImage) {
+          document.querySelector('a-scene')?.insertAdjacentHTML('beforeend',
+            `<xrextras-resource class="beard-style-xr-resource" id="beard-${id}" src="${beardImage}"></xrextras-resource>
+            <xrextras-basic-material class="beard-style-basic-material" id="paint-${id}" tex="#beard-${id}" alpha="#alpha-soft-eyes" opacity="0.9"></xrextras-basic-material>`
+          );
+        }
+
+        // inject model based face effect
+        if (!!faceEffectModel) {
+          const assetContainer = document.getElementById("assetContainer");
+          assetContainer?.insertAdjacentHTML('beforeend',
+            `<a-asset-item id="mask-model-${id}" class="mask-model" src="${faceEffectModel}"></a-asset-item>`)
+        }
+      });
     })
 
     return () => { subscription.unsubscribe(); }
@@ -433,11 +450,24 @@ const AScene = memo((props: AFrameComponentProps) => {
           aFrameComponent?.setAttribute('xrface', {
             mirroredDisplay: true,
             cameraDirection: 'front',
+            meshGeometry: "eyes, face, mouth",
+            allowedDevices: "any"
           })
           aFrameComponent?.insertAdjacentHTML('beforeend',
             ` 
                 <xrextras-faceanchor id="face-effect">
-                  <xrextras-face-mesh id="face-mesh" material-resource="#paint-${beardStyles[0].id}"></xrextras-face-mesh>
+                ${!!beardStyles[0].beardImage
+              ? `<xrextras-face-mesh id="face-mesh" material-resource="#paint-${beardStyles[0].id}"></xrextras-face-mesh>`
+              : `
+                    <a-entity id="face" gltf-model="#head-occluder" position="0 0 0.02" xrextras-hider-material></a-entity>  
+                    <xrextras-face-attachment point="${beardStyles[0].faceEffectModelAnchor}">
+                    <a-entity 
+                    gltf-model="#mask-model-${beardStyles[0].id}" 
+                    rotation="${beardStyles[0].modelRotation}"
+                    scale="${beardStyles[0].modelScale}" 
+                    position="${beardStyles[0].modelPosition}"></a-entity>
+                  </xrextras-face-attachment>`
+            }
                 </xrextras-faceanchor>
 
                 <xrextras-capture-button capture-mode="photo"></xrextras-capture-button>
@@ -495,12 +525,25 @@ const AScene = memo((props: AFrameComponentProps) => {
 
   useEffect(() => {
     if (switchBeardStyleEvent) {
-      const subscription = switchBeardStyleEvent.subscribe(beardStyleId => {
+      const subscription = switchBeardStyleEvent.subscribe(beardStyle => {
         const aFrameComponent = aFrameComponentRef.current;
-        const faceMesh = aFrameComponent?.querySelector("xrextras-face-mesh#face-mesh");
-        // FIXME
-        if (!!faceMesh) {
-          faceMesh.setAttribute('material-resource', `#paint-${beardStyleId}`);
+
+        const faceEffectContainer = document.getElementById("face-effect");
+        if (!!faceEffectContainer) {
+          faceEffectContainer.innerHTML = "";
+          faceEffectContainer.insertAdjacentHTML('beforeend',
+            !!beardStyle.beardImage
+              ? `<xrextras-face-mesh id="face-mesh" material-resource="#paint-${beardStyle.id}"></xrextras-face-mesh>`
+              : `
+                  <a-entity id="face" gltf-model="#head-occluder" position="0 0 0.02" xrextras-hider-material></a-entity>  
+                  <xrextras-face-attachment point="${beardStyle.faceEffectModelAnchor}">
+                  <a-entity 
+                  gltf-model="#mask-model-${beardStyle.id}" 
+                  rotation="${beardStyle.modelRotation}" 
+                  scale="${beardStyle.modelScale}" 
+                  position="${beardStyle.modelPosition}"></a-entity>
+                </xrextras-face-attachment>`
+          );
         }
       });
 
@@ -576,7 +619,7 @@ const AScene = memo((props: AFrameComponentProps) => {
           if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
           const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
           if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
-        
+
           const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
           overlayVideoMesh?.removeAttribute("play-video");
           overlayVideoMesh?.removeAttribute("material");

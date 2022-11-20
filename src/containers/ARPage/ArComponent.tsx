@@ -25,6 +25,7 @@ import ScreenOverlay from "./ScreenOverlay";
 import { getButtonAnimationContent } from "src/crud/crud";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import BeardStyleContent from "./BeardStyleContent";
 
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
@@ -103,7 +104,7 @@ const ArComponent = memo(() => {
     () => new BehaviorSubject<boolean>(false),
     []
   );
-  const switchBeardStyleEvent = useMemo(() => new Subject<string>(), []);
+  const switchBeardStyleEvent = useMemo(() => new Subject<IBeardStyle>(), []);
 
   useEffect(() => {
     if (beardStyleEvent) {
@@ -149,10 +150,11 @@ const ArComponent = memo(() => {
     [buttonPopupHandle]
   );
 
-  const handleShowBeardStyle = (beardStyleId: string) => {
+  const handleShowBeardStyle = useCallback((beardStyleId: string) => {
     beardStyleEvent.next(true);
-    switchBeardStyleEvent.next(beardStyleId);
-  };
+    const beardStyle = beardStyles.find(b => b.id === beardStyleId);
+    if (!!beardStyle) switchBeardStyleEvent.next(beardStyle);
+  }, [beardStyles]);
 
   return (
     <AppGrid
@@ -198,6 +200,14 @@ const ArComponent = memo(() => {
         buttonName={buttonName}
         onToggle={buttonPopupHandle}
         onShowBeardStyle={handleShowBeardStyle}
+      />
+
+      <BeardStyleContent
+        beardStyleEvent={beardStyleEvent}
+        switchBeardStyleEvent={switchBeardStyleEvent}
+        beardStyles={beardStyles}
+        headlineHeight={headlineHeight}
+        onShowButtonContent={buttonName => buttonPopupHandle(buttonName)}
       />
 
       <InfoMenu

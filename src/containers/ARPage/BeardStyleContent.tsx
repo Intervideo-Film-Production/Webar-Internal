@@ -30,7 +30,7 @@ const useStyles = makeStyles(() => ({
 
 interface IBeardStylePopupContentProps {
   beardStyleEvent?: Subject<boolean>;
-  switchBeardStyleEvent?: Subject<string>;
+  switchBeardStyleEvent?: Subject<IBeardStyle>;
   beardStyles?: IBeardStyle[];
   headlineHeight?: number;
   onShowButtonContent?: (buttonName: string) => void;
@@ -83,12 +83,12 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
 
   const handlePrevious = () => {
     const previousBeardIdx = (beardStyleIndex + beardStyles.length - 1) % beardStyles.length;
-    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[previousBeardIdx].id);
+    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[previousBeardIdx]);
   }
 
   const handleNext = () => {
-    const previousBeardIdx = (beardStyleIndex + beardStyles.length + 1) % beardStyles.length;
-    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[previousBeardIdx].id);
+    const nextBeardIdx = (beardStyleIndex + beardStyles.length + 1) % beardStyles.length;
+    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[nextBeardIdx]);
   }
 
   useEffect(() => {
@@ -112,8 +112,8 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
         .pipe(
           filter(() => beardStyles && beardStyles.length > 0),
         )
-        .subscribe(beardStyleId => {
-          setDisplayBeardStyleId(beardStyleId);
+        .subscribe(beardStyle => {
+          setDisplayBeardStyleId(beardStyle.id);
         });
 
       return () => subscription.unsubscribe();
@@ -214,7 +214,6 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
           <Grid
             id="beard-content-drawer"
             sx={theme => ({
-              mb: '20px',
               display: 'flex',
               flexDirection: 'column',
               ...theme.arPageStyles?.beardStyles.root

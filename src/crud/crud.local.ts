@@ -95,6 +95,12 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
         .map(bs => ({
           id: bs?._id,
           beardImage: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.beardImage.asset._ref)?.localUrl}`,
+          // FIXME
+          faceEffectModel: "",
+          faceEffectModelAnchor: "",
+          modelPosition: "",
+          modelScale: "",
+          modelRotation: "",
           popupIcon: `./sourceData${data.find(_d => _d._type === DataTypes.sanityImageAsset && _d._id === bs?.popupIcon.asset._ref)?.localUrl}`,
           popupTitle: bs?.popupTitle ? bs?.popupTitle[lng] : '',
           popupContent: bs?.popupContent ? bs?.popupContent[lng] : null,

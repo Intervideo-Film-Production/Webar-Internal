@@ -423,6 +423,11 @@ export interface ISearchCriteriaValue {
 export interface IBeardStyle {
   id: string;
   beardImage: string | { [key: string]: any; };
+  faceEffectModel: string;
+  faceEffectModelAnchor: string;
+  modelPosition: string;
+  modelScale: string;
+  modelRotation: string;
   popupIcon: string;
   popupTitle: string;
   popupContent: {};
