@@ -8,7 +8,7 @@ import { useQueryClient } from 'react-query';
 import { IProduct, IQRCodeData } from 'src/core/declarations/app';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { useHistory } from 'react-router';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 
 const LoginPage = () => {
   const queryClient = useQueryClient();

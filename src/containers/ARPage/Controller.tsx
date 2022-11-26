@@ -7,7 +7,7 @@ import {
 } from "src/components/icons";
 import { useTranslation } from "react-i18next";
 import { AppButton } from "src/components";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 import { useHistory } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { QueryKeys } from "src/core/declarations/enum";

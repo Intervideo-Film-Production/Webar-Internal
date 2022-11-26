@@ -11,7 +11,7 @@ import { useQueryClient } from "react-query";
 import { QueryKeys } from "../core/declarations/enum";
 import { IQRCodeData } from "../core/declarations/app";
 // import CookieConsent from "src/components/CookieConsent";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 import { FontLoader } from "src/components/FontLoader";
 import RegisterAframe from "src/A-Frame/RegisterAframe";
 import queryString from "query-string";

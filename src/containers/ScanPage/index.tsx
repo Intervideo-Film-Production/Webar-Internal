@@ -17,7 +17,7 @@ import { getProduct, getFirstProductQRCodes } from "src/crud/crud";
 import { map, Subject, filter, throttle, interval } from "rxjs";
 import parse from "html-react-parser";
 import { IQRCodeData } from "src/core/declarations/app";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 import ScanPageProductList from "./ScanPageProductList";
 
 declare let XR8: any;

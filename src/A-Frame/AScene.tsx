@@ -8,7 +8,7 @@ import parse from 'html-react-parser';
 import { Box } from '@mui/material';
 import { filter, map, skip, Subject, withLatestFrom, zip } from 'rxjs';
 import { AFrameElement, IBeardStyle, IButtonContent, IProduct } from 'src/core/declarations/app';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 import { modelRef, ProductTypes } from 'src/core/declarations/enum';
 // declare const AFRAME: any;
 

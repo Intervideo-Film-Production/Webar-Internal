@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useQueryClient } from 'react-query';
 import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router-dom';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 import { QueryKeys } from '../core/declarations/enum';
 import { AppPages } from './routeMap';
 import {

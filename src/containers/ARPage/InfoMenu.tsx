@@ -8,7 +8,7 @@ import { useQueryClient } from 'react-query';
 import { TabPanel } from 'src/components';
 import { QueryKeys } from 'src/core/declarations/enum';
 import { ISupportLanguage } from 'src/core/declarations/app';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 
 interface IinfoMenuProps {
 	open: boolean;

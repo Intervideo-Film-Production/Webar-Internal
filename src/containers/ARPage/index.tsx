@@ -5,7 +5,7 @@ import { QueryKeys } from 'src/core/declarations/enum';
 import ArComponent from './ArComponent';
 import LoadingScreen from './LoadingScreen';
 import { Fade } from '@mui/material';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 import { concat, filter, take } from 'rxjs';
 import { useLocation } from 'react-router-dom';
 

@@ -3,7 +3,7 @@ import {
   useLocation
 } from 'react-router-dom';
 import queryString from 'query-string';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 import { useQuery } from 'react-query';
 import { QueryKeys } from '../../core/declarations/enum';
 import { getProduct, getQRCodeData } from '../../crud/crud';
