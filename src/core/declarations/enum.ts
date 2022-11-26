@@ -41,4 +41,9 @@ export enum DataTypes {
   homePageContent = 'homePageContent',
 }
 
+export enum ProductTypes {
+  arObject = 'arObject',
+  alphaVideo = 'alphaVideo'
+}
+
 export const modelRef = 'ar-model';

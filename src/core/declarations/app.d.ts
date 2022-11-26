@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataTypes } from "./enum";
+import { DataTypes, ProductTypes } from "./enum";
 
 interface IComponentStyles {
   [key: string]: string | number;
@@ -354,12 +354,18 @@ export interface IComment {
   comment: string;
 }
 
+// different product types
 export interface IProduct {
   id: string;
   name: string;
   productClaim: string;
+  productType: ProductTypes;
   arObjectUrl: string;
+  alphaVideoUrl: string;
   arModelScale: string;
+  alphaVideoBgColor: string;
+  alphaVideoScale: string;
+  alphaVideoPosition: string;
   image: string | { [key: string]: any; };
   searchImage: string | { [key: string]: any; };
   imageCaption: string;

@@ -56,16 +56,14 @@ const ArComponent = memo(() => {
   const headlineRef = useRef<HTMLDivElement>(null);
   const [headlineHeight, setHeadlineHeight] = useState(0);
 
-  const arModelUrlSub = useMemo(() => new Subject<Partial<IProduct>>(), []);
+  const arModelUrlSub = useMemo(() => new Subject<IProduct>(), []);
   const buttonListSub = useMemo(() => new Subject<IButtonContent[]>(), []);
   const beardStylesSub = useMemo(() => new Subject<IBeardStyle[]>(), []);
 
   useEffect(() => {
     if (!!productData) {
-      const { arObjectUrl, cubemap, arModelScale } = productData;
-      arModelUrlSub.next({
-        arObjectUrl, cubemap, arModelScale
-      });
+      // const { arObjectUrl, cubemap, arModelScale } = productData;
+      arModelUrlSub.next(productData);
     }
   }, [arModelUrlSub, productData]);
 

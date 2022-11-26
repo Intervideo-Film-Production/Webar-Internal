@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import { filter, map, skip, Subject, withLatestFrom, zip } from 'rxjs';
 import { AFrameElement, IBeardStyle, IButtonContent, IProduct } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/store';
-import { modelRef } from 'src/core/declarations/enum';
+import { modelRef, ProductTypes } from 'src/core/declarations/enum';
 // declare const AFRAME: any;
 
 let modelButtons: any[] = []; //keep track of buttons in the 3D model for enabling/disabling on tap
@@ -41,15 +41,15 @@ const sceneGenerator = `
       <!-- face effect head -->
       <a-asset-item id="head-occluder" src="./models/head-occluder.glb"></a-asset-item>
 
-      <span id="overlayVideoWrapper"></span>
+      <span id="alphaVideoWrapper"></span>
       <span id="soundWrapper"></span>
 
     </a-assets>
 
     <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale></a-entity>
 
-    <a-entity id="overlayVideoMeshContainer" visible="true" xrextras-pinch-scale>
-      <a-entity id="overlayVideoMesh" visible="false" geometry="primitive: plane; height: 1; width: 1.78;"></a-entity>
+    <a-entity id="alphaVideoMeshContainer" visible="true" xrextras-pinch-scale>
+      <a-entity id="alphaVideoMesh" visible="false" geometry="primitive: plane; height: 1; width: 1.78;"></a-entity>
     </a-entity>
 
     <a-plane id="ground" rotation="-90 0 0" height="1000" width="1000"  material="shader: shadow" shadow></a-plane>
@@ -57,7 +57,7 @@ const sceneGenerator = `
 `;
 
 interface AFrameComponentProps {
-  productDataSub: Subject<Partial<IProduct>>;
+  productDataSub: Subject<IProduct>;
   buttonListSub: Subject<IButtonContent[]>;
   beardStylesSub: Subject<IBeardStyle[]>;
   recenterEvent?: Subject<any>;
@@ -114,53 +114,119 @@ const AScene = memo((props: AFrameComponentProps) => {
   useEffect(() => {
     if (!!productDataSub) {
 
-      const subscription = productDataSub.subscribe(({ arObjectUrl, arModelScale, cubemap }) => {
-        const assetContainer = document.querySelector('#assetContainer');
-
+      const subscription = productDataSub.subscribe((product) => {
+        const { id,
+          arObjectUrl,
+          arModelScale,
+          alphaVideoUrl,
+          alphaVideoBgColor,
+          alphaVideoScale,
+          alphaVideoPosition,
+          cubemap,
+          productType,
+        } = product;
+        // clean up either AR object or alpha video
         const assetItemEl = document.querySelector('a-scene a-asset-item#model');
         assetItemEl?.remove();
 
-        const newAssetEl = document.createElement('a-asset-item');
-        newAssetEl.setAttribute('id', 'model');
-        newAssetEl.setAttribute('src', arObjectUrl || "");
-        assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
+        const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
+        if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
 
-        if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
-          Object.keys(cubemap).forEach((key) => {
+        // product is an ar object
+        if (productType === ProductTypes.arObject) {
+          const assetContainer = document.querySelector('#assetContainer');
 
-            const cubemapImg = document.createElement("img");
-            cubemapImg.setAttribute("id", key);
-            cubemapImg.setAttribute("crossorigin", "anonymous");
-            cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
+          const newAssetEl = document.createElement('a-asset-item');
+          newAssetEl.setAttribute('id', 'model');
+          newAssetEl.setAttribute('src', arObjectUrl || "");
+          assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
 
-            assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
-          })
+          if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
+            Object.keys(cubemap).forEach((key) => {
+
+              const cubemapImg = document.createElement("img");
+              cubemapImg.setAttribute("id", key);
+              cubemapImg.setAttribute("crossorigin", "anonymous");
+              cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
+
+              assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
+            })
+          }
+
+          // bind entity to ascene
+          const modelContainer = document.querySelector('#modelContainer');
+          const arObjectScale = arModelScale || "1 1 1";
+          // reset parent scale & rotation
+          modelContainer?.setAttribute('scale', "1 1 1");
+          modelContainer?.setAttribute('rotation', "0 0 0");
+          if (!!modelContainer) {
+            modelContainer.innerHTML = '';
+            const entity = document.createElement('a-entity') as AFrameElement;
+            entity.setAttribute('id', 'modelEntity');
+            entity.setAttribute('gltf-model', '#model');
+            // FIXME debug only
+            // entity.setAttribute('position', '0 0 .5');
+            // entity.setAttribute('rotation', '-90 0 0');
+            entity.setAttribute('scale', arObjectScale);
+            entity.setAttribute('cubemap-static', '')
+            entity.setAttribute('shadow', 'receive: false');
+            entity.setAttribute('animation-mixer', {
+              clip: 'none',
+              loop: 'once',
+              clampWhenFinished: 'true',
+            });
+            entity.setAttribute(modelRef, '');
+            modelContainer?.appendChild(entity);
+          }
         }
+        // product is an alpha video
+        if (productType === ProductTypes.alphaVideo) {
+          // TODO an alpha video product has the same mechanism as an alpha video button effect
+          // thus these should be handled with the same module
+          // currently the app structure is mixed => need to implement in the restructure task
+          // overlay video efect
 
-        // bind entity to ascene
-        const modelContainer = document.querySelector('#modelContainer');
-        const arObjectScale = arModelScale || "1 1 1";
-        // reset parent scale & rotation
-        modelContainer?.setAttribute('scale', "1 1 1");
-        modelContainer?.setAttribute('rotation', "0 0 0");
-        if (!!modelContainer) {
-          modelContainer.innerHTML = '';
-          const entity = document.createElement('a-entity') as AFrameElement;
-          entity.setAttribute('id', 'modelEntity');
-          entity.setAttribute('gltf-model', '#model');
-          // FIXME debug only
-          // entity.setAttribute('position', '0 0 .5');
-          // entity.setAttribute('rotation', '-90 0 0');
-          entity.setAttribute('scale', arObjectScale);
-          entity.setAttribute('cubemap-static', '')
-          entity.setAttribute('shadow', 'receive: false');
-          entity.setAttribute('animation-mixer', {
-            clip: 'none',
-            loop: 'once',
-            clampWhenFinished: 'true',
-          });
-          entity.setAttribute(modelRef, '');
-          modelContainer?.appendChild(entity);
+          // append current product data
+          if (!!alphaVideoWrapperEl && alphaVideoUrl) {
+            // loop="true"
+            alphaVideoWrapperEl.innerHTML = `
+              <video
+                id="overlayVideo${id}"
+                playsinline
+                class="alpha-video-product"
+                preload="auto"
+                src="${alphaVideoUrl}" 
+                type="video/mp4"
+                crossorigin="anonymous"
+              >
+              </video>
+            `;
+
+            // FIXME
+
+            const alphaVideoProduct = document.querySelector(`#overlayVideo${id}`) as HTMLVideoElement;
+            alphaVideoProduct?.addEventListener("canplaythrough", () => {
+              if (!!alphaVideoProduct) {
+                try {
+                  const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+                  alphaVideoMesh?.removeAttribute("play-video");
+                  alphaVideoMesh?.removeAttribute("material");
+                  alphaVideoMesh?.removeAttribute("position");
+
+                  alphaVideoMesh?.removeAttribute("scale");
+                  alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${id}`);
+                  alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
+                  alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
+                  alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
+                  setTimeout(() => {
+                    alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
+                  }, 500)
+                } catch (ex) {
+                  console.error(ex);
+                }
+              }
+            })
+          }
         }
       });
 
@@ -204,16 +270,17 @@ const AScene = memo((props: AFrameComponentProps) => {
       )
     );
     const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
-      const overlayVideoWrapperEl = document.querySelector('a-scene span#overlayVideoWrapper');
+      // overlay video efect
+      const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
 
       // clear previous product data
 
-      if (!!overlayVideoWrapperEl) overlayVideoWrapperEl.innerHTML = '';
+      if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
 
       // append current product data
-      if (!!overlayVideoWrapperEl && arModelOverlays.length > 0) {
+      if (!!alphaVideoWrapperEl && arModelOverlays.length > 0) {
         // loop="true"
-        overlayVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
+        alphaVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
           <video
             id="overlayVideo${buttonName}"
             playsinline
@@ -226,13 +293,6 @@ const AScene = memo((props: AFrameComponentProps) => {
           </video>
         `).join(' ');
 
-        // testing only
-        setTimeout(() => {
-          const alVideos = document.querySelectorAll(".alpha-video");
-          alVideos.forEach(video => (video as HTMLVideoElement).addEventListener('play', (e) => {
-            console.log("playyyy");
-          }))
-        }, 300);
       }
     });
 
@@ -375,9 +435,9 @@ const AScene = memo((props: AFrameComponentProps) => {
                   child.getWorldPosition(pos);
                   var scale = new THREE.Vector3();
                   child.getWorldScale(scale);
-                  document.querySelector('#overlayVideoMesh')?.setAttribute('position', pos);
-                  document.querySelector('#overlayVideoMesh')?.setAttribute('scale', scale);
-                  document.querySelector('#overlayVideoMesh')?.setAttribute('shadow', 'cast: false');
+                  document.querySelector('#alphaVideoMesh')?.setAttribute('position', pos);
+                  document.querySelector('#alphaVideoMesh')?.setAttribute('scale', scale);
+                  document.querySelector('#alphaVideoMesh')?.setAttribute('shadow', 'cast: false');
                 }
               })
             })
@@ -570,18 +630,18 @@ const AScene = memo((props: AFrameComponentProps) => {
           if (!!videoEl) {
             setTimeout(() => {
               try {
-                const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
-                overlayVideoMesh?.removeAttribute("play-video");
-                overlayVideoMesh?.removeAttribute("material");
-                overlayVideoMesh?.removeAttribute("position");
+                const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+                alphaVideoMesh?.removeAttribute("play-video");
+                alphaVideoMesh?.removeAttribute("material");
+                alphaVideoMesh?.removeAttribute("position");
 
-                overlayVideoMesh?.removeAttribute("scale");
-                overlayVideoMesh?.setAttribute('play-video', `video: #overlayVideo${btnName}`);
-                overlayVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
-                overlayVideoMesh?.setAttribute("position", overlayPosition);
-                overlayVideoMesh?.setAttribute("scale", overlayScale);
+                alphaVideoMesh?.removeAttribute("scale");
+                alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${btnName}`);
+                alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
+                alphaVideoMesh?.setAttribute("position", overlayPosition);
+                alphaVideoMesh?.setAttribute("scale", overlayScale);
                 setTimeout(() => {
-                  overlayVideoMesh?.setAttribute('visible', 'true'); //disable water video
+                  alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
                 }, 500)
               } catch (ex) {
                 console.error(ex);
@@ -611,7 +671,7 @@ const AScene = memo((props: AFrameComponentProps) => {
           EnableButtons();
 
           // disable all overlay as well when button should be displayed since this means a specific button animation ends
-          document.querySelector('#overlayVideoMesh')?.setAttribute('visible', 'false');
+          document.querySelector('#alphaVideoMesh')?.setAttribute('visible', 'false');
           // display ar model if hidden before
           const modelContainer = document.querySelector("#modelContainer");
           modelContainer?.setAttribute("visible", "true");
@@ -620,9 +680,9 @@ const AScene = memo((props: AFrameComponentProps) => {
           const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
           if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
 
-          const overlayVideoMesh = document.querySelector('#overlayVideoMesh');
-          overlayVideoMesh?.removeAttribute("play-video");
-          overlayVideoMesh?.removeAttribute("material");
+          const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+          alphaVideoMesh?.removeAttribute("play-video");
+          alphaVideoMesh?.removeAttribute("material");
 
           // stop all playing audio
           const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;

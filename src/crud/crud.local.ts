@@ -6,7 +6,7 @@
  * Any missing data or assets will be notified as a server error from UX point of view and should be logged to data provider server
 */
 
-import { DataTypes } from 'src/core/declarations/enum';
+import { DataTypes, ProductTypes } from 'src/core/declarations/enum';
 import { map, from, lastValueFrom } from 'rxjs';
 import {
   SanityOriginalDataType,
@@ -133,8 +133,14 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
         id: product?._id as string,
         name: product?.name[lng],
         productClaim: product?.productClaim[lng],
+        // FIXME
+        productType: ProductTypes.arObject,
         arObjectUrl: `./sourceData${arObject?.localUrl}`,
         arModelScale: product.arModelScale,
+        alphaVideoUrl: "",
+        alphaVideoBgColor: "",
+        alphaVideoScale: "",
+        alphaVideoPosition: "",
         image: `./sourceData${productImage?.localUrl}`,
         searchImage: searchImage,
         imageCaption: product?.productImageCaption ? product?.productImageCaption[lng] : '',
@@ -195,8 +201,14 @@ const getLocalProductList = (predicate: (product: SanityOriginalDataType) => boo
           id: product?._id as string,
           name: product?.name[lng],
           productClaim: product?.productClaim[lng],
+          // FIXME
+          productType: ProductTypes.arObject,
           arObjectUrl: `./sourceData${arObject?.localUrl}`,
           arModelScale: product.arModelScale,
+          alphaVideoUrl: "",
+          alphaVideoBgColor: "",
+          alphaVideoScale: "",
+          alphaVideoPosition: "",
           image: `./sourceData${productImage?.localUrl}`,
           searchImage: searchImage,
           imageCaption: product?.productImageCaption ? product?.productImageCaption[lng] : '',

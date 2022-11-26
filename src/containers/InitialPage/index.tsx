@@ -41,6 +41,7 @@ const InitialPage = () => {
 
   const location = useLocation();
   let { sid, productqr } = queryString.parse(location.search) as { sid: string | null, productqr: string | null };
+  console.log("productqr", productqr);
   if (!sid) {
     let storedSid = localStorage.getItem("storeID");
     if (!!storedSid) sid = storedSid;
@@ -48,10 +49,11 @@ const InitialPage = () => {
     localStorage.setItem("storeID", sid);
   }
 
-  if (!productqr) {
-    let storedProductqr = localStorage.getItem("productqr");
-    if (!!storedProductqr) productqr = storedProductqr;
-  }
+  // FIXME not necessary as product is frequently changed & displayed
+  // if (!productqr) {
+  //   let storedProductqr = localStorage.getItem("productqr");
+  //   if (!!storedProductqr) productqr = storedProductqr;
+  // }
   // else {
   //   localStorage.setItem("productqr", productqr);
   // }
@@ -95,7 +97,7 @@ const InitialPage = () => {
     cacheTime: Infinity
   });
 
-  const { isLoading: isProductDataLoading, refetch, data: productData } = useQuery(QueryKeys.product, () => {
+  const { isLoading: isProductDataLoading, refetch, data: productData } = useQuery([QueryKeys.product, productqr], () => {
     return getProduct(productqr as string, languageLoaded, qrCodeData?.id as string)
   }, {
     enabled: false,
