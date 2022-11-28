@@ -24,24 +24,30 @@ const RegisterAframe = memo(() => {
       arResourcesLoadEvent.next(true);
     }
 
-    AFRAME.registerComponent(modelRef, {
-      init: function () {
-        let scene = this.el.sceneEl
-        scene.addEventListener('realityready', realityReadyHandler);
-        // Wait for model to load.
-        this.el.addEventListener('model-loaded', () => {
-          aFrameModelLoadedEvent.next(this.el);
-        });
-      },
-      remove: function () {
-        let scene = this.el.sceneEl
-        scene.removeEventListener('realityready', realityReadyHandler);
-      }
-    });
+    if (!AFRAME.components[modelRef]) {
+      AFRAME.registerComponent(modelRef, {
+        init: function () {
+          let scene = this.el.sceneEl
+          scene.addEventListener('realityready', realityReadyHandler);
+          // Wait for model to load.
+          this.el.addEventListener('model-loaded', () => {
+            aFrameModelLoadedEvent.next(this.el);
+          });
+        },
+        remove: function () {
+          let scene = this.el.sceneEl
+          scene.removeEventListener('realityready', realityReadyHandler);
+        }
+      });
+    }
 
-    AFRAME.registerComponent('cubemap-static', cubeEnvMapComponent);
-    AFRAME.registerComponent('play-video', playVideoComponent);
+    if (!AFRAME.components['cubemap-static']) {
+      AFRAME.registerComponent('cubemap-static', cubeEnvMapComponent);
+    }
 
+    if (!AFRAME.components['play-video']) {
+      AFRAME.registerComponent('play-video', playVideoComponent);
+    }
   })
 
   return (<></>)

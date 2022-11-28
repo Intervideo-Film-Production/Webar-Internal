@@ -1,14 +1,13 @@
 import { Grid, Button, Modal, IconButton, Box, ButtonProps, Typography, List, ListItemButton } from '@mui/material';
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import { InfoIcon, LanguageIcon } from 'src/components/icons';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useQueryClient } from 'react-query';
 import { TabPanel } from 'src/components';
-import { QueryKeys } from 'src/core/declarations/enum';
-import { ISupportLanguage } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/events';
+import { useBoundStore } from 'src/core/store';
+import { usePrevious } from 'src/core/helpers';
 
 interface IinfoMenuProps {
 	open: boolean;
@@ -33,25 +32,37 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 	const { appTheme } = useAppContext();
 	const { t, i18n } = useTranslation();
 	const [tabPanel, setTabPanel] = useState(0);
-	const queryClient = useQueryClient();
+	const supportedLanguages = useBoundStore(state => state.languages);
+	const resetData = useBoundStore(state => state.resetData);
+	// const supportedLanguages = queryClient.getQueryData<ISupportLanguage[]>(QueryKeys.language);
 
-	const supportedLanguages = queryClient.getQueryData<ISupportLanguage[]>(QueryKeys.language);
-
+	const previousLanguage = usePrevious(i18n.language);
 	const handleClose = () => {
 		if (onClose) onClose();
 		setTabPanel(0);
 	};
 
+	useEffect(() => {
+		// refetch all data if language changed
+		if (i18n.language !== previousLanguage && previousLanguage !== undefined) {
+			// resetData(true);
+		}
+	}, [i18n.language, previousLanguage, resetData])
+
 	const switchLanguageHandle = (lng: string) => {
-		i18n.changeLanguage(lng, (err) => {
-			// if no error refetch all available queries to get localized data
-			if (!err) {
-				queryClient.invalidateQueries({
-					refetchActive: true,
-					refetchInactive: true
-				});
-			}
-		});
+		i18n.changeLanguage(lng);
+
+		// i18n.changeLanguage(lng, (err) => {
+		// 	// if no error refetch all available queries to get localized data
+		// 	if (!err) {
+		// 		// queryClient.invalidateQueries({
+		// 		// 	refetchActive: true,
+		// 		// 	refetchInactive: true
+		// 		// });
+		// 	}
+		// });
+
+		i18n.changeLanguage(lng);
 
 		handleClose();
 	}
@@ -96,7 +107,7 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 					<IconButton sx={{ p: 0 }} onClick={handleClose}>
 						<CloseIcon
 							sx={theme => ({ ...theme.arPageStyles?.infoMenu.navigationIcons })}
-							// style={{ ...appTheme.getValue().arPageStyles?.infoMenu.navigationIcons }}
+						// style={{ ...appTheme.getValue().arPageStyles?.infoMenu.navigationIcons }}
 						/>
 					</IconButton>
 				</Grid>

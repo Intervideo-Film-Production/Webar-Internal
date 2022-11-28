@@ -1,5 +1,5 @@
 import {
-  IQRCodeData,
+  IStore,
   IProduct,
   IComment,
   IButtonContent,
@@ -360,9 +360,9 @@ export const getSupportLanguages = () => {
  * @param qrValue 
  * @returns 
  */
-export const getQRCodeData = (qrValue: string) => {
+export const getStoreData = (qrValue: string) => {
   return useLocalData !== 'TRUE'
-    ? client.fetch<IQRCodeData[]>(QRCODE_QUERY, { qrValue: qrValue }).then(res => res[0])
+    ? client.fetch<IStore[]>(QRCODE_QUERY, { qrValue: qrValue }).then(res => res[0])
     : getLocalQRCodeData(qrValue);
 }
 

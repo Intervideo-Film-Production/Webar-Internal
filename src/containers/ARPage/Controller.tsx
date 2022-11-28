@@ -9,10 +9,7 @@ import { useTranslation } from "react-i18next";
 import { AppButton } from "src/components";
 import { useAppContext } from "src/core/events";
 import { useHistory } from "react-router-dom";
-import { useQueryClient } from "react-query";
-import { QueryKeys } from "src/core/declarations/enum";
-import { useLocation } from "react-router-dom";
-import { IProduct } from "src/core/declarations/app";
+import { useBoundStore } from "src/core/store";
 
 interface ARPageControllerProps {
   showGrandControl?: boolean;
@@ -32,21 +29,21 @@ const ARPageController = (props: ARPageControllerProps) => {
   const { t } = useTranslation();
   const { appLoadingStateEvent } = useAppContext();
   const history = useHistory();
-  const queryClient = useQueryClient();
 
   // FIXME check location state should be default
-  const location = useLocation<{ productId: string }>();
-  const productId = location.state && location.state.productId;
-
-  const productData = !!productId
-    ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
-    : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
+  // const productId = location.state && location.state.productId;
+  const product = useBoundStore(state => state.product);
+  const resetData = useBoundStore(state => state.resetData);
+  // FIXME remove
+  // const productData = !!productId
+  //   ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
+  //   : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
 
   const averageRatings = useMemo(() => {
-    if (!productData || productData.ratings.length === 0) return null;
-    const _averageRatings = productData.ratings.reduce((a: number, b: number) => a + b, 0) / productData.ratings.length;
+    if (!product || product.ratings.length === 0) return null;
+    const _averageRatings = product.ratings.reduce((a: number, b: number) => a + b, 0) / product.ratings.length;
     return Math.floor(_averageRatings * 100) / 100;
-  }, [productData])
+  }, [product])
 
   const infoButtonHandle = () => {
     if (onInfo) {
@@ -61,15 +58,7 @@ const ARPageController = (props: ARPageControllerProps) => {
   };
 
   const scanButtonHandle = () => {
-    queryClient.removeQueries(QueryKeys.product, { exact: true });
-    queryClient.removeQueries(QueryKeys.compareProduct, { exact: true });
-    queryClient.removeQueries(QueryKeys.productComments, { exact: true });
-    queryClient.removeQueries(QueryKeys.compareProducts, { exact: true });
-    queryClient.removeQueries(QueryKeys.buttonAnimationContent, {
-      exact: true,
-    });
-    queryClient.removeQueries(QueryKeys.productfinder, { exact: true });
-    queryClient.removeQueries(QueryKeys.imageTargetsCodes, { exact: true });
+    resetData();
     appLoadingStateEvent.next(true);
     history.push("/scan-page");
   };
@@ -164,7 +153,7 @@ const ARPageController = (props: ARPageControllerProps) => {
               lineHeight: 1,
               color: theme => theme.palette.text.secondary,
               fontWeight: 700
-            }}>{productData?.name}</Typography>
+            }}>{product?.name}</Typography>
 
             <Button sx={{
               padding: "5px 10px",

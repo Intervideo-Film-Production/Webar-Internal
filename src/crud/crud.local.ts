@@ -11,7 +11,7 @@ import { map, from, lastValueFrom } from 'rxjs';
 import {
   SanityOriginalDataType,
   ISupportLanguage,
-  IQRCodeData,
+  IStore,
   IProduct,
   IComment,
   IButtonContent,
@@ -44,7 +44,7 @@ export const getLocalSupportLanguages = () => {
 
 export const getLocalQRCodeData = (qrValue: string) => {
   return lastValueFrom(
-    localDataTransform<IQRCodeData | null>(data => {
+    localDataTransform<IStore | null>(data => {
 
       const qrCode = data.find(d => d._type === DataTypes.qrCode && d.qrValue === qrValue);
       const brandData = data.find(b => b._type === DataTypes.brand && b._id === qrCode?.brand._ref);

@@ -3,19 +3,16 @@ import { Grid, Typography, Toolbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { QueryKeys } from 'src/core/declarations/enum';
 import { AppGrid, AppButton, LoadingBox } from 'src/components';
-import { useQueryClient } from 'react-query';
 import HomePageBackground from './HomePageBackground';
-import { IQRCodeData } from 'src/core/declarations/app';
+import { useBoundStore } from 'src/core/store';
 
 const HomePage = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const [appLoading, setAppLoading] = useState(true);
-  const queryClient = useQueryClient();
-  const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
-  const backgroundVideo = qrCodeData?.homePage.backgroundVideo;
+  const storeData = useBoundStore(state => state.store);
+  const backgroundVideo = storeData?.homePage.backgroundVideo;
 
   const onBackgroundDisplayHandle = useCallback(() => {
     setAppLoading(false);

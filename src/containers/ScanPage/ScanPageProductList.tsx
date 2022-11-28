@@ -1,51 +1,49 @@
 import { Skeleton, IconButton } from '@mui/material';
 import React, { memo, useState, useMemo, useEffect } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
 import { LazyImage } from 'src/components';
-import { QueryKeys } from 'src/core/declarations/enum';
-import { getAllProductsByQRCode, getProductById } from 'src/crud/crud';
 import { useTranslation } from "react-i18next";
-import { IQRCodeData } from 'src/core/declarations/app';
 import { useHistory } from 'react-router-dom';
+import { useBoundStore } from 'src/core/store';
 
 const ScanPageProductList: React.FC = memo(() => {
-  const queryClient = useQueryClient();
   const { i18n } = useTranslation();
   const history = useHistory();
 
   const [productId, setProductId] = useState('');
 
-  const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
+  const store = useBoundStore(state => state.store);
 
-  const { isLoading, data } = useQuery(
-    QueryKeys.productsListByQRCode,
-    () => getAllProductsByQRCode(qrCodeData?.id as string, i18n.language)
-  )
+  const { product, productsByQrCode, productsByQrCodeStatus, getAllProductsByQRCode, getProductById } = useBoundStore(state => ({
+    product: state.product,
+    productsByQrCode: state.productsByQrCode,
+    productsByQrCodeStatus: state.productsByQrCodeStatus,
+    getAllProductsByQRCode: state.getAllProductsByQRCode,
+    getProductById: state.getById
+  }));
 
+  useEffect(() => {
+    if (!!store?.id) getAllProductsByQRCode(store.id, i18n.language);
+  }, [getAllProductsByQRCode, store, i18n.language])
 
   // TODO: temporary only 4 product from product list should be displayed
   // need discussion
-  const topProducts = useMemo(() => data?.slice(0, 4), [data]);
-
-  const { data: productByIdData } = useQuery(
-    [QueryKeys.product, productId],
-    () => getProductById(productId, i18n.language, qrCodeData?.id as string),
-    {
-      enabled: !!productId
-    }
-  )
+  const topProducts = useMemo(() => productsByQrCode?.slice(0, 4), [productsByQrCode]);
 
   useEffect(() => {
-    if (!!productByIdData) {
+    if (productId && store?.id) getProductById(productId, i18n.language, store?.id)
+  }, [getProductById, productId, i18n.language, store?.id])
+
+  useEffect(() => {
+    if (!!product) {
       history.push({
         pathname: '/ar-page',
-        state: { productId: productByIdData?.id }
+        state: { productId: product?.id }
       })
     }
 
-  }, [history, productByIdData])
+  }, [history, product])
 
-  if (isLoading)
+  if (productsByQrCodeStatus)
     return (<>
       <Skeleton sx={{ margin: '0px 7px' }} variant="circular" width={60} height={60} />
       <Skeleton sx={{ margin: '0px 7px' }} variant="circular" width={60} height={60} />

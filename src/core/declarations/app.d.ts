@@ -304,7 +304,7 @@ export interface IFont {
   fontUrl: string;
 };
 
-export interface IQRCodeData {
+export interface IStore {
   id: string;
   brandId: string;
   brandName: string;

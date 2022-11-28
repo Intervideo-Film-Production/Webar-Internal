@@ -11,14 +11,11 @@ import {
   qrprocessPipelineModule,
 } from "./qrprocessPipelineModule";
 import CameraSquare from "./CameraSquare";
-import { useQuery, useQueryClient } from "react-query";
-import { QueryKeys } from "src/core/declarations/enum";
-import { getProduct, getFirstProductQRCodes } from "src/crud/crud";
 import { map, Subject, filter, throttle, interval } from "rxjs";
 import parse from "html-react-parser";
-import { IQRCodeData } from "src/core/declarations/app";
 import { useAppContext } from "src/core/events";
-import ScanPageProductList from "./ScanPageProductList";
+import { StoreStatus } from "src/core/declarations/enum";
+import { useBoundStore } from "src/core/store";
 
 declare let XR8: any;
 declare let XRExtras: any;
@@ -32,28 +29,30 @@ const ScanPage = () => {
 
   const { t, i18n } = useTranslation();
   const history = useHistory();
-  const queryClient = useQueryClient();
-  const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
+  const storeData = useBoundStore(state => state.store);
 
   const onCameraUpdateEvent = useRef(new Subject<any>());
   const productFinderButton = useRef<HTMLButtonElement | null>(null);
 
   const [productQrText, setProductQrText] = useState("");
 
-  const imageTargets = useQuery(QueryKeys.imageTargetsCodes, () =>
-    getFirstProductQRCodes(qrCodeData?.id as string)
-      // FIXME: temporary fix => should adjust api instead
-      .then((qrCodes) => qrCodes.slice(0, 5))
-  );
+  const storeId = useBoundStore(state => state.store?.id);
+  const { product, productStatus, getByQR } = useBoundStore(({ product, productStatus, getByQR }) => ({ product, productStatus, getByQR }));
+  const { imageTargetCodes, setImageTargetCodes } = useBoundStore(({ imageTargetCodes, setImageTargetCodes }) => ({ imageTargetCodes, setImageTargetCodes }))
 
-  const { isFetching, refetch, data, isError } = useQuery(
-    QueryKeys.product,
-    () => getProduct(productQrText, i18n.language, qrCodeData?.id as string),
-    {
-      enabled: false,
-      cacheTime: Infinity,
-    }
-  );
+  useEffect(() => {
+    if (!!storeId) setImageTargetCodes(storeId);
+
+  }, [setImageTargetCodes, storeId]);
+  // FIXME remove
+  // const { isFetching, refetch, data, isError } = useQuery(
+  //   QueryKeys.product,
+  //   () => getProduct(productQrText, i18n.language, storeData?.id as string),
+  //   {
+  //     enabled: false,
+  //     cacheTime: Infinity,
+  //   }
+  // );
 
   useEffect(() => {
     // disable app loading page
@@ -79,16 +78,16 @@ const ScanPage = () => {
      * if product data successfully returned from server
      * navigate to AR page
      */
-    if (data && history) {
+    if (product && history) {
       history.push("/ar-page");
     }
-  }, [data, history]);
+  }, [product, history]);
 
   useEffect(() => {
-    if (!!productQrText) {
-      refetch();
+    if (!!productQrText && !!storeData?.id) {
+      getByQR(productQrText, i18n.language, storeData?.id);
     }
-  }, [productQrText, refetch]);
+  }, [productQrText, getByQR, i18n.language, storeData]);
 
   useEffect(() => {
     if (onCameraUpdateEvent.current) {
@@ -164,16 +163,15 @@ const ScanPage = () => {
   }, []);
 
   useEffect(() => {
-    const imageTargetsText = imageTargets.data;
     const aframeScene = document.getElementById("a-scene");
 
-    if (imageTargetsText && imageTargetsText.length > 0 && aframeScene) {
+    if (imageTargetCodes && imageTargetCodes.length > 0 && aframeScene) {
       // image targets -----------------------------------------------------------------
       //create an empty A-frame scene to dispatch image target events
 
       //add image targets to controller
       if (!script8thWallDisabled) {
-        XR8.XrController.configure({ imageTargets: imageTargetsText });
+        XR8.XrController.configure({ imageTargets: imageTargetCodes });
       }
 
       const showImage = ({ detail }: { detail: { name: string } }) => {
@@ -193,7 +191,7 @@ const ScanPage = () => {
           );
       }
     }
-  }, [imageTargets.data]);
+  }, [imageTargetCodes]);
 
   return (
     <>
@@ -289,14 +287,13 @@ const ScanPage = () => {
             variant="h5"
             sx={(theme) => theme.scanPageStyles.resultText}
           >
-            {isFetching && t("ScanPageFetchText")}
-            {!isFetching &&
-              (isError || data === null) &&
+            {productStatus === StoreStatus.loading && t("ScanPageFetchText")}
+            {productStatus === StoreStatus.loaded && !product &&
               t("ScanPageQRCodeNotCorrectText")}
-            {data && (
+            {product && (
               <>
                 {t("ScanPageFoundProductText")}
-                <span id="scanPageFoundProduct">{data.name}</span>
+                <span id="scanPageFoundProduct">{product.name}</span>
               </>
             )}
           </Typography>
