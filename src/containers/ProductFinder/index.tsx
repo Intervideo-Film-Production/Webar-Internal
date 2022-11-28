@@ -74,9 +74,6 @@ const ProductFinderPage = () => {
 	}, [i18n.language, getSearchCriteria, getSearchCriteriaValue]);
 
 	const { searchProducts, searchProductsStatus, findMatchingProducts, setProduct } = useBoundStore(state => ({
-		// FIXME product & productStatus are not needed
-		// product: state.product,
-		// productStatus: state.productStatus,
 		searchProducts: state.searchProducts,
 		searchProductsStatus: state.searchProductsStatus,
 		findMatchingProducts: state.findMatchingProducts,
@@ -87,17 +84,6 @@ const ProductFinderPage = () => {
 		if (!storeData?.id) return;
 		findMatchingProducts(selectedAnswers, i18n.language, storeData?.id);
 	}, [findMatchingProducts, selectedAnswers, i18n.language, storeData?.id])
-
-	// FIXME
-	// useEffect(() => {
-	// 	if (!!storeData?.id) findMatchingProducts(selectedAnswers, i18n.language, storeData?.id);
-	// }, [findMatchingProducts, selectedAnswers, i18n.language, storeData?.id])
-	// const { isIdle, isFetching, refetch, data } = useQuery(
-	// 	[QueryKeys.productfinder],
-	// 	() => findMatchingProducts(selectedAnswers, i18n.language, storeData?.id as string),
-	// 	{
-	// 		enabled: false
-	// 	});
 
 	const handleModifySettingClose = (modifiedSettings?: { questionId: string, answerId: string | string[] }[]) => {
 		setModifySettingOpen(false);
@@ -172,8 +158,6 @@ const ProductFinderPage = () => {
 	const handleBackToStart = () => {
 		setSelectedAnwsers([]);
 		setLastQuestion(null);
-		// FIXME not needed
-		// queryClient.resetQueries(QueryKeys.productfinder);
 		setTrackStep(activeStep);
 		setActiveStep(firstQuestion?.id || '');
 	}
@@ -256,8 +240,6 @@ const ProductFinderPage = () => {
 				variant="contained"
 				sx={theme => ({ ...theme.productFinderStyles?.backToScannerButton })}
 				onClick={() => {
-					// FIXME not needed
-					// queryClient.resetQueries(QueryKeys.productfinder);
 					history.push('/scan-page')
 				}}
 				startIcon={<AppArrowLeftSquareIcon sx={{ fontSize: '1.25rem' }} />}

@@ -50,15 +50,6 @@ const InitialPage = () => {
     localStorage.setItem("storeID", sid);
   }
 
-  // FIXME not necessary as product is frequently changed & displayed
-  // if (!productqr) {
-  //   let storedProductqr = localStorage.getItem("productqr");
-  //   if (!!storedProductqr) productqr = storedProductqr;
-  // }
-  // else {
-  //   localStorage.setItem("productqr", productqr);
-  // }
-
   const handleDialogClose = useCallback(() => {
     setDialogOpen(false);
   }, [])

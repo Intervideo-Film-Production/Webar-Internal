@@ -44,15 +44,6 @@ const ScanPage = () => {
     if (!!storeId) setImageTargetCodes(storeId);
 
   }, [setImageTargetCodes, storeId]);
-  // FIXME remove
-  // const { isFetching, refetch, data, isError } = useQuery(
-  //   QueryKeys.product,
-  //   () => getProduct(productQrText, i18n.language, storeData?.id as string),
-  //   {
-  //     enabled: false,
-  //     cacheTime: Infinity,
-  //   }
-  // );
 
   useEffect(() => {
     // disable app loading page

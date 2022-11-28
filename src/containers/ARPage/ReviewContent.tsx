@@ -21,8 +21,6 @@ const ReviewContent = memo(({ productId, open, onReviewToggle }: IReviewContent)
     getComments: state.getComments
   }))
 
-  // const { isLoading, data } = useQuery(QueryKeys.productComments, () => getProductComments(productId))
-
   useEffect(() => {
     getComments(productId);
   }, [productId, getComments])

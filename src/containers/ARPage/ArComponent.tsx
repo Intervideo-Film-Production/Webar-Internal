@@ -36,26 +36,7 @@ const ArComponent = memo(() => {
     buttonsStatus: state.buttonsStatus,
     getButtonContents: state.getButtonContents
   }))
-  // const productData = !!productId
-  //   ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
-  //   : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
-
-  // const {
-  //   id,
-  //   beardStyles,
-  // } = product;
-
-  // const { data: buttonData } = useQuery(
-  //   QueryKeys.buttonAnimationContent,
-  //   () => {
-  //     return getButtonAnimationContent(id as string, i18n.language);
-  //   },
-  //   {
-  //     enabled: !!id,
-  //     notifyOnChangeProps: ["data"],
-  //   }
-  // );
-
+  
   const fetchButtonContent = useCallback(() => {
     if (!!product?.id) getButtonContents(product.id, i18n.language);
 
@@ -74,7 +55,6 @@ const ArComponent = memo(() => {
 
   useEffect(() => {
     if (!!product) {
-      // const { arObjectUrl, cubemap, arModelScale } = productData;
       arModelUrlSub.next(product);
     }
   }, [arModelUrlSub, product]);

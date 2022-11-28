@@ -34,7 +34,6 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 	const [tabPanel, setTabPanel] = useState(0);
 	const supportedLanguages = useBoundStore(state => state.languages);
 	const resetData = useBoundStore(state => state.resetData);
-	// const supportedLanguages = queryClient.getQueryData<ISupportLanguage[]>(QueryKeys.language);
 
 	const previousLanguage = usePrevious(i18n.language);
 	const handleClose = () => {
@@ -45,25 +44,12 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 	useEffect(() => {
 		// refetch all data if language changed
 		if (i18n.language !== previousLanguage && previousLanguage !== undefined) {
-			// resetData(true);
+			resetData(true);
 		}
 	}, [i18n.language, previousLanguage, resetData])
 
 	const switchLanguageHandle = (lng: string) => {
 		i18n.changeLanguage(lng);
-
-		// i18n.changeLanguage(lng, (err) => {
-		// 	// if no error refetch all available queries to get localized data
-		// 	if (!err) {
-		// 		// queryClient.invalidateQueries({
-		// 		// 	refetchActive: true,
-		// 		// 	refetchInactive: true
-		// 		// });
-		// 	}
-		// });
-
-		i18n.changeLanguage(lng);
-
 		handleClose();
 	}
 

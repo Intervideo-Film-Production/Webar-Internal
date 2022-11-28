@@ -30,14 +30,8 @@ const ARPageController = (props: ARPageControllerProps) => {
   const { appLoadingStateEvent } = useAppContext();
   const history = useHistory();
 
-  // FIXME check location state should be default
-  // const productId = location.state && location.state.productId;
   const product = useBoundStore(state => state.product);
   const resetData = useBoundStore(state => state.resetData);
-  // FIXME remove
-  // const productData = !!productId
-  //   ? queryClient.getQueryData<IProduct>([QueryKeys.product, productId]) as IProduct
-  //   : queryClient.getQueryData<IProduct>(QueryKeys.product) as IProduct;
 
   const averageRatings = useMemo(() => {
     if (!product || product.ratings.length === 0) return null;
