@@ -31,12 +31,11 @@ const ArComponent = memo(() => {
   const productId = location.state && location.state && location.state.productId;
 
   const product = useBoundStore(state => state.product);
-  const { buttons, buttonsStatus, getButtonContents } = useBoundStore(state => ({
+  const { buttons, getButtonContents } = useBoundStore(state => ({
     buttons: state.buttons,
-    buttonsStatus: state.buttonsStatus,
     getButtonContents: state.getButtonContents
   }))
-  
+
   const fetchButtonContent = useCallback(() => {
     if (!!product?.id) getButtonContents(product.id, i18n.language);
 
@@ -77,7 +76,7 @@ const ArComponent = memo(() => {
     }
   }, [headlineRef]);
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  // const [drawerOpen, setDrawerOpen] = useState(false);
   const [reviewContentOpen, setReviewContentOpen] = useState(false);
   const [showGrandControl, setShowGrandControl] = useState(true);
   const [buttonName, setButtonName] = useState("");
@@ -119,10 +118,10 @@ const ArComponent = memo(() => {
     }
   }, [recenterEvent]);
 
-  const compareDrawerHandle = useCallback(() => {
-    setDrawerOpen(true);
-    setShowGrandControl(false);
-  }, []);
+  // const compareDrawerHandle = useCallback(() => {
+  //   setDrawerOpen(true);
+  //   setShowGrandControl(false);
+  // }, []);
 
   const buttonPopupHandle = useCallback(
     (buttonName: string) => {
@@ -144,7 +143,7 @@ const ArComponent = memo(() => {
     beardStyleEvent.next(true);
     const beardStyle = product?.beardStyles.find(b => b.id === beardStyleId);
     if (!!beardStyle) switchBeardStyleEvent.next(beardStyle);
-  }, [product?.beardStyles]);
+  }, [product?.beardStyles, beardStyleEvent, switchBeardStyleEvent]);
 
   return (
     <AppGrid

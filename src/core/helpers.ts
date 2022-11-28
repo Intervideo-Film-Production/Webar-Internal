@@ -96,6 +96,7 @@ export const isIOS = () => typeof navigator !== 'undefined' && /iPad|iPhone|iPod
 
 export const getRootSubPath = () => {
   const href = window.location.href;
+  // eslint-disable-next-line
   const pathGroups = href.match(/^https:\/\/[^\/]+((\/[^\/]+)*)\/.+$/m);
   return !!pathGroups
     ? pathGroups[1]

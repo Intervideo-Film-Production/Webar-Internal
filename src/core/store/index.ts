@@ -19,8 +19,7 @@ type IBoundStore = IProductState
   & IAggregationStateAction;
 
 const createAggregationSlice: (...args: any) => IAggregationStateAction = (set) => ({
-  resetData: (resetStore = false) => {
-    console.log('resetData');
+  resetData: () => {
     // reset product data
     createProductSlice(set).resetProduct();
 
@@ -32,17 +31,12 @@ const createAggregationSlice: (...args: any) => IAggregationStateAction = (set) 
 
     // reset product finder data
     createProductFinderSlice(set).reset();
-
-    if (resetStore) {
-      createStoreSlice(set).reset();
-    }
   }
 })
 
 // FIXME check where the below are and should be removed?
 // queryClient.removeQueries(QueryKeys.compareProduct, { exact: true });
 // queryClient.removeQueries(QueryKeys.imageTargetsCodes, { exact: true });
-
 
 const useBoundStore = create<IBoundStore>((...a) => ({
   ...createProductSlice(...a),

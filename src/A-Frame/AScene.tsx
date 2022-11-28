@@ -6,7 +6,7 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
 import parse from 'html-react-parser';
 import { Box } from '@mui/material';
-import { filter, map, skip, Subject, withLatestFrom, zip } from 'rxjs';
+import { filter, map, pairwise, skip, startWith, Subject, withLatestFrom, zip } from 'rxjs';
 import { AFrameElement, IBeardStyle, IButtonContent, IProduct } from 'src/core/declarations/app';
 import { useAppContext } from 'src/core/events';
 import { modelRef, ProductTypes } from 'src/core/declarations/enum';
@@ -17,8 +17,8 @@ declare const THREE: any;
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 
 // default light
-{/* <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
-<a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> */}
+// <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
+// <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity>
 const sceneGenerator = `
   <a-scene
     id='ascene' 
@@ -114,82 +114,91 @@ const AScene = memo((props: AFrameComponentProps) => {
   useEffect(() => {
     if (!!productDataSub) {
 
-      const subscription = productDataSub.subscribe((product) => {
-        const { id,
-          arObjectUrl,
-          arModelScale,
-          alphaVideoUrl,
-          alphaVideoBgColor,
-          alphaVideoScale,
-          alphaVideoPosition,
-          cubemap,
-          productType,
-        } = product;
-        // clean up either AR object or alpha video
-        const assetItemEl = document.querySelector('a-scene a-asset-item#model');
-        assetItemEl?.remove();
+      const subscription = productDataSub
+        .pipe(
+          startWith(null),
+          pairwise()
+          )
 
-        const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
-        if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
-
-        // product is an ar object
-        if (productType === ProductTypes.arObject) {
-          const assetContainer = document.querySelector('#assetContainer');
-
-          const newAssetEl = document.createElement('a-asset-item');
-          newAssetEl.setAttribute('id', 'model');
-          newAssetEl.setAttribute('src', arObjectUrl || "");
-          assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
-
-          if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
-            Object.keys(cubemap).forEach((key) => {
-
-              const cubemapImg = document.createElement("img");
-              cubemapImg.setAttribute("id", key);
-              cubemapImg.setAttribute("crossorigin", "anonymous");
-              cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
-
-              assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
-            })
+        .subscribe(([prev, cur]) => {
+          if(cur === null) return;
+          const { id,
+            arObjectUrl,
+            arModelScale,
+            alphaVideoUrl,
+            alphaVideoBgColor,
+            alphaVideoScale,
+            alphaVideoPosition,
+            cubemap,
+            productType,
+          } = cur;
+          // clean up either AR object or alpha video
+          if (prev?.id !== cur.id && prev?.productType === ProductTypes.arObject) {
+            const assetItemEl = document.querySelector('a-scene a-asset-item#model');
+            assetItemEl?.remove();
           }
 
-          // bind entity to ascene
-          const modelContainer = document.querySelector('#modelContainer');
-          const arObjectScale = arModelScale || "1 1 1";
-          // reset parent scale & rotation
-          modelContainer?.setAttribute('scale', "1 1 1");
-          modelContainer?.setAttribute('rotation', "0 0 0");
-          if (!!modelContainer) {
-            modelContainer.innerHTML = '';
-            const entity = document.createElement('a-entity') as AFrameElement;
-            entity.setAttribute('id', 'modelEntity');
-            entity.setAttribute('gltf-model', '#model');
-            // FIXME debug only
-            // entity.setAttribute('position', '0 0 .5');
-            // entity.setAttribute('rotation', '-90 0 0');
-            entity.setAttribute('scale', arObjectScale);
-            entity.setAttribute('cubemap-static', '')
-            entity.setAttribute('shadow', 'receive: false');
-            entity.setAttribute('animation-mixer', {
-              clip: 'none',
-              loop: 'once',
-              clampWhenFinished: 'true',
-            });
-            entity.setAttribute(modelRef, '');
-            modelContainer?.appendChild(entity);
-          }
-        }
-        // product is an alpha video
-        if (productType === ProductTypes.alphaVideo) {
-          // TODO an alpha video product has the same mechanism as an alpha video button effect
-          // thus these should be handled with the same module
-          // currently the app structure is mixed => need to implement in the restructure task
-          // overlay video efect
+          const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
+          if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
 
-          // append current product data
-          if (!!alphaVideoWrapperEl && alphaVideoUrl) {
-            // loop="true"
-            alphaVideoWrapperEl.innerHTML = `
+          // product is an ar object
+          if (productType === ProductTypes.arObject && prev?.id !== cur.id) {
+            const assetContainer = document.querySelector('#assetContainer');
+
+            const newAssetEl = document.createElement('a-asset-item');
+            newAssetEl.setAttribute('id', 'model');
+            newAssetEl.setAttribute('src', arObjectUrl || "");
+            assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
+
+            if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
+              Object.keys(cubemap).forEach((key) => {
+
+                const cubemapImg = document.createElement("img");
+                cubemapImg.setAttribute("id", key);
+                cubemapImg.setAttribute("crossorigin", "anonymous");
+                cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
+
+                assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
+              })
+            }
+
+            // bind entity to ascene
+            const modelContainer = document.querySelector('#modelContainer');
+            const arObjectScale = arModelScale || "1 1 1";
+            // reset parent scale & rotation
+            modelContainer?.setAttribute('scale', "1 1 1");
+            modelContainer?.setAttribute('rotation', "0 0 0");
+            if (!!modelContainer) {
+              modelContainer.innerHTML = '';
+              const entity = document.createElement('a-entity') as AFrameElement;
+              entity.setAttribute('id', 'modelEntity');
+              entity.setAttribute('gltf-model', '#model');
+              // FIXME debug only
+              // entity.setAttribute('position', '0 0 .5');
+              // entity.setAttribute('rotation', '-90 0 0');
+              entity.setAttribute('scale', arObjectScale);
+              entity.setAttribute('cubemap-static', '')
+              entity.setAttribute('shadow', 'receive: false');
+              entity.setAttribute('animation-mixer', {
+                clip: 'none',
+                loop: 'once',
+                clampWhenFinished: 'true',
+              });
+              entity.setAttribute(modelRef, '');
+              modelContainer?.appendChild(entity);
+            }
+          }
+          // product is an alpha video
+          if (productType === ProductTypes.alphaVideo) {
+            // TODO an alpha video product has the same mechanism as an alpha video button effect
+            // thus these should be handled with the same module
+            // currently the app structure is mixed => need to implement in the restructure task
+            // overlay video efect
+
+            // append current product data
+            if (!!alphaVideoWrapperEl && alphaVideoUrl) {
+              // loop="true"
+              alphaVideoWrapperEl.innerHTML = `
               <video
                 id="overlayVideo${id}"
                 playsinline
@@ -202,33 +211,33 @@ const AScene = memo((props: AFrameComponentProps) => {
               </video>
             `;
 
-            // FIXME
+              // FIXME
 
-            const alphaVideoProduct = document.querySelector(`#overlayVideo${id}`) as HTMLVideoElement;
-            alphaVideoProduct?.addEventListener("canplaythrough", () => {
-              if (!!alphaVideoProduct) {
-                try {
-                  const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
-                  alphaVideoMesh?.removeAttribute("play-video");
-                  alphaVideoMesh?.removeAttribute("material");
-                  alphaVideoMesh?.removeAttribute("position");
+              const alphaVideoProduct = document.querySelector(`#overlayVideo${id}`) as HTMLVideoElement;
+              alphaVideoProduct?.addEventListener("canplaythrough", () => {
+                if (!!alphaVideoProduct) {
+                  try {
+                    const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+                    alphaVideoMesh?.removeAttribute("play-video");
+                    alphaVideoMesh?.removeAttribute("material");
+                    alphaVideoMesh?.removeAttribute("position");
 
-                  alphaVideoMesh?.removeAttribute("scale");
-                  alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${id}`);
-                  alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
-                  alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
-                  alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
-                  setTimeout(() => {
-                    alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
-                  }, 500)
-                } catch (ex) {
-                  console.error(ex);
+                    alphaVideoMesh?.removeAttribute("scale");
+                    alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${id}`);
+                    alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
+                    alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
+                    alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
+                    setTimeout(() => {
+                      alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
+                    }, 500)
+                  } catch (ex) {
+                    console.error(ex);
+                  }
                 }
-              }
-            })
+              })
+            }
           }
-        }
-      });
+        });
 
       return () => { subscription.unsubscribe(); }
     }
@@ -586,7 +595,8 @@ const AScene = memo((props: AFrameComponentProps) => {
   useEffect(() => {
     if (switchBeardStyleEvent) {
       const subscription = switchBeardStyleEvent.subscribe(beardStyle => {
-        const aFrameComponent = aFrameComponentRef.current;
+        // FIXME
+        // const aFrameComponent = aFrameComponentRef.current;
 
         const faceEffectContainer = document.getElementById("face-effect");
         if (!!faceEffectContainer) {

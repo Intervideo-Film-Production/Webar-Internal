@@ -7,7 +7,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { TabPanel } from 'src/components';
 import { useAppContext } from 'src/core/events';
 import { useBoundStore } from 'src/core/store';
-import { usePrevious } from 'src/core/helpers';
 
 interface IinfoMenuProps {
 	open: boolean;
@@ -32,24 +31,44 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 	const { appTheme } = useAppContext();
 	const { t, i18n } = useTranslation();
 	const [tabPanel, setTabPanel] = useState(0);
-	const supportedLanguages = useBoundStore(state => state.languages);
-	const resetData = useBoundStore(state => state.resetData);
 
-	const previousLanguage = usePrevious(i18n.language);
+	const supportedLanguages = useBoundStore(state => state.languages);
+	const {
+		product,
+		store,
+		getById,
+		getButtonContents,
+		getSearchCriteria,
+		getSearchCriteriaValue
+	} = useBoundStore(state => ({
+		product: state.product,
+		store: state.store,
+		getById: state.getById,
+		getButtonContents: state.getButtonContents,
+		getSearchCriteria: state.getSearchCriteria,
+		getSearchCriteriaValue: state.getSearchCriteriaValue
+	}));
+
 	const handleClose = () => {
 		if (onClose) onClose();
 		setTabPanel(0);
 	};
 
-	useEffect(() => {
-		// refetch all data if language changed
-		if (i18n.language !== previousLanguage && previousLanguage !== undefined) {
-			resetData(true);
-		}
-	}, [i18n.language, previousLanguage, resetData])
-
 	const switchLanguageHandle = (lng: string) => {
-		i18n.changeLanguage(lng);
+		i18n.changeLanguage(lng, (err) => {
+			if (err) {
+				console.error("an error when trying to change language");
+				return;
+			}
+
+			// refetch all data
+			if (!!product?.id && !!store?.id) {
+				getById(product.id, lng, store.id);
+				getButtonContents(product.id, lng);
+				getSearchCriteria(lng);
+				getSearchCriteriaValue(lng);
+			}
+		});
 		handleClose();
 	}
 

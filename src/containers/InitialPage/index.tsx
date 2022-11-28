@@ -113,7 +113,7 @@ const InitialPage = () => {
   return !language // language is not loaded
     || loading // store data and/or product data is loading
     || (!productqr && !store) // no store data is loaded
-    || (!!productqr && !product)
+    || (!!productqr && !product) // no product data loaded when product qr value is provided
     ? (
       <>
         <LoadingBox sx={{ height: '100%' }} />
