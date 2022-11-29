@@ -34,7 +34,7 @@ const sceneGenerator = `
     <!-- face effects -->
     <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
 
-    <a-assets id="assetContainer" timeout="30000">
+    <a-assets id="assetContainer" timeout="5000">
 
       <a-asset-item id="model" src=""></a-asset-item>
 
@@ -118,10 +118,10 @@ const AScene = memo((props: AFrameComponentProps) => {
         .pipe(
           startWith(null),
           pairwise()
-          )
+        )
 
         .subscribe(([prev, cur]) => {
-          if(cur === null) return;
+          if (cur === null) return;
           const { id,
             arObjectUrl,
             arModelScale,
@@ -141,10 +141,11 @@ const AScene = memo((props: AFrameComponentProps) => {
           const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
           if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
 
+          const assetContainer = document.querySelector('#assetContainer');
+
           // product is an ar object
           if (productType === ProductTypes.arObject && prev?.id !== cur.id) {
-            const assetContainer = document.querySelector('#assetContainer');
-
+            // assetContainer?.setAttribute("timeout", "30000");
             const newAssetEl = document.createElement('a-asset-item');
             newAssetEl.setAttribute('id', 'model');
             newAssetEl.setAttribute('src', arObjectUrl || "");
@@ -187,13 +188,6 @@ const AScene = memo((props: AFrameComponentProps) => {
               entity.setAttribute(modelRef, '');
               modelContainer?.appendChild(entity);
             }
-          }
-          // product is an alpha video
-          if (productType === ProductTypes.alphaVideo) {
-            // TODO an alpha video product has the same mechanism as an alpha video button effect
-            // thus these should be handled with the same module
-            // currently the app structure is mixed => need to implement in the restructure task
-            // overlay video efect
 
             // append current product data
             if (!!alphaVideoWrapperEl && alphaVideoUrl) {
@@ -211,8 +205,6 @@ const AScene = memo((props: AFrameComponentProps) => {
               </video>
             `;
 
-              // FIXME
-
               const alphaVideoProduct = document.querySelector(`#overlayVideo${id}`) as HTMLVideoElement;
               alphaVideoProduct?.addEventListener("canplaythrough", () => {
                 if (!!alphaVideoProduct) {
@@ -229,13 +221,24 @@ const AScene = memo((props: AFrameComponentProps) => {
                     alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
                     setTimeout(() => {
                       alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
-                    }, 500)
+                    }, 150)
                   } catch (ex) {
                     console.error(ex);
                   }
                 }
               })
             }
+          }
+
+          // product is an alpha video
+          // FIXME
+          if (productType === ProductTypes.alphaVideo) {
+            // TODO an alpha video product has the same mechanism as an alpha video button effect
+            // thus these should be handled with the same module
+            // currently the app structure is mixed => need to implement in the restructure task
+            // overlay video efect
+
+            // assetContainer?.setAttribute("timeout", "3000");
           }
         });
 
@@ -282,25 +285,38 @@ const AScene = memo((props: AFrameComponentProps) => {
       // overlay video efect
       const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
 
-      // clear previous product data
-
-      if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
+      // clear previous model overlays
+      const allModelOverlays = alphaVideoWrapperEl?.querySelectorAll(".alpha-video");
+      allModelOverlays?.forEach(el => el.remove());
 
       // append current product data
       if (!!alphaVideoWrapperEl && arModelOverlays.length > 0) {
-        // loop="true"
-        alphaVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
-          <video
-            id="overlayVideo${buttonName}"
-            playsinline
-            class="alpha-video"
-            preload="auto"
-            src="${arModelOverlay}" 
-            type="video/mp4"
-            crossorigin="anonymous"
-          >
-          </video>
-        `).join(' ');
+        arModelOverlays.forEach(({ buttonName, arModelOverlay }) => {
+          // loop="true"
+          const newOverlayVideoEl = document.createElement("video");
+          newOverlayVideoEl.id = `overlayVideo${buttonName}`;
+          newOverlayVideoEl.setAttribute("playsinline", "");
+          newOverlayVideoEl.className = "alpha-video";
+          newOverlayVideoEl.setAttribute("preload", "auto");
+          newOverlayVideoEl.setAttribute("src", arModelOverlay);
+          newOverlayVideoEl.setAttribute("type", "video/mp4");
+          newOverlayVideoEl.setAttribute("crossorigin", "anonymous");
+        });
+
+        // FIXME remove if above works
+
+        // alphaVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
+        //   <video
+        //     id="overlayVideo${buttonName}"
+        //     playsinline
+        //     class="alpha-video"
+        //     preload="auto"
+        //     src="${arModelOverlay}" 
+        //     type="video/mp4"
+        //     crossorigin="anonymous"
+        //   >
+        //   </video>
+        // `).join(' ');
 
       }
     });

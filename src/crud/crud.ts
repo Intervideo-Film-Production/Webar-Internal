@@ -261,7 +261,11 @@ export const BUTTON_ANIMATION_CONTENT_QUERY = `
     arModelOverlayBgColor,
     overlayHideModel,
     arOverlayPosition,
-    arOverlayScale
+    arOverlayScale,
+    'videoContent': videoContent[$lng].asset->['url'],
+    'customContent': customContent[$lng],
+    link,
+    phoneNumber
   }
 `;
 

@@ -52,4 +52,12 @@ export enum ProductTypes {
   alphaVideo = 'alphaVideo'
 }
 
+export enum ButtonActionTypes {
+  DisplayProductFeatures = "DisplayProductFeatures",
+  CustomContent = "CustomContent",
+  WatchVideo = "WatchVideo",
+  Link = "Link",
+  GiveACall = "GiveACall",
+};
+
 export const modelRef = 'ar-model';

@@ -6,7 +6,7 @@
  * Any missing data or assets will be notified as a server error from UX point of view and should be logged to data provider server
 */
 
-import { DataTypes, ProductTypes } from 'src/core/declarations/enum';
+import { ButtonActionTypes, DataTypes, ProductTypes } from 'src/core/declarations/enum';
 import { map, from, lastValueFrom } from 'rxjs';
 import {
   SanityOriginalDataType,
@@ -346,6 +346,7 @@ export const getLocalButtonAnimationContent = (productId: string, lng: string) =
 
         return {
           buttonName: b.buttonName,
+          actionType: ButtonActionTypes.DisplayProductFeatures,
           popupTitle: b.popupTitle ? b.popupTitle[lng] : null,
           popupContent: btnContent,
           hasBeardStyles: b.hasBeardStyles,
@@ -364,7 +365,11 @@ export const getLocalButtonAnimationContent = (productId: string, lng: string) =
           arModelOverlayBgColor: b.arModelOverlayBgColor,
           overlayHideModel: b.overlayHideModel,
           arOverlayPosition: b.arOverlayPosition,
-          arOverlayScale: b.arOverlayScale
+          arOverlayScale: b.arOverlayScale,
+          videoContent: "",
+          customContent: [],
+          link: "",
+          phoneNumber: ""
         }
       })
     )

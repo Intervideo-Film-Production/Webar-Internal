@@ -9,6 +9,7 @@ export class AppStore {
   headerToggleEvent = new Subject<boolean>();
   productClaimToggleEvent = new Subject<boolean>();
   arResourcesLoadEvent = new Subject<boolean>();
+  // change name to support non-model based products
   aFrameModelLoadedEvent = new Subject<any>();
   initialPageUrl = new BehaviorSubject<string>('');
   // FIXME temp credential

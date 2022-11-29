@@ -15,6 +15,7 @@ import { useLanguage } from 'src/core/i18n';
 import { useBoundStore } from 'src/core/store';
 import { StoreStatus } from 'src/core/declarations/enum';
 
+// FIXME should check iOS in allow scan page
 const iOS = isIOS();
 
 const useStyles = makeStyles(() => ({
@@ -129,8 +130,9 @@ const InitialPage = () => {
       ? (<Redirect to="/" />)
       : (
         <>
-          <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} />
-          {(!iOS || !!permissionStatus) && (<Redirect to="/ar-page" />)}
+          {/* // FIXME move permission logic to permission page */}
+          {/* <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} /> */}
+          {(!iOS || !!permissionStatus) && (<Redirect to="/allow-scan?showArPage=true" />)}
         </>
 
       )

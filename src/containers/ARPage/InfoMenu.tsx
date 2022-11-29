@@ -1,5 +1,5 @@
 import { Grid, Button, Modal, IconButton, Box, ButtonProps, Typography, List, ListItemButton } from '@mui/material';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import { InfoIcon, LanguageIcon } from 'src/components/icons';

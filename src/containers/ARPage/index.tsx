@@ -19,7 +19,7 @@ const ARPage = () => {
 
     const subscription = appLoadingStateEvent.pipe(
       filter(v => !!v)
-    ).subscribe(appIsLoading => {
+    ).subscribe(() => {
       setModelLoading(true);
       appLoadingStateEvent.next(false);
     })
@@ -32,7 +32,7 @@ const ARPage = () => {
       const subscription = concat(
         arResourcesLoadEvent.pipe(filter(v => !!v), take(1)),
         aFrameModelLoadedEvent
-      ).subscribe(v => {
+      ).subscribe(() => {
         setModelLoading(false);
       });
 

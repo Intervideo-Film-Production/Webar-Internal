@@ -42,7 +42,7 @@ const LoginPage = () => {
     if (!product) {
       history.push('/');
     } else {
-      history.push('/ar-page');
+      history.push('/allow-scan?showArPage=true');
     }
   }
 

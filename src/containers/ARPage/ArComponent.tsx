@@ -12,7 +12,7 @@ import { Grid, Toolbar } from "@mui/material";
 import { AScene } from "src/A-Frame/AScene";
 import { BehaviorSubject, filter, Subject } from "rxjs";
 import ReviewContent from "./ReviewContent";
-import ButtonPopupContent from "./ButtonPopupContent";
+import ButtonDrawerContent from "./ButtonDrawerContent";
 import {
   IProduct,
   IButtonContent,
@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import BeardStyleContent from "./BeardStyleContent";
 import { useBoundStore } from "src/core/store";
+import ButtonContent from "./ButtonContent";
 
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
@@ -185,11 +186,10 @@ const ArComponent = memo(() => {
       />
 
       {/* Button Popup Content */}
-      <ButtonPopupContent
+      <ButtonContent
         buttonName={buttonName}
         onToggle={buttonPopupHandle}
-        onShowBeardStyle={handleShowBeardStyle}
-      />
+        onShowBeardStyle={handleShowBeardStyle} />
 
       <BeardStyleContent
         beardStyleEvent={beardStyleEvent}
