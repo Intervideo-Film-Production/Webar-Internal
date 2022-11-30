@@ -4,7 +4,8 @@ import { AppGrid, AppButton } from 'src/components';
 import { AccountCircle, VpnKey } from '@mui/icons-material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useHistory } from 'react-router';
+import { IProduct, IStore } from 'src/core/declarations/app';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from 'src/core/events';
 import { useBoundStore } from 'src/core/store';
 
@@ -12,13 +13,13 @@ const LoginPage = () => {
 
   const product = useBoundStore(state => state.product);
   const store = useBoundStore(state => state.store);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { appCredential } = useAppContext();
 
   useEffect(() => {
     if (!store) {
-      history.push('/initialize');
+      navigate('/initialize');
     }
   });
 
@@ -40,9 +41,9 @@ const LoginPage = () => {
   const handleSubmit = () => {
     appCredential.next(credential);
     if (!product) {
-      history.push('/');
+      navigate('/');
     } else {
-      history.push('/allow-scan?showArPage=true');
+      navigate('/ar-page?showArPage=true');
     }
   }
 

@@ -1,10 +1,11 @@
-import { IProductState, createProductSlice } from './product';
-import { IStoreState, createStoreSlice } from './store';
-import { ISupportLanguageState, createSupportLanguageSlice } from './supportLanguages';
-import { IProductFinderState, createProductFinderSlice } from './productFinder';
+
+import create from 'zustand';
 import { IButtonContentState, createButtonContentSlice } from './buttonContent';
 import { ICommentState, createCommentSlice } from './comment';
-import create from 'zustand';
+import { IProductState, createProductSlice } from './product';
+import { IProductFinderState, createProductFinderSlice } from './productFinder';
+import { IStoreState, createStoreSlice } from './store';
+import { ISupportLanguageState, createSupportLanguageSlice } from './supportLanguages';
 
 interface IAggregationStateAction {
   resetData: (resetStore?: boolean) => void;

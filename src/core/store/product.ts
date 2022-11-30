@@ -1,4 +1,4 @@
-import { findMatchingProducts, getAllProductsByQRCode, getFirstProductQRCodes, getProduct, getProductById } from 'src/crud/crud';
+import { getProductById, getProduct, getFirstProductQRCodes, findMatchingProducts, getAllProductsByQRCode } from 'src/crud';
 import { IProduct } from '../declarations/app';
 import { StoreStatus } from '../declarations/enum';
 
@@ -10,6 +10,7 @@ export interface IProductState {
   setProduct: (product: IProduct) => void;
   resetProduct: () => void;
   imageTargetCodes: string[] | null;
+  imageTargetCodesStatus: StoreStatus;
   setImageTargetCodes: (storeId: string) => void;
 
   productsByQrCode: IProduct[] | null;
@@ -45,9 +46,11 @@ export const createProductSlice: (...args: any) => IProductState = (set) => ({
   },
 
   imageTargetCodes: null,
+  imageTargetCodesStatus: StoreStatus.empty,
   setImageTargetCodes: async (storeId) => {
+    set({ imageTargetCodesStatus: StoreStatus.loading });
     const imageTargetCodes = await getFirstProductQRCodes(storeId);
-    set({ imageTargetCodes: imageTargetCodes.slice(0, 5) });
+    set({ imageTargetCodes: imageTargetCodes.slice(0, 5), imageTargetCodesStatus: StoreStatus.loaded });
   },
 
   searchProducts: null,

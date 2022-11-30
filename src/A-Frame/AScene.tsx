@@ -4,91 +4,140 @@
 // // DISABLE_IMAGE_TARGETS will prevent any image targets from loading, including ones that would
 // // otherwise enabled automatically.
 import React, { memo, useEffect, useMemo, useRef } from 'react';
-import parse from 'html-react-parser';
 import { Box } from '@mui/material';
 import { filter, map, pairwise, skip, startWith, Subject, withLatestFrom, zip } from 'rxjs';
-import { AFrameElement, IBeardStyle, IButtonContent, IProduct } from 'src/core/declarations/app';
-import { useAppContext } from 'src/core/events';
+import { AFrameElement, IBeardStyle, IButtonContent, IProduct, IProductColor } from 'src/core/declarations/app';
 import { modelRef, ProductTypes } from 'src/core/declarations/enum';
-// declare const AFRAME: any;
+import { Entity } from "aframe";
+import arView from "./views/ar.view.html";
+import { AframeComponent, AFrameScene, AframeSystem } from './aframeScene';
 
-let modelButtons: any[] = []; //keep track of buttons in the 3D model for enabling/disabling on tap
-declare const THREE: any;
+import {
+  useEnableButtonsFromExternalEvent,
+  useInsertButtonOverlays,
+  useInsertButtons,
+  useInsertButtonSound,
+  useInsertHotspots,
+  useInsertModel,
+  useMaxTouchPoints,
+  useTriggerExternalEffectAndSound,
+  useTriggerOverLay,
+  useWatchRecenterEvent
+} from './hooks';
+import {
+  cubeEnvMapComponent,
+  changeColorComponent,
+  absPinchScaleComponent,
+  proximityComponent,
+  gltfMorphComponent,
+  ignoreRaycast,
+  responsiveImmersiveComponent,
+  xrLightComponent,
+  xrLightSystem,
+  annotationComponent,
+  cubeMapRealtimeComponent
+} from './8thwallComponents';
+import { useAppContext } from 'src/core/events';
+import { useBoundStore } from 'src/core/store';
+
+declare var THREE: any;
+
 const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED
 
 // default light
 // <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
 // <a-entity light="type: ambient; color: white; intensity: 2;"></a-entity>
-const sceneGenerator = `
-  <a-scene
-    id='ascene' 
-    responsive-immersive
-    xrextras-gesture-detector
-    xrextras-loading
-    xrextras-runtime-error
-    renderer="colorManagement: true"
-    xrweb="allowedDevices: any">
 
-    <a-camera id="camera" position="0 5 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+interface IARAsceneComponentsGenerator {
+  (
+    realityReadyEvent: Subject<boolean>,
+    modelLoadedEvent: Subject<boolean>,
+    productColorSub: Subject<IProductColor>
 
-    <!-- face effects -->
-    <xrextras-resource id="alpha-soft-eyes" src="imgs/beards/soft-eyes.png"></xrextras-resource>
+  ): Array<AframeComponent>;
+}
 
-    <a-assets id="assetContainer" timeout="5000">
+const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEvent, modelLoadedEvent, productColorSub) => {
+  let readyReadyHandler: Function;
+  let modelLoadedHandler: Function;
 
-      <a-asset-item id="model" src=""></a-asset-item>
+  return [
+    // app components
+    {
+      name: "ar-view-initializer",
+      val: {
+        init: function () {
+          let scene = this.el.sceneEl;
 
-      <!-- face effect head -->
-      <a-asset-item id="head-occluder" src="./models/head-occluder.glb"></a-asset-item>
+          readyReadyHandler = () => {
+            realityReadyEvent.next(true);
+          }
 
-      <span id="alphaVideoWrapper"></span>
-      <span id="soundWrapper"></span>
+          scene.addEventListener("realityready", readyReadyHandler);
+        },
+        remove: function () {
+          let scene = this.el.sceneEl;
+          scene.removeEventListener("realityready", readyReadyHandler);
+          realityReadyEvent.next(false);
+          // FIXME
+          // modelLoadedEvent.next(false);
+        }
+      }
+    },
+    {
+      name: modelRef,
+      val: {
+        init: function () {
+          modelLoadedHandler = () => {
+            modelLoadedEvent.next(this.el);
+          }
+          this.el.addEventListener("model-loaded", modelLoadedHandler);
+        },
+        remove: function () {
+          this.el.removeEventListener("realityready", modelLoadedHandler);
+        }
+      }
+    },
+    // 8thwall support components
+    {
+      name: "cubemap-static",
+      val: cubeEnvMapComponent
+    },
+    // 8thwall absolute scale component
+    { name: 'change-color', val: changeColorComponent(productColorSub) },
+    { name: 'annotation', val: annotationComponent },
+    { name: 'absolute-pinch-scale', val: absPinchScaleComponent },
+    { name: 'proximity', val: proximityComponent },
+    { name: 'gltf-morph', val: gltfMorphComponent },
+    { name: 'ignore-raycast', val: ignoreRaycast },
+    { name: 'cubemap-realtime', val: cubeMapRealtimeComponent },
+    { name: 'cubemap-static', val: cubeEnvMapComponent },
+    { name: 'responsive-immersive', val: responsiveImmersiveComponent(modelLoadedEvent) },
+    { name: 'xr-light', val: xrLightComponent },
+  ]
+}
 
-    </a-assets>
-
-    <a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale></a-entity>
-
-    <a-entity id="alphaVideoMeshContainer" visible="true" xrextras-pinch-scale>
-      <a-entity id="alphaVideoMesh" visible="false" geometry="primitive: plane; height: 1; width: 1.78;"></a-entity>
-    </a-entity>
-
-    <a-plane id="ground" rotation="-90 0 0" height="1000" width="1000"  material="shader: shadow" shadow></a-plane>
-  </a-scene>
-`;
+const systems: AframeSystem[] = [
+  // 8thwall absolute scale system
+  {
+    name: 'xr-light',
+    val: xrLightSystem
+  }
+];
 
 interface AFrameComponentProps {
   productDataSub: Subject<IProduct>;
   buttonListSub: Subject<IButtonContent[]>;
   beardStylesSub: Subject<IBeardStyle[]>;
   recenterEvent?: Subject<any>;
-  onButtonClick?: (buttonName: string) => any;
+  onButtonClick: (buttonName: string) => any;
   buttonToggleEvent?: Subject<string>;
   beardStyleEvent?: Subject<boolean>;
   switchBeardStyleEvent?: Subject<IBeardStyle>;
+  productColorSub: Subject<IProductColor>;
+  // beardStyleEvent?: Subject<boolean>;
+  // switchBeardStyleEvent?: Subject<string>;
 }
-
-function DisableButtons() {
-  for (const element of modelButtons) {
-    element.visible = false;
-  }
-
-  document.querySelectorAll('a-box.model-button').forEach(btnBox => {
-    btnBox.setAttribute('data-disabled', 'true');
-  })
-}
-
-function EnableButtons() {
-  document.querySelector('#modelEntity')?.setAttribute('animation-mixer', 'clip: none'); //reset animations
-  for (const element of modelButtons) {
-    element.visible = true;
-  }
-
-  document.querySelectorAll('a-box.model-button').forEach(btnBox => {
-    btnBox.setAttribute('data-disabled', 'false');
-  })
-}
-
-//#endregion AR stuffs
 
 const AScene = memo((props: AFrameComponentProps) => {
   const {
@@ -97,234 +146,17 @@ const AScene = memo((props: AFrameComponentProps) => {
     recenterEvent,
     buttonToggleEvent,
     onButtonClick,
+    productColorSub,
     beardStylesSub,
     beardStyleEvent,
     switchBeardStyleEvent
   } = props;
 
-  const aframeComponent = useMemo(() => {
-    return parse(sceneGenerator);
-  }, []);
-
-  const aFrameComponentRef = useRef<AFrameElement | null>(null);
+  const hotspots = useBoundStore(state => state.product?.hotspots);
   const buttonHandleEventRef = useRef(new Subject<string>());
-  const { aFrameModelLoadedEvent } = useAppContext();
 
-
-  useEffect(() => {
-    if (!!productDataSub) {
-
-      const subscription = productDataSub
-        .pipe(
-          startWith(null),
-          pairwise()
-        )
-
-        .subscribe(([prev, cur]) => {
-          if (cur === null) return;
-          const { id,
-            arObjectUrl,
-            arModelScale,
-            alphaVideoUrl,
-            alphaVideoBgColor,
-            alphaVideoScale,
-            alphaVideoPosition,
-            cubemap,
-            productType,
-          } = cur;
-          // clean up either AR object or alpha video
-          if (prev?.id !== cur.id && prev?.productType === ProductTypes.arObject) {
-            const assetItemEl = document.querySelector('a-scene a-asset-item#model');
-            assetItemEl?.remove();
-          }
-
-          const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
-          if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
-
-          const assetContainer = document.querySelector('#assetContainer');
-
-          // product is an ar object
-          if (productType === ProductTypes.arObject && prev?.id !== cur.id) {
-            // assetContainer?.setAttribute("timeout", "30000");
-            const newAssetEl = document.createElement('a-asset-item');
-            newAssetEl.setAttribute('id', 'model');
-            newAssetEl.setAttribute('src', arObjectUrl || "");
-            assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
-
-            if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
-              Object.keys(cubemap).forEach((key) => {
-
-                const cubemapImg = document.createElement("img");
-                cubemapImg.setAttribute("id", key);
-                cubemapImg.setAttribute("crossorigin", "anonymous");
-                cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
-
-                assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
-              })
-            }
-
-            // bind entity to ascene
-            const modelContainer = document.querySelector('#modelContainer');
-            const arObjectScale = arModelScale || "1 1 1";
-            // reset parent scale & rotation
-            modelContainer?.setAttribute('scale', "1 1 1");
-            modelContainer?.setAttribute('rotation', "0 0 0");
-            if (!!modelContainer) {
-              modelContainer.innerHTML = '';
-              const entity = document.createElement('a-entity') as AFrameElement;
-              entity.setAttribute('id', 'modelEntity');
-              entity.setAttribute('gltf-model', '#model');
-              // FIXME debug only
-              // entity.setAttribute('position', '0 0 .5');
-              // entity.setAttribute('rotation', '-90 0 0');
-              entity.setAttribute('scale', arObjectScale);
-              entity.setAttribute('cubemap-static', '')
-              entity.setAttribute('shadow', 'receive: false');
-              entity.setAttribute('animation-mixer', {
-                clip: 'none',
-                loop: 'once',
-                clampWhenFinished: 'true',
-              });
-              entity.setAttribute(modelRef, '');
-              modelContainer?.appendChild(entity);
-            }
-
-            // append current product data
-            if (!!alphaVideoWrapperEl && alphaVideoUrl) {
-              // loop="true"
-              alphaVideoWrapperEl.innerHTML = `
-              <video
-                id="overlayVideo${id}"
-                playsinline
-                class="alpha-video-product"
-                preload="auto"
-                src="${alphaVideoUrl}" 
-                type="video/mp4"
-                crossorigin="anonymous"
-              >
-              </video>
-            `;
-
-              const alphaVideoProduct = document.querySelector(`#overlayVideo${id}`) as HTMLVideoElement;
-              alphaVideoProduct?.addEventListener("canplaythrough", () => {
-                if (!!alphaVideoProduct) {
-                  try {
-                    const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
-                    alphaVideoMesh?.removeAttribute("play-video");
-                    alphaVideoMesh?.removeAttribute("material");
-                    alphaVideoMesh?.removeAttribute("position");
-
-                    alphaVideoMesh?.removeAttribute("scale");
-                    alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${id}`);
-                    alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
-                    alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
-                    alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
-                    setTimeout(() => {
-                      alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
-                    }, 150)
-                  } catch (ex) {
-                    console.error(ex);
-                  }
-                }
-              })
-            }
-          }
-
-          // product is an alpha video
-          // FIXME
-          if (productType === ProductTypes.alphaVideo) {
-            // TODO an alpha video product has the same mechanism as an alpha video button effect
-            // thus these should be handled with the same module
-            // currently the app structure is mixed => need to implement in the restructure task
-            // overlay video efect
-
-            // assetContainer?.setAttribute("timeout", "3000");
-          }
-        });
-
-      return () => { subscription.unsubscribe(); }
-    }
-  }, [productDataSub]);
-
-  useEffect(() => {
-    const soundWrapper = document.querySelector('a-scene span#soundWrapper');
-
-    const subscription = buttonListSub.subscribe((buttons) => {
-      // remove audio
-      const allAudios = document.querySelectorAll('a-scene span#soundWrapper audio');
-      allAudios.forEach(el => el.remove());
-
-      // load sound files
-      buttons.forEach(btn => {
-        if (!!btn.sound) {
-          const audioEl = document.createElement('audio');
-          audioEl.setAttribute('id', `btn-audio-${btn.buttonName}`);
-          audioEl.className = "ar-button-audio";
-          const audioSource = document.createElement('source');
-          audioSource.setAttribute('src', btn.sound);
-          audioSource.setAttribute('type', "audio/mp3");
-          audioEl.appendChild(audioSource);
-          soundWrapper?.appendChild(audioEl);
-        }
-
-      })
-    })
-
-    return () => { subscription.unsubscribe(); }
-
-  }, [buttonListSub])
-
-  useEffect(() => {
-
-    const arModelOverlaysSub = buttonListSub.pipe(
-      map(list => list.filter(b => !!b.arModelOverlay)
-        .map<Pick<IButtonContent, 'buttonName' | 'arModelOverlay'>>(({ buttonName, arModelOverlay }) => ({ buttonName, arModelOverlay }))
-      )
-    );
-    const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
-      // overlay video efect
-      const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
-
-      // clear previous model overlays
-      const allModelOverlays = alphaVideoWrapperEl?.querySelectorAll(".alpha-video");
-      allModelOverlays?.forEach(el => el.remove());
-
-      // append current product data
-      if (!!alphaVideoWrapperEl && arModelOverlays.length > 0) {
-        arModelOverlays.forEach(({ buttonName, arModelOverlay }) => {
-          // loop="true"
-          const newOverlayVideoEl = document.createElement("video");
-          newOverlayVideoEl.id = `overlayVideo${buttonName}`;
-          newOverlayVideoEl.setAttribute("playsinline", "");
-          newOverlayVideoEl.className = "alpha-video";
-          newOverlayVideoEl.setAttribute("preload", "auto");
-          newOverlayVideoEl.setAttribute("src", arModelOverlay);
-          newOverlayVideoEl.setAttribute("type", "video/mp4");
-          newOverlayVideoEl.setAttribute("crossorigin", "anonymous");
-        });
-
-        // FIXME remove if above works
-
-        // alphaVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
-        //   <video
-        //     id="overlayVideo${buttonName}"
-        //     playsinline
-        //     class="alpha-video"
-        //     preload="auto"
-        //     src="${arModelOverlay}" 
-        //     type="video/mp4"
-        //     crossorigin="anonymous"
-        //   >
-        //   </video>
-        // `).join(' ');
-
-      }
-    });
-
-    return () => { subscription.unsubscribe(); }
-
-  }, [buttonListSub])
-
+  // FIXME decide whether separate face effect?
+  // keep here for now
   useEffect(() => {
     // beard styles
     const subscription = beardStylesSub.subscribe(beardStyles => {
@@ -360,163 +192,7 @@ const AScene = memo((props: AFrameComponentProps) => {
 
   }, [beardStylesSub])
 
-  useEffect(() => {
-    // AR buttons
-    const aFrameComponent = document.querySelector('a-scene') as AFrameElement | null;
-
-    aFrameComponentRef.current = aFrameComponent;
-    if (aFrameComponent) {
-      // prepare when entity is init
-
-      const subscription =
-        zip([
-          aFrameModelLoadedEvent,
-          buttonListSub
-        ]).subscribe(([entityEl, buttonsList]) => {
-          // clear old buttons
-          document.querySelectorAll('a-box.model-button').forEach(btnEl => {
-            btnEl.remove();
-          });
-          modelButtons = [];
-
-          // add buttons of new model
-          const modelMesh = entityEl.getObject3D('mesh');
-          // turn off frustumCulled on meshes
-          modelMesh.traverse((node: any) => {
-            if (node.isMesh) {
-              node.frustumCulled = false;
-            }
-          });
-
-
-          //get list of buttons from backend and match in 3D model
-          if (buttonsList && buttonsList.length > 0) {
-            buttonsList.forEach((btnItem, idx) => {
-
-              modelMesh.traverse((child: { [key: string]: any }) => {
-                if (child.name.includes(btnItem.buttonName)) {
-                  //add new flat material for buttons that doesn't use lighting
-                  var prevMaterial = child.material;
-                  child.material = new THREE.MeshBasicMaterial();
-                  THREE.MeshBasicMaterial.prototype.copy.call(child.material, prevMaterial);
-                  child.castShadow = false;
-                  modelButtons.push(child); //add to array
-                  const newEl = document.createElement('a-box') as AFrameElement;
-
-                  newEl.setAttribute('color', 'red');
-                  document.querySelector('#modelContainer')?.appendChild(newEl);
-
-                  var box = new THREE.Box3().setFromObject(child);
-                  const boxMin = box.min;
-                  const boxMax = box.max;
-                  const meshX = boxMax.x - boxMin.x,
-                    meshY = boxMax.y - boxMin.y,
-                    meshZ = boxMax.z - boxMin.z;
-
-                  const target = new THREE.Vector3();
-                  child.getWorldPosition(target);
-                  newEl.setAttribute('position', target);
-                  // check sizes of other models buttons
-                  newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
-                  newEl.setAttribute('transparency', true);
-                  newEl.setAttribute('data-disabled', 'false');
-                  newEl.setAttribute('opacity', 0);
-                  newEl.setAttribute('class', 'model-button cantap');
-
-                  newEl.setAttribute('id', 'guiButton' + btnItem.buttonName);
-                  newEl.addEventListener('click', (e: unknown) => {
-                    const thisBtnBox = (e as CustomEvent).target as HTMLElement;
-                    const btnBoxDisabled = thisBtnBox.getAttribute('data-disabled');
-                    if (btnBoxDisabled === 'true') return;
-
-                    entityEl.setAttribute('animation-mixer', 'clip: ' + btnItem.buttonName);
-                    if (btnItem.animationLooping)
-                      entityEl.setAttribute("animation-mixer", "loop: true;");
-                    else
-                      entityEl.setAttribute("animation-mixer", "loop: once;");
-
-                    if (btnItem.hasBeardStyles) {
-                      if (beardStyleEvent) {
-                        beardStyleEvent.next(true);
-                      }
-                    } else {
-                      if (buttonClickHandle) {
-                        buttonClickHandle(btnItem.buttonName);
-                        // FIXME temporary if no popup content stop after x seconds
-                        if (!btnItem.popupContent) {
-                          setTimeout(() => {
-                            buttonClickHandle("");
-                          }, 8000)
-                        }
-
-                      }
-                    }
-                  })
-
-                }
-                if (child.name.includes('VideoPlane')) {
-                  child.visible = false;
-                  const pos = new THREE.Vector3();
-                  child.getWorldPosition(pos);
-                  var scale = new THREE.Vector3();
-                  child.getWorldScale(scale);
-                  document.querySelector('#alphaVideoMesh')?.setAttribute('position', pos);
-                  document.querySelector('#alphaVideoMesh')?.setAttribute('scale', scale);
-                  document.querySelector('#alphaVideoMesh')?.setAttribute('shadow', 'cast: false');
-                }
-              })
-            })
-          }
-        })
-
-      const buttonClickHandle = (buttonName: string) => {
-        if (!!buttonName) DisableButtons();
-        if (!buttonHandleEventRef.current) { console.error('something wrong') };
-        if (buttonHandleEventRef.current) {
-          buttonHandleEventRef.current.next(buttonName);
-        }
-      }
-
-      return () => {
-        subscription.unsubscribe();
-      }
-    }
-  }, [aFrameModelLoadedEvent, beardStyleEvent, buttonListSub]);
-
-  useEffect(() => {
-    if (onButtonClick && buttonHandleEventRef.current) {
-      const subscription = buttonHandleEventRef.current.subscribe((buttonName: string) => {
-        // trigger content outside
-        onButtonClick(buttonName);
-
-        // play sound if any
-        const buttonAudio = document.querySelector(`#btn-audio-${buttonName}`) as HTMLAudioElement;
-        buttonAudio?.play();
-
-        // TODO stop playing audio when if button content is closed
-      })
-
-      return () => { subscription.unsubscribe() }
-    }
-  }, [onButtonClick])
-
-  useEffect(() => {
-    // recenter event
-    if (recenterEvent) {
-      const aFrameComponent = aFrameComponentRef.current;
-
-      const subscription = recenterEvent.subscribe(() => {
-
-        if (aFrameComponent !== null && aFrameComponent !== undefined) { aFrameComponent.emit('recenter') }
-        else { console.log('A-Frame scene not defined') }
-
-      })
-
-      return () => { subscription.unsubscribe() }
-    }
-
-  }, [recenterEvent]);
-
+  // FIXME face effect keep here for now
   useEffect(() => {
     if (beardStyleEvent) {
       const subscription = beardStyleEvent.pipe(
@@ -525,7 +201,7 @@ const AScene = memo((props: AFrameComponentProps) => {
         filter(([_, beardStyles]) => beardStyles.length > 0)
       ).subscribe(([isUsingFace, beardStyles]) => {
 
-        const aFrameComponent = aFrameComponentRef.current;
+        const aFrameComponent = document.querySelector('a-scene');
         if (isUsingFace) {
           document.querySelector('#modelContainer')?.setAttribute('visible', 'false')
           if (!!aFrameComponent) {
@@ -608,6 +284,7 @@ const AScene = memo((props: AFrameComponentProps) => {
     }
   }, [beardStyleEvent, beardStylesSub])
 
+  // FIXME face effect keep here for now
   useEffect(() => {
     if (switchBeardStyleEvent) {
       const subscription = switchBeardStyleEvent.subscribe(beardStyle => {
@@ -637,108 +314,39 @@ const AScene = memo((props: AFrameComponentProps) => {
     }
   }, [switchBeardStyleEvent])
 
-  useEffect(() => {
-    const subscription = buttonHandleEventRef.current
-      .pipe(
-        withLatestFrom(buttonListSub)
-      )
-      .subscribe(([buttonName, buttonsList]) => {
-        // check if a selected button should trigger model overlay effect
+  const { arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
 
-        const btnData = buttonsList?.find(btn => btn.buttonName === buttonName);
-        const btnName = btnData?.buttonName || '';
-        const arModelOverlayPlaytime = btnData?.arModelOverlayPlaytime || 0;
-        const chromaColor = btnData?.arModelOverlayBgColor || '0 0 0';
-        const overlayPosition = btnData?.arOverlayPosition || '0 0 0';
-        const overlayScale = btnData?.arOverlayScale || '1 1 1';
-        if (!!btnName) {
-          const videoEl = document.querySelector(`#overlayVideo${btnName}`) as HTMLVideoElement;
-          if (!!videoEl) {
-            setTimeout(() => {
-              try {
-                const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
-                alphaVideoMesh?.removeAttribute("play-video");
-                alphaVideoMesh?.removeAttribute("material");
-                alphaVideoMesh?.removeAttribute("position");
+  const registerComponents = useMemo(
+    () => arSceneComponentsGenerator(arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub),
+    [arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub]
+  );
+  useMaxTouchPoints();
+  useInsertModel(productDataSub);
+  useInsertButtonOverlays(buttonListSub);
+  useInsertButtonSound(buttonListSub);
+  useInsertButtons(buttonListSub, buttonHandleEventRef.current);
+  useTriggerOverLay(buttonListSub, buttonHandleEventRef.current);
+  useTriggerExternalEffectAndSound(onButtonClick, buttonHandleEventRef.current);
+  useEnableButtonsFromExternalEvent(buttonToggleEvent);
+  useWatchRecenterEvent(recenterEvent);
+  useInsertHotspots(aFrameModelLoadedEvent, hotspots);
 
-                alphaVideoMesh?.removeAttribute("scale");
-                alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${btnName}`);
-                alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
-                alphaVideoMesh?.setAttribute("position", overlayPosition);
-                alphaVideoMesh?.setAttribute("scale", overlayScale);
-                setTimeout(() => {
-                  alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
-                }, 500)
-              } catch (ex) {
-                console.error(ex);
-              }
-            }, arModelOverlayPlaytime)
-          }
-
-          if (!!btnData?.overlayHideModel) {
-            const modelContainer = document.querySelector("#modelContainer");
-            modelContainer?.removeAttribute("xrextras-one-finger-rotate");
-            modelContainer?.removeAttribute("xrextras-pinch-scale");
-            modelContainer?.setAttribute("visible", "false");
-          }
-        }
-      })
-
-    return () => { subscription.unsubscribe(); }
-  }, [buttonListSub])
-
-  useEffect(() => {
-
-    // TODO
-    if (buttonToggleEvent) {
-      const subscription = buttonToggleEvent.subscribe(buttonName => {
-
-        if (!buttonName) {
-          EnableButtons();
-
-          // disable all overlay as well when button should be displayed since this means a specific button animation ends
-          document.querySelector('#alphaVideoMesh')?.setAttribute('visible', 'false');
-          // display ar model if hidden before
-          const modelContainer = document.querySelector("#modelContainer");
-          modelContainer?.setAttribute("visible", "true");
-          const fingerRotateAttr = modelContainer?.getAttribute("xrextras-one-finger-rotate");
-          if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
-          const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
-          if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
-
-          const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
-          alphaVideoMesh?.removeAttribute("play-video");
-          alphaVideoMesh?.removeAttribute("material");
-
-          // stop all playing audio
-          const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;
-          buttonAudios.forEach(audio => {
-            audio.pause();
-            audio.currentTime = 0;
-          })
-        } else {
-          const arButton = document.querySelector(`#guiButton${buttonName}`) as AFrameElement;
-          if (!!arButton) arButton.click();
-        }
-      })
-
-      return () => { subscription.unsubscribe(); }
-    }
-  }, [buttonToggleEvent])
-
-  return (
-    <>
-      <Box style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        height: window.innerHeight,
-        width: window.innerWidth
-      }}>
-        {script8thWallDisabled ? null : aframeComponent}
+  return script8thWallDisabled
+    ? <></>
+    : (
+      <Box
+        id="arSceneWrapper"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: window.innerHeight,
+          width: window.innerWidth,
+        }}
+      >
+        <AFrameScene components={registerComponents} systems={systems} sceneHtml={arView} wrapperId="arSceneWrapper" />
       </Box>
-    </>
-  )
+    )
 });
 
 const DISABLE_IMAGE_TARGETS: unknown[] = [];

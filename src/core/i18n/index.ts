@@ -5,7 +5,7 @@ import HttpApi, { BackendOptions } from 'i18next-http-backend';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   GET_TRANSLATION_QUERY
-} from 'src/crud/crud';
+} from 'src/crud';
 import { ISupportLanguage } from "../declarations/app";
 import { Subject } from "rxjs";
 import { useBoundStore } from "../store";

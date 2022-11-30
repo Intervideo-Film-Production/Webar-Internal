@@ -2,14 +2,14 @@
 import { Grid, Typography, Toolbar } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AppGrid, AppButton, LoadingBox } from 'src/components';
 import HomePageBackground from './HomePageBackground';
 import { useBoundStore } from 'src/core/store';
 
 const HomePage = () => {
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [appLoading, setAppLoading] = useState(true);
   const storeData = useBoundStore(state => state.store);
   const backgroundVideo = storeData?.homePage.backgroundVideo;
@@ -70,7 +70,7 @@ const HomePage = () => {
             <AppButton
               sx={(theme) => ({ ...theme.homePageStyles.startButton })}
               variant="contained"
-              onClick={() => { history.push("/allow-scan"); }}
+              onClick={() => { navigate("/allow-scan"); }}
             >
               {t('HomePageButtonText')}
             </AppButton>

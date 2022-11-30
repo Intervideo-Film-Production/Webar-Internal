@@ -17,6 +17,8 @@ import {
   IProduct,
   IButtonContent,
   IBeardStyle,
+  IStore,
+  IProductColor,
 } from "src/core/declarations/app";
 import InfoMenu from "./InfoMenu";
 import ScreenOverlay from "./ScreenOverlay";
@@ -28,8 +30,8 @@ import ButtonContent from "./ButtonContent";
 
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
-  const location = useLocation<{ productId: string }>();
-  const productId = location.state && location.state && location.state.productId;
+  const location = useLocation();
+  const productId = (location.state as { productId: string })?.productId;;
 
   const product = useBoundStore(state => state.product);
   const { buttons, getButtonContents } = useBoundStore(state => ({
@@ -83,18 +85,36 @@ const ArComponent = memo(() => {
   const [buttonName, setButtonName] = useState("");
   const [infoMenuOpen, setInfoMenuOpen] = useState(false);
 
+  const recenterEvent = useMemo(() => new Subject(), []);
+  const arButtonToggleEvent = useMemo(() => new Subject<string>(), []);
+  const productColorEvent = useMemo(() => new Subject<IProductColor>(), []);
+  // const beardStyleEvent = useMemo(
+  //   () => new BehaviorSubject<boolean>(false),
+  //   []
+  // );
+  const switchBeardStyleEvent = useMemo(() => new Subject<IBeardStyle>(), []);
+
+  // useEffect(() => {
+  //   if (beardStyleEvent) {
+  //     const subscription = beardStyleEvent
+  //       .pipe(filter(() => beardStyles && beardStyles.length > 0))
+  //       .subscribe((shouldBeardStyleShow) => {
+  //         setShowGrandControl(!shouldBeardStyleShow);
+  //       });
+
+  //     return () => subscription.unsubscribe();
+  //   }
+  // }, [beardStyleEvent, beardStyles]);
+
   const handleReviewToggle = useCallback(
     (shouldReviewOpen: boolean) => {
       setReviewContentOpen(shouldReviewOpen);
     }, []);
 
-  const recenterEvent = useMemo(() => new Subject(), []);
-  const arButtonToggleEvent = useMemo(() => new Subject<string>(), []);
   const beardStyleEvent = useMemo(
     () => new BehaviorSubject<boolean>(false),
     []
   );
-  const switchBeardStyleEvent = useMemo(() => new Subject<IBeardStyle>(), []);
 
   useEffect(() => {
     if (beardStyleEvent) {
@@ -164,9 +184,11 @@ const ArComponent = memo(() => {
           recenterEvent={recenterEvent}
           onButtonClick={arButtonHandle}
           buttonToggleEvent={arButtonToggleEvent}
-          beardStyleEvent={beardStyleEvent}
-          switchBeardStyleEvent={switchBeardStyleEvent}
+          productColorSub={productColorEvent}
+        // beardStyleEvent={beardStyleEvent}`
+        // switchBeardStyleEvent={switchBeardStyleEvent}
         />
+
         <ScreenOverlay buttonName={buttonName} />
       </Grid>
 
@@ -176,6 +198,7 @@ const ArComponent = memo(() => {
         onInfo={() => infoMenuHandle(true)}
         onRecenter={() => reCenterHandle()}
         onReview={() => handleReviewToggle(true)}
+        productColorSub={productColorEvent}
       />
 
       {/* Expand Content */}

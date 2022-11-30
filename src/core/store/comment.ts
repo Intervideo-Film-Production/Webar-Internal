@@ -1,4 +1,4 @@
-import { getProductComments } from 'src/crud/crud';
+import { getProductComments } from 'src/crud';
 import { IComment } from '../declarations/app';
 import { StoreStatus } from '../declarations/enum';
 

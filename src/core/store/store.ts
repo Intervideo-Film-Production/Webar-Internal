@@ -1,4 +1,4 @@
-import { getStoreData } from 'src/crud/crud';
+import { getStoreData } from 'src/crud';
 import { IStore } from '../declarations/app';
 import { StoreStatus } from '../declarations/enum';
 

@@ -12,13 +12,7 @@ import { styled } from "@mui/material/styles";
 import { AppGrid, LazyImage } from "src/components";
 import { IProduct } from "src/core/declarations/app";
 import { DefaultComponentProps } from "@mui/material/OverridableComponent";
-
-interface LoadingScreenProps {
-  product: IProduct;
-}
-
-// TODO
-// current background color: #F7F7F7
+import { useBoundStore } from "src/core/store";
 
 const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
   [`& .${linearProgressClasses.bar}`]: {
@@ -29,11 +23,12 @@ const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
 const LoadingScreen = forwardRef(
   (
     {
-      product,
       ...props
-    }: LoadingScreenProps & DefaultComponentProps<GridTypeMap>,
+    }: DefaultComponentProps<GridTypeMap>,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const product = useBoundStore(state => state.product);
+    if (!product) return <>Data not available</>;
 
     return (
       <AppGrid

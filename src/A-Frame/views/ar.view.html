@@ -1,0 +1,84 @@
+<!-- // default light -->
+<!-- <a-entity position="-2 4 2" light="type: directional; color: white; intensity: 2.5"></a-entity>
+<a-entity light="type: ambient; color: white; intensity: 2;"></a-entity> -->
+
+<!-- scale: absolute -->
+<!-- defaultEnvironmentFogIntensity: 0.5; 
+		defaultEnvironmentFloorTexture: #groundTex; 
+		defaultEnvironmentFloorColor: #FFF;
+		defaultEnvironmentSkyBottomColor: #B4C4CC; 
+		defaultEnvironmentSkyTopColor: #5ac8fa;
+		defaultEnvironmentSkyGradientStrength: 0.5;scale: absolute; -->
+
+
+		<!-- coaching-overlay -->
+
+<a-scene id='ascene' 
+	ar-view-initializer
+	responsive-immersive
+	landing-page
+	xrextras-gesture-detector 
+	xrextras-loading 
+	xrextras-runtime-error 
+	gltf-model="dracoDecoderPath: https://cdn.8thwall.com/web/aframe/draco-decoder/"
+	renderer="colorManagement: true"
+	xrweb="allowedDevices: any;">
+   
+	<a-assets id="assetContainer" timeout="30000">
+		<!-- overlay assets-->
+		<span id="overlayVideoWrapper"></span>
+		<!-- sound assets -->
+		<span id="soundWrapper"></span>
+
+		<img id="groundTex" src="/public/imgs/absolute-scale-textures/concrete.jpg" crossorigin="anonymous">
+	</a-assets>
+
+	<!-- position="0 8 8" -->
+	<a-camera
+		id="camera"
+		position="0 1.75 4"
+		raycaster="objects: .cantap"
+		cursor="fuse: false; rayOrigin: mouse;">
+	</a-camera>
+
+	<a-entity
+		xr-light
+		light="type: directional;
+			castShadow: true;
+			shadowMapHeight:2048;
+			shadowMapWidth:2048;
+			shadowCameraTop: 20;
+			shadowCameraBottom: -20;
+			shadowCameraLeft: -20;
+			shadowCameraRight: 20;
+			target: #modelEntity;
+			shadowRadius: 5"
+		xrextras-attach="target: modelEntity; offset: 0 15 0;"
+		shadow>
+	</a-entity>
+
+	<a-light
+		xr-light
+		type="ambient">
+	</a-light>
+
+	<!--
+		xrextras-pinch-scale -->
+		<!-- absolute-pinch-scale -->
+
+	<a-entity 
+		id="modelContainer" 
+		visible="true" 
+		xrextras-one-finger-rotate 
+		xrextras-hold-drag="rise-height: 0"
+		>
+	</a-entity>
+
+	<a-plane 
+		id="ground" 
+		rotation="-90 0 0" 
+		height="50" 
+		width="50"
+		material="shader: shadow" shadow>
+</a-plane>
+</a-scene>

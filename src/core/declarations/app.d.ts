@@ -270,7 +270,7 @@ declare module '@mui/material/Button' {
 
 export interface IAppRoute {
   path: string;
-  component: React.FC<any>;
+  element: JSX.Element;
   name?: string;
   exact?: boolean;
 }
@@ -360,7 +360,31 @@ export interface IComment {
   comment: string;
 }
 
-// different product types
+export interface IProductColor {
+  type: ProductColorTypes;
+  value: string;
+  icon?: string;
+}
+
+export interface IProductHotspot {
+  id: string;
+  position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  labelDistance?: number;
+  hsdistance?: number;
+  offsetY?: number;
+  text: string;
+}
+/**
+ * If IProduct is updated, it is likely that the following queries should be updated
+ * findMatchingProducts
+ * getProduct
+ * getProductById
+ * getAllProductsByQRCode
+*/
 export interface IProduct {
   id: string;
   name: string;
@@ -393,6 +417,8 @@ export interface IProduct {
   };
   beardStyles: IBeardStyle[];
   productQRCodes?: string[];
+  arObjectColors: IProductColor[];
+  hotspots: IProductHotspot[];
 }
 
 export interface IButtonContent {
@@ -470,4 +496,5 @@ export type AFrameElement = HTMLElement & {
   material: any;
   emit: Function;
   click: Function;
+  [key: string]: any;
 }

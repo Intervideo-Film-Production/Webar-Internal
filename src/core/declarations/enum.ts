@@ -1,20 +1,3 @@
-// TODO remove
-// export enum QueryKeys {
-//   language = 'language',
-//   qrCode = 'qrCode',
-//   store = 'store',
-//   product = 'product',
-//   compareProduct = 'compareProduct',
-//   productComments = 'productComments',
-//   compareProducts = 'compareProducts',
-//   buttonAnimationContent = 'buttonAnimationContent',
-//   searchCriteria = 'searchCriteria',
-//   searchCriteriaValue = 'searchCriteriaValue',
-//   productfinder = 'productfinder',
-//   imageTargetsCodes = 'imageTargetsCodes',
-//   homePageContent = 'homePageContent',
-//   productsListByQRCode = 'productsListByQRCode'
-// };
 export enum StoreStatus {
   empty,
   loading,
@@ -59,5 +42,9 @@ export enum ButtonActionTypes {
   Link = "Link",
   GiveACall = "GiveACall",
 };
+export enum ProductColorTypes {
+  color = 'color',
+  pattern = 'pattern'
+}
 
 export const modelRef = 'ar-model';

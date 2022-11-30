@@ -1,20 +1,16 @@
-import React from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router-dom";
-import { AppHeader, LoginPage } from "../containers";
+import React from 'react';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { AppHeader } from "../containers";
 
-import routeMaps, { AppPages } from "./routeMap";
 import { ThemeProvider } from "@emotion/react";
 import { Container, CssBaseline, ThemeOptions } from "@mui/material";
-import PrivateRoute from "./PrivateRoute";
 import createAppTheme from "../core/theme";
 // import CookieConsent from "src/components/CookieConsent";
 import { useAppContext } from "src/core/events";
 import { FontLoader } from "src/components/FontLoader";
-import RegisterAframe from "src/A-Frame/RegisterAframe";
+// import RegisterAframe from "src/A-Frame/RegisterAframe";
 import queryString from "query-string";
 import { useBoundStore } from "src/core/store";
-
-const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";
 
 const AppRouter = () => {
   const { appTheme } = useAppContext();
@@ -104,12 +100,13 @@ const AppRouter = () => {
       localStorage.setItem("productqr", productqr);
     }
 
-    if (!!localStorage.getItem("storeID")) return <Redirect to="/initialize" />;
+    if (!!localStorage.getItem("storeID")) return <Navigate to="/initialize" />;
   }
 
   return (
     <>
-      <RegisterAframe />
+      {/* FIXME */}
+      {/* Register Aframe */}
 
       <ThemeProvider theme={theme}>
         {/* Css normalise */}
@@ -127,23 +124,8 @@ const AppRouter = () => {
         >
           {/* Header */}
           <AppHeader brandName={brandName} logo={logo} />
-
-          <Switch>
-            {routeMaps.map((route, idx) => {
-              return (
-                <PrivateRoute
-                  key={`route-${idx}`}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.component}
-                />
-              );
-            })}
-            {loginEnabled && (
-              <Route path={AppPages.LoginPage} component={LoginPage} />
-            )}
-          </Switch>
-
+          {/* nested route outlet */}
+          <Outlet />
           {/* Cookie Consent */}
           {/* <CookieConsent /> */}
         </Container>

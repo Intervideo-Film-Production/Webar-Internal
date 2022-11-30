@@ -1,4 +1,4 @@
-import { getButtonAnimationContent } from 'src/crud/crud';
+import { getButtonAnimationContent } from 'src/crud';
 import { IButtonContent } from '../declarations/app';
 import { StoreStatus } from '../declarations/enum';
 

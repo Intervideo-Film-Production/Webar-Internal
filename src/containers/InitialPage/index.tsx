@@ -3,8 +3,7 @@ import {
   useLocation
 } from 'react-router-dom';
 import queryString from 'query-string';
-import { useAppContext } from 'src/core/events';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { LoadingBox } from 'src/components';
 import { getDataExportDate } from 'src/crud/crud.local';
 import PermissionsDialog from './PermissionDialog';
@@ -14,6 +13,7 @@ import { makeStyles } from '@mui/styles';
 import { useLanguage } from 'src/core/i18n';
 import { useBoundStore } from 'src/core/store';
 import { StoreStatus } from 'src/core/declarations/enum';
+import { useAppContext } from 'src/core/events';
 
 // FIXME should check iOS in allow scan page
 const iOS = isIOS();
@@ -127,12 +127,12 @@ const InitialPage = () => {
       </>
     )
     : (!!store && !productqr)
-      ? (<Redirect to="/" />)
+      ? (<Navigate to="/" />)
       : (
         <>
           {/* // FIXME move permission logic to permission page */}
           {/* <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} /> */}
-          {(!iOS || !!permissionStatus) && (<Redirect to="/allow-scan?showArPage=true" />)}
+          {(!iOS || !!permissionStatus) && (<Navigate to="/allow-scan?showArPage=true" />)}
         </>
 
       )

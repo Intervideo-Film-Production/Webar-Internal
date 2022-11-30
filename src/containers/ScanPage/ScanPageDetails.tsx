@@ -1,13 +1,15 @@
-import { Skeleton, IconButton } from '@mui/material';
+import { Skeleton, IconButton, Grid, Typography } from '@mui/material';
 import React, { memo, useState, useMemo, useEffect } from 'react';
-import { LazyImage } from 'src/components';
-import { useTranslation } from "react-i18next";
-import { useHistory } from 'react-router-dom';
 import { useBoundStore } from 'src/core/store';
+
+import { AppButton, LazyImage } from 'src/components';
+import { getAllProductsByQRCode, getProductById } from 'src/crud';
+import { useTranslation } from "react-i18next";
+import { useNavigate } from 'react-router-dom';
 
 const ScanPageProductList: React.FC = memo(() => {
   const { i18n } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [productId, setProductId] = useState('');
 
@@ -35,13 +37,12 @@ const ScanPageProductList: React.FC = memo(() => {
 
   useEffect(() => {
     if (!!product) {
-      history.push({
-        pathname: '/ar-page',
+      navigate('/ar-page', {
         state: { productId: product?.id }
       })
     }
 
-  }, [history, product])
+  }, [navigate, product])
 
   if (productsByQrCodeStatus)
     return (<>
@@ -68,4 +69,66 @@ const ScanPageProductList: React.FC = memo(() => {
   )
 });
 
-export default ScanPageProductList;
+interface IScanPageDetailsProps {
+  isFetching: boolean;
+  isError: boolean;
+  itemName?: string;
+}
+
+const ScanPageDetails: React.FC<IScanPageDetailsProps> = (props) => {
+  const { isFetching, isError, itemName } = props;
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+
+  return (
+    <Grid
+      sx={{
+        textAlign: "center",
+        marginBottom: 7,
+        marginTop: 3,
+        position: "absolute",
+        bottom: 0,
+        width: "100%",
+        zIndex: 5,
+      }}
+    >
+      <Typography
+        variant="h5"
+        sx={(theme) => theme.scanPageStyles.resultText}
+      >
+        {isFetching && t("ScanPageFetchText")}
+        {!isFetching &&
+          (isError || !itemName) &&
+          t("ScanPageQRCodeNotCorrectText")}
+        {!!itemName && (
+          <>
+            {t("ScanPageFoundProductText")}
+            <span id="scanPageFoundProduct">{itemName}</span>
+          </>
+        )}
+      </Typography>
+
+      {/* <Grid sx={{
+        display: !!itemName ? 'none' : 'block'
+      }}>
+        <Typography sx={{ opacity: 0.7, mb: 2 }} variant="h3">
+          {t("ScanPageDirectSelectionText")}
+        </Typography>
+
+        <ScanPageProductList />
+      </Grid> */}
+
+      <AppButton
+        onClick={() => { navigate('/product-finder') }}
+        variant="contained"
+        sx={theme => ({
+          whiteSpace: 'pre-wrap',
+          ...theme.scanPageStyles.productFinderButton
+        })}
+      >{t("ScanPageHelperButtonText")}</AppButton>
+    </Grid>
+  )
+}
+
+export default ScanPageDetails;

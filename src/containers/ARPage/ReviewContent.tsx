@@ -6,7 +6,7 @@ import { LoadingBox } from 'src/components';
 import { useTranslation } from 'react-i18next';
 import { useBoundStore } from 'src/core/store';
 import { StoreStatus } from 'src/core/declarations/enum';
-
+import { getProductComments } from 'src/crud';
 interface IReviewContent {
   productId: string;
   open: boolean;

@@ -1,4 +1,4 @@
-import { getSupportLanguages } from 'src/crud/crud';
+import { getSupportLanguages } from 'src/crud';
 import { ISupportLanguage } from '../declarations/app';
 import { StoreStatus } from '../declarations/enum';
 

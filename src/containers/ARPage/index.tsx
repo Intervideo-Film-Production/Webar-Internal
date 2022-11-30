@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { IProduct } from 'src/core/declarations/app';
 import ArComponent from './ArComponent';
 import LoadingScreen from './LoadingScreen';
 import { Fade } from '@mui/material';
@@ -46,7 +45,7 @@ const ARPage = () => {
     <>
       <ArComponent />
       <Fade in={modelLoading}>
-        <LoadingScreen product={productData as IProduct} />
+        <LoadingScreen />
       </Fade>
     </>
   )

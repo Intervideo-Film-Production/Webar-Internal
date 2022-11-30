@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
 	Grid,
 	Typography,
@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { AppGrid } from '../../components';
 import { LoadingBox, AppButton, TabPanel, CompareProductContent } from 'src/components';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ProductFinderSettingIcon, AppArrowLeftSquareIcon } from 'src/components/icons';
 import { IProduct, ISearchCriteria, ISearchCriteriaValue } from 'src/core/declarations/app';
 import { deepCopyObject, sortFunction } from 'src/core/helpers';
@@ -46,7 +46,7 @@ const ProductFinderPage = () => {
 	const [lastQuestion, setLastQuestion] = useState<ISearchCriteria | null>(null);
 	const { t, i18n } = useTranslation();
 	const breadcrumnbsRef = useRef<HTMLUListElement | null>(null);
-	const history = useHistory();
+	const navigate = useNavigate();
 	const storeData = useBoundStore(state => state.store);
 	const location = useLocation();
 	let { showFullList } = queryString.parse(location.search) as { showFullList: string }; // FIXME should be boolean
@@ -152,7 +152,7 @@ const ProductFinderPage = () => {
 
 	const handleSelectProduct = (product: IProduct) => {
 		setProduct(product);
-		history.push('/ar-page');
+		navigate('/ar-page');
 	}
 
 	const handleBackToStart = () => {
@@ -240,7 +240,7 @@ const ProductFinderPage = () => {
 				variant="contained"
 				sx={theme => ({ ...theme.productFinderStyles?.backToScannerButton })}
 				onClick={() => {
-					history.push('/scan-page')
+					navigate('/scan-page')
 				}}
 				startIcon={<AppArrowLeftSquareIcon sx={{ fontSize: '1.25rem' }} />}
 			>

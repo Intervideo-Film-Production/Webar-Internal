@@ -1,8 +1,8 @@
 import React, { memo, useEffect } from 'react';
 import { modelRef } from 'src/core/declarations/enum';
 import { useAppContext } from 'src/core/events';
-import { cubeEnvMapComponent } from './cubemap-static';
 import { playVideoComponent } from './play-video';
+import { cubeEnvMapComponent } from './8thwallComponents/cubemapStatic';
 
 declare let AFRAME: any;
 

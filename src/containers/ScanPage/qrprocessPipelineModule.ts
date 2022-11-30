@@ -32,7 +32,7 @@ const qrprocessPipelineModule = () => ({
 // scanning, and navigates to the found url on any tap to the screen.
 const qrdisplayPipelineModule = (
   overlayCanvas: HTMLCanvasElement | null,
-  onUpdate?: (found: boolean, foundText: string) => void
+  onUpdate?: (foundText: string) => void
 ) => {
   // const ctx_ = overlayCanvas?.getContext('2d') as CanvasRenderingContext2D;
 
@@ -61,13 +61,10 @@ const qrdisplayPipelineModule = (
       // }
       const { found, foundText } = processCpuResult.qrprocess;
 
-      
-      if (onUpdate) onUpdate(found, foundText);
+      if (onUpdate && found) onUpdate(foundText);
     },
     onCanvasSizeChange,
   }
 }
 
 export { qrprocessPipelineModule, qrdisplayPipelineModule };
-
-

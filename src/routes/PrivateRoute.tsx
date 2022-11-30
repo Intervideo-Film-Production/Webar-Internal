@@ -1,16 +1,13 @@
-import React, { FC } from 'react';
-import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router-dom';
-import { useAppContext } from 'src/core/events';
+import React from 'react';
 import { AppPages } from './routeMap';
-import {
-  useLocation
-} from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { useBoundStore } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 
 const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";
 
-const RouteWithRedirect = ({ component: Component, ...props }: { component: FC<any> } & RouteComponentProps) => {
+const RouteWithRedirect = ({ element }: { element: JSX.Element }) => {
   const storeData = useBoundStore((state) => state.store);
   const { appCredential } = useAppContext();
   const { username, password } = appCredential.getValue();
@@ -25,30 +22,21 @@ const RouteWithRedirect = ({ component: Component, ...props }: { component: FC<a
     }
   }
 
-  return !storeData ? (<Redirect
+  return !storeData ? (<Navigate
     to={{
       pathname: AppPages.InitialPage,
       ...(qrId ? { search: `?sid=${qrId}` } : {}),
-      state: { from: props.location }
-    }} />)
+    }}
+    state={{ from: location.pathname }}
+  />)
     : !loginEnabled || (username === 'braun' && password === 'intervideo')
-      ? (<Component {...props} />)
-      : (<Redirect
+      ? (element)
+      : (<Navigate
         to={{
           pathname: AppPages.LoginPage,
-          state: { from: props.location }
-        }} />)
+        }}
+        state={{ from: location.pathname }}
+      />)
 }
 
-const PrivateRoute = ({ component, ...rest }: { component: FC<any> } & RouteProps) => {
-  return (
-    <Route
-      {...rest}
-      render={props => {
-        return (<RouteWithRedirect component={component} {...props} />)
-      }}
-    ></Route>
-  )
-}
-
-export default PrivateRoute;
+export default RouteWithRedirect;

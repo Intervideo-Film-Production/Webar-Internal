@@ -1,4 +1,4 @@
-import { getSearchCriteria, getSearchCriteriaValues } from 'src/crud/crud';
+import { getSearchCriteria, getSearchCriteriaValues } from 'src/crud';
 import { ISearchCriteria, ISearchCriteriaValue } from '../declarations/app';
 import { StoreStatus } from '../declarations/enum';
 

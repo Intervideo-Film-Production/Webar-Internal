@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Grid, IconButton, Collapse, Typography, Rating, Button } from "@mui/material";
 import {
   ProductInfoIcon,
@@ -7,15 +7,19 @@ import {
 } from "src/components/icons";
 import { useTranslation } from "react-i18next";
 import { AppButton } from "src/components";
-import { useAppContext } from "src/core/events";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { IProductColor } from "src/core/declarations/app";
+import ColorPicker from "./ColorPicker";
+import { Subject } from "rxjs";
 import { useBoundStore } from "src/core/store";
+import { useAppContext } from "src/core/events";
 
 interface ARPageControllerProps {
   showGrandControl?: boolean;
   onInfo?: Function;
   onRecenter?: Function;
   onReview?: Function;
+  productColorSub?: Subject<IProductColor>;
 }
 
 const ARPageController = (props: ARPageControllerProps) => {
@@ -25,11 +29,11 @@ const ARPageController = (props: ARPageControllerProps) => {
     onInfo,
     onRecenter,
     onReview,
+    productColorSub
   } = props;
   const { t } = useTranslation();
   const { appLoadingStateEvent } = useAppContext();
-  const history = useHistory();
-
+  const navigate = useNavigate();
   const product = useBoundStore(state => state.product);
   const resetData = useBoundStore(state => state.resetData);
 
@@ -38,6 +42,11 @@ const ARPageController = (props: ARPageControllerProps) => {
     const _averageRatings = product.ratings.reduce((a: number, b: number) => a + b, 0) / product.ratings.length;
     return Math.floor(_averageRatings * 100) / 100;
   }, [product])
+
+  const handleSelectColor = useCallback((color: IProductColor) => {
+    if (!!productColorSub) productColorSub.next(color);
+  }, [productColorSub]);
+
 
   const infoButtonHandle = () => {
     if (onInfo) {
@@ -54,7 +63,7 @@ const ARPageController = (props: ARPageControllerProps) => {
   const scanButtonHandle = () => {
     resetData();
     appLoadingStateEvent.next(true);
-    history.push("/scan-page");
+    navigate("/scan-page");
   };
 
   const reviewButtonHandle = () => {
@@ -80,12 +89,16 @@ const ARPageController = (props: ARPageControllerProps) => {
             p: "0px 20px 10px",
           }}
         >
-          <IconButton
-            sx={{ p: 0, zIndex: 2 }}
-            onClick={() => infoButtonHandle()}
-          >
-            <ProductInfoIcon sx={{ fontSize: 42 }} />
-          </IconButton>
+          <Grid sx={{ position: 'relative' }}>
+            {product?.arObjectColors && (<ColorPicker onSelectColor={handleSelectColor} />)}
+
+            <IconButton
+              sx={{ p: 0, zIndex: 2 }}
+              onClick={() => infoButtonHandle()}
+            >
+              <ProductInfoIcon sx={{ fontSize: 42 }} />
+            </IconButton>
+          </Grid>
 
           <AppButton
             sx={(theme) => ({

@@ -161,7 +161,9 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
           posz: '',
         },
         beardStyles: beardStyles,
-        productQRCodes: product?.productQRCodes
+        productQRCodes: product?.productQRCodes,
+        arObjectColors: [],
+        hotspots: []
       }
     })
   )
@@ -229,6 +231,8 @@ const getLocalProductList = (predicate: (product: SanityOriginalDataType) => boo
             posy: '',
             posz: '',
           },
+          arObjectColors: [],
+          hotspots: []
         }
       })
     })

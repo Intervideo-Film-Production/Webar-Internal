@@ -1,44 +1,107 @@
 // FIXME temporary use the previous version with QR code scanning only
 // this current version includes image targets will be tackled after the holiday
 
-import { Grid, Typography, Box, Toolbar } from "@mui/material";
-import { useEffect, useState, useRef, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
-import { AppButton, AppGrid } from "src/components";
+import { Box, Toolbar } from "@mui/material";
+import { useEffect, useRef, useCallback, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppGrid, LoadingBox } from "src/components";
 import {
   qrdisplayPipelineModule,
   qrprocessPipelineModule,
 } from "./qrprocessPipelineModule";
 import CameraSquare from "./CameraSquare";
 import { map, Subject, filter, throttle, interval } from "rxjs";
-import parse from "html-react-parser";
 import { useAppContext } from "src/core/events";
 import { StoreStatus } from "src/core/declarations/enum";
 import { useBoundStore } from "src/core/store";
+import { getFirstProductQRCodes } from "src/crud";
+import { IStore } from "src/core/declarations/app";
+import { AframeComponent, AFrameScene } from "src/A-Frame/aframeScene";
+import qrScanPage from 'src/A-Frame/views/qr-scan.view.html';
+import CameraSquareWrapper from "./CameraSquare";
+import { useTranslation } from "react-i18next";
+import BackgroundMask from "./BackgroundMask";
+import useProductQRValue from "./useProductQRValue";
+import ScanPageDetails from "./ScanPageDetails";
 
 declare let XR8: any;
 declare let XRExtras: any;
+interface ICompopentGenerator {
+  (
+    onQrScan: (productText: string) => void,
+    imageTargets: string[] | null,
+    showImageTarget: ({ detail: { name } }: { detail: { name: string } }) => void,
+  ): Array<AframeComponent>;
+};
 
-// NOTE: for development only
-const script8thWallDisabled = false; // process.env.REACT_APP_8THWALL_DISABLED
+const components: ICompopentGenerator =
+  (onQrScan, imageTargets, showImageTarget) => {
+    return [{
+      name: "initializer",
+      val: {
+        init: function () {
+          let scene = this.el.sceneEl;
+          XR8.addCameraPipelineModules([
+            // Add camera pipeline modules.
+            // Existing pipeline modules.
+            XR8.CameraPixelArray.pipelineModule({
+              luminance: true,
+              maxDimension: 640,
+            }),
+            XRExtras.Loading.pipelineModule(), // Manages the loading screen on startup.
+            XRExtras.RuntimeError.pipelineModule(), // Shows an error image on runtime error.
+            qrprocessPipelineModule(),
+            qrdisplayPipelineModule(scene.canvas, onQrScan),
+            {
+              name: "request-gyro",
+              requiredPermissions: () => [
+                XR8.XrPermissions.permissions().DEVICE_ORIENTATION,
+              ],
+            },
 
-// FIXME should check UX for button press behavior
+          ]);
+
+          if (!!imageTargets && imageTargets.length > 0) {
+            XR8.XrController.configure({ imageTargets });
+            this.el.sceneEl.addEventListener(
+              "xrimagefound",
+              showImageTarget as (e: unknown) => void
+            );
+          }
+        },
+        remove: function () {
+
+          XR8.clearCameraPipelineModules();
+          XR8.XrController.configure({ imageTargets: ["case"] });
+          this.el.sceneEl.removeEventListener(
+            "xrimagefound",
+            showImageTarget as (e: unknown) => void
+          );
+          XR8.stop();
+        }
+      }
+    }];
+  }
+
 const ScanPage = () => {
   const { appTheme, appLoadingStateEvent } = useAppContext();
+  const navigate = useNavigate();
 
   const { t, i18n } = useTranslation();
-  const history = useHistory();
   const storeData = useBoundStore(state => state.store);
 
-  const onCameraUpdateEvent = useRef(new Subject<any>());
+  const onCameraUpdateEvent = useRef(new Subject<string>());
   const productFinderButton = useRef<HTMLButtonElement | null>(null);
 
   const [productQrText, setProductQrText] = useState("");
 
   const storeId = useBoundStore(state => state.store?.id);
   const { product, productStatus, getByQR } = useBoundStore(({ product, productStatus, getByQR }) => ({ product, productStatus, getByQR }));
-  const { imageTargetCodes, setImageTargetCodes } = useBoundStore(({ imageTargetCodes, setImageTargetCodes }) => ({ imageTargetCodes, setImageTargetCodes }))
+  const { imageTargetCodes, imageTargetCodesStatus, setImageTargetCodes } = useBoundStore(({ imageTargetCodes, imageTargetCodesStatus, setImageTargetCodes }) => ({
+    imageTargetCodes,
+    imageTargetCodesStatus,
+    setImageTargetCodes
+  }))
 
   useEffect(() => {
     if (!!storeId) setImageTargetCodes(storeId);
@@ -52,27 +115,15 @@ const ScanPage = () => {
     }
   });
 
-  const scene = useMemo(() => {
-    return script8thWallDisabled
-      ? null
-      : parse(`
-  <a-scene
-    id="a-scene"
-    xrextras-generate-image-targets
-    xrweb>
-      <a-camera position="0 0 0"></a-camera>
-  </a-scene>`);
-  }, []);
-
   useEffect(() => {
     /**
      * if product data successfully returned from server
      * navigate to AR page
      */
-    if (product && history) {
-      history.push("/ar-page");
+    if (product && navigate) {
+      navigate("/ar-page");
     }
-  }, [product, history]);
+  }, [product, navigate]);
 
   useEffect(() => {
     if (!!productQrText && !!storeData?.id) {
@@ -103,101 +154,53 @@ const ScanPage = () => {
     }
   });
 
-  useEffect(() => {
-    const canvasEl = script8thWallDisabled
-      ? null
-      : (document.querySelector("a-scene#a-scene canvas") as HTMLCanvasElement);
-    if (canvasEl) {
-      const onQrScan = (found: boolean, productText: string) => {
-        onCameraUpdateEvent.current.next(productText || "");
-      };
-
-      XR8.XrController.configure({ disableWorldTracking: true });
-
-      //QR scanning
-      XR8.addCameraPipelineModules([
-        // Add camera pipeline modules.
-        // Existing pipeline modules.
-        XR8.CameraPixelArray.pipelineModule({
-          luminance: true,
-          maxDimension: 640,
-        }), // Provides pixels.
-        // XR8.GlTextureRenderer.pipelineModule(),  // Draws the camera feed.
-        // XRExtras.AlmostThere.pipelineModule(),  // Detects unsupported browsers and gives hints.
-        // XRExtras.FullWindowCanvas.pipelineModule(),  // Modifies the canvas to fill the window.
-        XRExtras.Loading.pipelineModule(), // Manages the loading screen on startup.
-        XRExtras.RuntimeError.pipelineModule(), // Shows an error image on runtime error.
-        qrprocessPipelineModule(),
-        qrdisplayPipelineModule(canvasEl, onQrScan),
-        {
-          name: "request-gyro",
-          requiredPermissions: () => [
-            XR8.XrPermissions.permissions().DEVICE_ORIENTATION,
-          ],
-        },
-      ]);
-
-      // Request camera permissions and run the camera.
-
-      // --------------------------------------------------------------------------------
-
-      return () => {
-        XR8.clearCameraPipelineModules();
-        XR8.stop();
-        document.getElementById("camerafeed")?.remove();
-        document.getElementById("overlay2d")?.remove();
-        XR8.XrController.configure({ imageTargets: ["case"] });
-        document.getElementById("overlayText")?.remove();
-        document.getElementById("a-scene")?.remove();
-      };
-    }
+  const qrScanHandler = useCallback((productText: string) => {
+    onCameraUpdateEvent.current.next(productText || "");
   }, []);
 
+  const showImage = useCallback(({ detail }: { detail: { name: string } }) => {
+    onCameraUpdateEvent.current.next(detail.name || "");
+  }, []);
+
+  // FIXME test model only
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     onCameraUpdateEvent.current.next("KTM");
+  //   }, 5000)
+  // }, [])
+
+  const registerComponents = useMemo(() => {
+    return components(qrScanHandler, imageTargetCodes, showImage)
+  }, [qrScanHandler, imageTargetCodes, showImage])
+
+  const { isFetching, isError, productName } = useProductQRValue(onCameraUpdateEvent.current);
+
   useEffect(() => {
-    const aframeScene = document.getElementById("a-scene");
-
-    if (imageTargetCodes && imageTargetCodes.length > 0 && aframeScene) {
-      // image targets -----------------------------------------------------------------
-      //create an empty A-frame scene to dispatch image target events
-
-      //add image targets to controller
-      if (!script8thWallDisabled) {
-        XR8.XrController.configure({ imageTargets: imageTargetCodes });
-      }
-
-      const showImage = ({ detail }: { detail: { name: string } }) => {
-        onCameraUpdateEvent.current.next(detail.name || "");
-      };
-
-      if (aframeScene) {
-        aframeScene.addEventListener(
-          "xrimagefound",
-          showImage as (e: unknown) => void
-        );
-
-        return () =>
-          aframeScene.removeEventListener(
-            "xrimagefound",
-            showImage as (e: unknown) => void
-          );
-      }
+    if (!!productName) {
+      navigate("/ar-page");
     }
-  }, [imageTargetCodes]);
+  }, [productName, navigate])
+
+  if (imageTargetCodesStatus === StoreStatus.loading) {
+    return (<LoadingBox />)
+  }
 
   return (
     <>
+      {/* qr code scanner aframe */}
       <Box
+        id="scanPageWrapper"
         style={{
-          position: "fixed",
+          position: 'fixed',
           top: 0,
           left: 0,
           height: window.innerHeight,
-          width: window.innerWidth,
-        }}
-      >
-        {scene}
+          width: window.innerWidth
+        }}>
+        <AFrameScene sceneHtml={qrScanPage} components={registerComponents} wrapperId="scanPageWrapper" />
       </Box>
 
+      {/* content */}
       <AppGrid
         sx={{
           gridTemplateRows: "auto 1fr auto",
@@ -207,110 +210,20 @@ const ScanPage = () => {
       >
         <Toolbar />
 
-        <Grid
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: "flex",
-            background: "rgba(0,0,0,.3)",
-            maskImage: `url("imgs/rect.svg")`,
-            maskRepeat: "no-repeat",
-            maskPosition: "center top",
-            maskSize: "1000px 1000px",
-            zIndex: 3,
-          }}
-        ></Grid>
+        {/* gray mask just for decoration only */}
+        <BackgroundMask />
 
-        <Grid
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 4,
-          }}
-        >
-          <Grid
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              position: "absolute",
-              top: "130px",
-              justifyContent: "center",
-            }}
-          >
-            <Typography
-              variant="h3"
-              sx={(theme) => theme.scanPageStyles.qrBoxText}
-            >
-              {t("ScanPageScanQRCode")}
-            </Typography>
+        {/* responsive camera square */}
+        <CameraSquareWrapper cameraQRCodeEvent={onCameraUpdateEvent.current} />
 
-            <CameraSquare
-              color={appTheme.getValue().scanPageStyles.color}
-              foundColor={appTheme.getValue().scanPageStyles.foundColor}
-              style={{ width: "202px", height: "202px" }}
-              cameraUpdateEvent={onCameraUpdateEvent.current.pipe(
-                map((v) => v !== "")
-              )}
-            />
-          </Grid>
-        </Grid>
-
-        <Grid
-          sx={{
-            textAlign: "center",
-            marginBottom: 7,
-            marginTop: 3,
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            zIndex: 5,
-          }}
-        >
-          <Typography
-            variant="h5"
-            sx={(theme) => theme.scanPageStyles.resultText}
-          >
-            {productStatus === StoreStatus.loading && t("ScanPageFetchText")}
-            {productStatus === StoreStatus.loaded && !product &&
-              t("ScanPageQRCodeNotCorrectText")}
-            {product && (
-              <>
-                {t("ScanPageFoundProductText")}
-                <span id="scanPageFoundProduct">{product.name}</span>
-              </>
-            )}
-          </Typography>
-
-          {/* <Grid sx={{
-            display: !!data ? 'none' : 'block'
-          }}>
-            <Typography sx={{ opacity: 0.7, mb: 2 }} variant="h3">
-              {t("ScanPageDirectSelectionText")}
-            </Typography>
-
-            <ScanPageProductList />
-          </Grid> */}
-          <AppButton
-            onClick={() => { history.push('/product-finder') }}
-            ref={productFinderButton}
-            variant="contained"
-            sx={theme => ({
-              whiteSpace: 'pre-wrap',
-              ...theme.scanPageStyles.productFinderButton
-            })}
-          >{t("ScanPageHelperButtonText")}</AppButton>
-        </Grid>
-      </AppGrid>
-    </>
-  );
+        {/* qr code scan results and prefined list of items */}
+        <ScanPageDetails
+          isFetching={isFetching}
+          isError={isError}
+          itemName={productName}
+        />
+      </AppGrid >
+    </>)
 };
 
 export default ScanPage;
