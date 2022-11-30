@@ -43,7 +43,7 @@ const LoginPage = () => {
     if (!product) {
       navigate('/');
     } else {
-      navigate('/ar-page?showArPage=true');
+      navigate('/allow-scan?showArPage=true');
     }
   }
 

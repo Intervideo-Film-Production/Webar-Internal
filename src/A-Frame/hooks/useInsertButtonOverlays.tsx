@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Subject, map } from "rxjs";
 import { IButtonContent, AFrameElement } from "src/core/declarations/app";
+import { Entity } from 'aframe';
 
 const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
 	useEffect(() => {
@@ -11,51 +12,31 @@ const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
 		);
 
 		const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
-			const overlayVideoWrapperEl = document.querySelector('a-scene span#overlayVideoWrapper');
+			// overlay video efect
+      const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
 
-			// clear previous product data
+      // clear previous model overlays
+      const allModelOverlays = alphaVideoWrapperEl?.querySelectorAll(".alpha-video");
+      allModelOverlays?.forEach(el => el.remove());
 
-			document.querySelector('a-entity#alphaVideoMesh')?.remove();
-			if (!!overlayVideoWrapperEl) overlayVideoWrapperEl.innerHTML = '';
+      // append current product data
+      if (!!alphaVideoWrapperEl && arModelOverlays.length > 0) {
+        arModelOverlays.forEach(({ buttonName, arModelOverlay }) => {
+          // loop="true"
+          const newOverlayVideoEl = document.createElement("video");
+          newOverlayVideoEl.id = `overlayVideo${buttonName}`;
+          newOverlayVideoEl.setAttribute("playsinline", "");
+          newOverlayVideoEl.className = "alpha-video";
+          newOverlayVideoEl.setAttribute("preload", "auto");
+          newOverlayVideoEl.setAttribute("src", arModelOverlay);
+          newOverlayVideoEl.setAttribute("type", "video/mp4");
+          newOverlayVideoEl.setAttribute("crossorigin", "anonymous");
 
-			// append current product data
-			if (!!overlayVideoWrapperEl && arModelOverlays.length > 0) {
-				overlayVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
-				<video
-					playsinline
-					id="overlayVideo${buttonName}"
-					class="alpha-video"
-					preload="auto"
-					src="${arModelOverlay}" 
-					type="video/mp4"
-					crossorigin="anonymous"
-				>
-				</video>
-				`).join(' ');
+					alphaVideoWrapperEl.insertAdjacentElement("beforeend", newOverlayVideoEl);
+        });
+      }
 
-				// TODO need calculate video ratio
-				const alphaVideoMeshEl = `<a-entity 
-					id="alphaVideoMesh" 
-					visible="false" 
-					></a-entity>`
 
-				// NOTE back up
-				// const alphaVideoMeshEl = document.createElement('a-entity') as AFrameElement;
-				// alphaVideoMeshEl.setAttribute('id', 'alphaVideoMesh');
-				// alphaVideoMeshEl.setAttribute('visible', 'false');
-				// alphaVideoMeshEl.setAttribute('geometry', {
-				// 	primitive: 'plane',
-				// 	height: 2,
-				// 	width: 2
-				// })
-
-				// alphaVideoMeshEl.setAttribute('xrextras-play-video', arModelOverlays.length > 0 ? `video: #overlayVideo${arModelOverlays[0].buttonName}` : '');
-				// alphaVideoMeshEl.setAttribute('material', `shader: chromakey; src: '${arModelOverlays.length > 0 ? `#overlayVideo${arModelOverlays[0].buttonName}` : ''
-				// 	}'; color: 0 0 0; side: double; depthTest: true;`)
-
-				const sceneEl = document.querySelector('a-scene#ascene');
-				if (!!sceneEl) sceneEl.insertAdjacentHTML('beforeend', alphaVideoMeshEl);
-			}
 		});
 
 		return () => { subscription.unsubscribe(); }

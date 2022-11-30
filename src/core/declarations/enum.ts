@@ -42,6 +42,7 @@ export enum ButtonActionTypes {
   Link = "Link",
   GiveACall = "GiveACall",
 };
+
 export enum ProductColorTypes {
   color = 'color',
   pattern = 'pattern'
