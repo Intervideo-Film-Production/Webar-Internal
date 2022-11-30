@@ -41,13 +41,13 @@ const RegisterAframe = memo(() => {
       });
     }
 
-    if (!AFRAME.components['cubemap-static']) {
-      AFRAME.registerComponent('cubemap-static', cubeEnvMapComponent);
-    }
+    // if (!AFRAME.components['cubemap-static']) {
+    //   AFRAME.registerComponent('cubemap-static', cubeEnvMapComponent);
+    // }
 
-    if (!AFRAME.components['play-video']) {
-      AFRAME.registerComponent('play-video', playVideoComponent);
-    }
+    // if (!AFRAME.components['play-video']) {
+    //   AFRAME.registerComponent('play-video', playVideoComponent);
+    // }
   })
 
   return (<></>)

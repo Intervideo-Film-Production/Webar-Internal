@@ -102,7 +102,6 @@ export const useInsertButtons = (
 										child.getWorldPosition(target);
 										newEl.setAttribute('position', target);
 										// check sizes of other models buttons
-										console.log(btnItem.buttonName, { x: meshX, y: meshY, z: meshZ });
 										newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
 										newEl.setAttribute('transparency', true);
 										newEl.setAttribute('data-disabled', 'false');

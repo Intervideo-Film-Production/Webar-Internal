@@ -86,10 +86,6 @@ const ColorPicker: React.FC<IColorPickerProps> = memo(({ onSelectColor }) => {
 		return arrayColorList;
 	}, [arObjectColors]);
 
-	useEffect(() => {
-		console.log("colors", colors);
-	}, [colors])
-
 	const handleClose = () => {
 		setAnchorEl(null);
 	};

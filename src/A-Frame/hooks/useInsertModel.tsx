@@ -100,7 +100,7 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 						// loop="true"
 						alphaVideoWrapperEl.innerHTML = `
 						<video
-							id="overlayVideo${id}"
+							id="alphaVideo${id}"
 							playsinline
 							class="alpha-video-product"
 							preload="auto"
@@ -113,7 +113,7 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 
 						// FIXME
 
-						const alphaVideoProduct = document.querySelector(`#overlayVideo${id}`) as Entity<HTMLVideoElement>;
+						const alphaVideoProduct = document.querySelector(`#alphaVideo${id}`) as Entity<HTMLVideoElement>;
 						alphaVideoProduct?.addEventListener("canplaythrough", () => {
 							if (!!alphaVideoProduct) {
 								try {
@@ -123,8 +123,8 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 									alphaVideoMesh?.removeAttribute("position");
 
 									alphaVideoMesh?.removeAttribute("scale");
-									alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${id}`);
-									alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
+									alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${id}`);
+									alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
 									alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
 									alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
 									setTimeout(() => {

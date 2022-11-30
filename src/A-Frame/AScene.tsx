@@ -39,6 +39,7 @@ import {
 } from './8thwallComponents';
 import { useAppContext } from 'src/core/events';
 import { useBoundStore } from 'src/core/store';
+import { playVideoComponent } from './play-video';
 
 declare var THREE: any;
 
@@ -109,6 +110,7 @@ const arSceneComponentsGenerator: IARAsceneComponentsGenerator = (realityReadyEv
     { name: 'absolute-pinch-scale', val: absPinchScaleComponent },
     { name: 'proximity', val: proximityComponent },
     { name: 'gltf-morph', val: gltfMorphComponent },
+    { name: 'play-video', val: playVideoComponent },
     { name: 'ignore-raycast', val: ignoreRaycast },
     { name: 'cubemap-realtime', val: cubeMapRealtimeComponent },
     { name: 'cubemap-static', val: cubeEnvMapComponent },

@@ -16,6 +16,7 @@ const useInsertButtonSound = (buttonListSub: Subject<IButtonContent[]>) => {
 				if (!!btn.sound) {
 					const audioEl = document.createElement('audio');
 					audioEl.setAttribute('id', `btn-audio-${btn.buttonName}`);
+					audioEl.className = "ar-button-audio";
 					const audioSource = document.createElement('source');
 					audioSource.setAttribute('src', btn.sound);
 					audioSource.setAttribute('type', "audio/mp3");

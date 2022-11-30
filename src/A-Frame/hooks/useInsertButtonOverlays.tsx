@@ -4,15 +4,15 @@ import { IButtonContent, AFrameElement } from "src/core/declarations/app";
 import { Entity } from 'aframe';
 
 const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
-	useEffect(() => {
-		const arModelOverlaysSub = buttonListSub.pipe(
-			map(list => list.filter(b => !!b.arModelOverlay)
-				.map<Pick<IButtonContent, 'buttonName' | 'arModelOverlay'>>(({ buttonName, arModelOverlay }) => ({ buttonName, arModelOverlay }))
-			)
-		);
+  useEffect(() => {
+    const arModelOverlaysSub = buttonListSub.pipe(
+      map(list => list.filter(b => !!b.arModelOverlay)
+        .map<Pick<IButtonContent, 'buttonName' | 'arModelOverlay'>>(({ buttonName, arModelOverlay }) => ({ buttonName, arModelOverlay }))
+      )
+    );
 
-		const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
-			// overlay video efect
+    const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
+      // overlay video efect
       const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
 
       // clear previous model overlays
@@ -23,24 +23,24 @@ const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
       if (!!alphaVideoWrapperEl && arModelOverlays.length > 0) {
         arModelOverlays.forEach(({ buttonName, arModelOverlay }) => {
           // loop="true"
-          const newOverlayVideoEl = document.createElement("video");
-          newOverlayVideoEl.id = `overlayVideo${buttonName}`;
-          newOverlayVideoEl.setAttribute("playsinline", "");
-          newOverlayVideoEl.className = "alpha-video";
-          newOverlayVideoEl.setAttribute("preload", "auto");
-          newOverlayVideoEl.setAttribute("src", arModelOverlay);
-          newOverlayVideoEl.setAttribute("type", "video/mp4");
-          newOverlayVideoEl.setAttribute("crossorigin", "anonymous");
+          const newAlphaVideoEl = document.createElement("video");
+          newAlphaVideoEl.id = `alphaVideo${buttonName}`;
+          newAlphaVideoEl.setAttribute("playsinline", "");
+          newAlphaVideoEl.className = "alpha-video";
+          newAlphaVideoEl.setAttribute("preload", "auto");
+          newAlphaVideoEl.setAttribute("src", arModelOverlay);
+          newAlphaVideoEl.setAttribute("type", "video/mp4");
+          newAlphaVideoEl.setAttribute("crossorigin", "anonymous");
 
-					alphaVideoWrapperEl.insertAdjacentElement("beforeend", newOverlayVideoEl);
+          alphaVideoWrapperEl.insertAdjacentElement("beforeend", newAlphaVideoEl);
         });
       }
 
 
-		});
+    });
 
-		return () => { subscription.unsubscribe(); }
-	}, [buttonListSub])
+    return () => { subscription.unsubscribe(); }
+  }, [buttonListSub])
 }
 
 export default useInsertButtonOverlays;

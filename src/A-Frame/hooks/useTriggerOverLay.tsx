@@ -19,7 +19,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
         const overlayScale = btnData?.arOverlayScale || '1 1 1';
 
 				if (!!btnName) {
-					const videoEl = document.querySelector(`#overlayVideo${btnName}`) as Entity<HTMLVideoElement>;
+					const videoEl = document.querySelector(`#alphaVideo${btnName}`) as Entity<HTMLVideoElement>;
 					if (!!videoEl) {
 						setTimeout(() => {
 							try {
@@ -30,8 +30,8 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 								alphaVideoMesh?.removeAttribute("material");
 								alphaVideoMesh?.removeAttribute("position");
 								alphaVideoMesh?.removeAttribute("scale");
-								alphaVideoMesh?.setAttribute('play-video', `video: #overlayVideo${btnName}`);
-								alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #overlayVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
+								alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${btnName}`);
+								alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
 								alphaVideoMesh?.setAttribute("position", overlayPosition);
                 alphaVideoMesh?.setAttribute("scale", overlayScale);
 								alphaVideoMesh?.setAttribute('geometry', {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ButtonActionTypes } from 'src/core/declarations/enum';
 import { useBoundStore } from 'src/core/store';
 import ButtonDrawerContent from './ButtonDrawerContent';
@@ -12,10 +12,6 @@ interface IButtonContentProps {
 
 const ButtonContent: React.FC<IButtonContentProps> = ({ buttonName, onToggle, onShowBeardStyle }) => {
   const buttons = useBoundStore(state => state.buttons);
-
-  useEffect(() => {
-    console.log("buttonName", buttonName);
-  }, [buttonName])
 
   const button = useMemo(() => {
     return buttons?.find(btn => btn.buttonName === buttonName);
