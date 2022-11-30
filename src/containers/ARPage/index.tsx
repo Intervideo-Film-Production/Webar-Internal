@@ -28,7 +28,7 @@ const ARPage = () => {
 
   useEffect(() => {
     if (arResourcesLoadEvent) {
-      const subscription = concat(
+      const subscription = concat( 
         arResourcesLoadEvent.pipe(filter(v => !!v), take(1)),
         aFrameModelLoadedEvent
       ).subscribe(() => {

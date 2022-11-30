@@ -182,7 +182,6 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 					// display ar model if hidden before
 					const modelContainer = document.querySelector("#modelContainer");
 					modelContainer?.setAttribute("visible", "true");
-
 					const fingerRotateAttr = modelContainer?.getAttribute("xrextras-one-finger-rotate");
 					if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
 					const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");

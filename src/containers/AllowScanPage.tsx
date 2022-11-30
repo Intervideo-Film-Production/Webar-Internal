@@ -1,6 +1,6 @@
 
 import { Grid, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Button from '@mui/material/Button';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';

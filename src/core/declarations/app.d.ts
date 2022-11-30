@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataTypes, ProductTypes, ButtonActionTypes } from "./enum";
+import { DataTypes, ProductColorTypes, ProductTypes, ButtonActionTypes } from "./enum";
 
 interface IComponentStyles {
   [key: string]: string | number;

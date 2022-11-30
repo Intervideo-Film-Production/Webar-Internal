@@ -47,7 +47,6 @@ const ARPageController = (props: ARPageControllerProps) => {
     if (!!productColorSub) productColorSub.next(color);
   }, [productColorSub]);
 
-
   const infoButtonHandle = () => {
     if (onInfo) {
       onInfo();
