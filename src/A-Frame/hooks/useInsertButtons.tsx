@@ -146,6 +146,7 @@ export const useInsertButtons = (
 											const btn = document.querySelector('#guiButton' + btnItem.buttonName);
 											console.log(btn);
 											btn?.addEventListener('click', (e: unknown) => {
+												console.log('click triggered');
 												const thisBtnBox = (e as CustomEvent).target as HTMLElement;
 												const btnBoxDisabled = thisBtnBox.getAttribute('data-disabled');
 												if (btnBoxDisabled === 'true') return;
@@ -175,6 +176,8 @@ export const useInsertButtons = (
 
 												}
 											})
+
+											enableButtons();
 										})
 
 									}
