@@ -172,16 +172,26 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 					enableButtons();
 
 					// disable all overlay as well when button should be displayed since this means a specific button animation ends
-					document.querySelector('#overlayVideoMesh')?.setAttribute('visible', 'false');
+					document.querySelector('#alphaVideoMesh')?.setAttribute('visible', 'false');
 					// display ar model if hidden before
 					const modelContainer = document.querySelector("#modelContainer");
 					modelContainer?.setAttribute("visible", "true");
-					
-					const videoEls = document.querySelectorAll('.alpha-video') as NodeListOf<HTMLVideoElement>;
-					videoEls.forEach((el: HTMLVideoElement) => {
-						el.pause();
-						el.currentTime = 0;
-					});
+					const fingerRotateAttr = modelContainer?.getAttribute("xrextras-one-finger-rotate");
+					if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
+					const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
+					if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
+
+					const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+					alphaVideoMesh?.removeAttribute("play-video");
+					alphaVideoMesh?.removeAttribute("material");
+
+					// stop all playing audio
+					const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;
+					buttonAudios.forEach(audio => {
+						audio.pause();
+						audio.currentTime = 0;
+					})
+
 				} else {
 					const arButton = document.querySelector(`#guiButton${buttonName}`) as Entity;
 					// const arButton = document.querySelector(`#guiButton${buttonName}`) as AFrameElement;
