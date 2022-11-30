@@ -89,10 +89,7 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 						entity.setAttribute(modelRef, '');
 						modelContainer?.appendChild(entity);
 					}
-				}
 
-				// product is an alpha video
-				if (productType === ProductTypes.alphaVideo) {
 					// TODO an alpha video product has the same mechanism as an alpha video button effect
 					// thus these should be handled with the same module
 					// currently the app structure is mixed => need to implement in the restructure task
@@ -102,17 +99,17 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 					if (!!alphaVideoWrapperEl && alphaVideoUrl) {
 						// loop="true"
 						alphaVideoWrapperEl.innerHTML = `
-					<video
-						id="overlayVideo${id}"
-						playsinline
-						class="alpha-video-product"
-						preload="auto"
-						src="${alphaVideoUrl}" 
-						type="video/mp4"
-						crossorigin="anonymous"
-					>
-					</video>
-				`;
+						<video
+							id="overlayVideo${id}"
+							playsinline
+							class="alpha-video-product"
+							preload="auto"
+							src="${alphaVideoUrl}" 
+							type="video/mp4"
+							crossorigin="anonymous"
+						>
+						</video>
+					`;
 
 						// FIXME
 
@@ -140,7 +137,6 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 						})
 					}
 				}
-
 			})
 
 		return () => { subscription.unsubscribe(); }
