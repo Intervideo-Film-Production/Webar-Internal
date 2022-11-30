@@ -28,7 +28,6 @@ jobs:
         REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
         REACT_APP_DATASET: "development"
         REACT_APP_CONSENT_OVERLAY_ID: ${{ secrets.REACT_APP_CONSENT_OVERLAY_ID }}
-        PUBLIC_URL: "/webar-internal-dev"
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main

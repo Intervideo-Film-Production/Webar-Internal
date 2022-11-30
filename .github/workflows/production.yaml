@@ -32,7 +32,6 @@ jobs:
         REACT_APP_DATASET: "production"
         REACT_APP_CONSENT_OVERLAY_ID: ${{ secrets.REACT_APP_CONSENT_OVERLAY_ID }}
         REACT_APP_VERSION: ${{ steps.get_version.outputs.version-without-v }}
-        PUBLIC_URL: "/webar-internal"
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
