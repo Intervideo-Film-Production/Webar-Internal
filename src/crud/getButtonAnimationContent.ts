@@ -28,7 +28,7 @@ const BUTTON_ANIMATION_CONTENT_QUERY = `
   'iosScreenOverlay': iosScreenOverlay.asset->['url'],
   hasModelOverlay,
   modelOverlayObjectname,
-  'arModelOverlay': arModelOverlay.asset->['url'],
+  'arModelOverlay': arModelOverlay[$lng].asset->['url'],
   arModelOverlayPlaytime,
   arModelOverlayBgColor,
   overlayHideModel,

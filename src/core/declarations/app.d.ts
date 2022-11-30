@@ -205,6 +205,12 @@ declare module '@mui/material/styles' {
         closeButton: IComponentStyles;
         content: IComponentStyles;
       };
+      buttonDrawerContent: {
+        root: IComponentStyles;
+        title: IComponentStyles;
+        closeButton: IComponentStyles;
+        content: IComponentStyles;
+      };
       beardStyles: {
         root: IComponentStyles;
         title: IComponentStyles;
@@ -328,6 +334,7 @@ export interface IStore {
     compareDetails: { styles: string };
     reviewContent: { styles: string };
     buttonPopupContent: { styles: string };
+    buttonDrawerContent: { styles: string };
     beardStyles: { styles: string };
     infoMenu: { styles: string };
   };

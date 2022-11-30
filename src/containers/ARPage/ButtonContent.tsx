@@ -21,6 +21,10 @@ const ButtonContent: React.FC<IButtonContentProps> = ({ buttonName, onToggle, on
     return buttons?.find(btn => btn.buttonName === buttonName);
   }, [buttons, buttonName])
 
+  useEffect(() => {
+    console.log("button", button);
+  }, [button])
+  
   if (button?.actionType === ButtonActionTypes.DisplayProductFeatures) {
     return (<ButtonDrawerContent
       buttonName={buttonName}

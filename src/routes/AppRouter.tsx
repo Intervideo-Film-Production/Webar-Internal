@@ -72,6 +72,9 @@ const AppRouter = () => {
         arPageStyles && arPageStyles.buttonPopupContent
           ? JSON.parse(arPageStyles.buttonPopupContent.styles)
           : null,
+      buttonDrawerContent: arPageStyles && arPageStyles.buttonDrawerContent
+      ? JSON.parse(arPageStyles.buttonDrawerContent.styles)
+      : null,
       beardStyles:
         arPageStyles && arPageStyles.beardStyles
           ? JSON.parse(arPageStyles.beardStyles.styles)

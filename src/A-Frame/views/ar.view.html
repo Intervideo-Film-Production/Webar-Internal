@@ -11,20 +11,28 @@
 		defaultEnvironmentSkyGradientStrength: 0.5;scale: absolute; -->
 
 
-		<!-- coaching-overlay -->
+<!-- coaching-overlay -->
+<!-- responsive-immersive -->
+<!-- gltf-model="dracoDecoderPath: https://cdn.8thwall.com/web/aframe/draco-decoder/" -->
 
-<a-scene id='ascene' 
-	ar-view-initializer
-	responsive-immersive
-	landing-page
+<a-scene 
+	id='ascene' 
+	ar-view-initializer 
 	xrextras-gesture-detector 
 	xrextras-loading 
-	xrextras-runtime-error 
-	gltf-model="dracoDecoderPath: https://cdn.8thwall.com/web/aframe/draco-decoder/"
-	renderer="colorManagement: true"
+	xrextras-runtime-error
+	renderer="colorManagement: true" 
 	xrweb="allowedDevices: any;">
-   
+
+	<a-camera id="camera" position="0 5 8" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
+    
+	<!-- face effects -->
+	<xrextras-resource id="alpha-soft-eyes" src="/public/imgs/beards/soft-eyes.png"></xrextras-resource>
+
 	<a-assets id="assetContainer" timeout="30000">
+
+		<!-- face effect head -->
+		<a-asset-item id="head-occluder" src="/public/models/head-occluder.glb"></a-asset-item>
 		<!-- overlay assets-->
 		<span id="overlayVideoWrapper"></span>
 		<!-- sound assets -->
@@ -33,17 +41,7 @@
 		<img id="groundTex" src="/public/imgs/absolute-scale-textures/concrete.jpg" crossorigin="anonymous">
 	</a-assets>
 
-	<!-- position="0 8 8" -->
-	<a-camera
-		id="camera"
-		position="0 1.75 4"
-		raycaster="objects: .cantap"
-		cursor="fuse: false; rayOrigin: mouse;">
-	</a-camera>
-
-	<a-entity
-		xr-light
-		light="type: directional;
+		<!-- <a-entity xr-light light="type: directional;
 			castShadow: true;
 			shadowMapHeight:2048;
 			shadowMapWidth:2048;
@@ -52,33 +50,22 @@
 			shadowCameraLeft: -20;
 			shadowCameraRight: 20;
 			target: #modelEntity;
-			shadowRadius: 5"
-		xrextras-attach="target: modelEntity; offset: 0 15 0;"
-		shadow>
+			shadowRadius: 5" xrextras-attach="target: modelEntity; offset: 0 15 0;" shadow>
 	</a-entity>
 
-	<a-light
-		xr-light
-		type="ambient">
-	</a-light>
+	<a-light xr-light type="ambient">
+	</a-light> -->
 
 	<!--
 		xrextras-pinch-scale -->
-		<!-- absolute-pinch-scale -->
+	<!-- absolute-pinch-scale -->
 
-	<a-entity 
-		id="modelContainer" 
-		visible="true" 
-		xrextras-one-finger-rotate 
-		xrextras-hold-drag="rise-height: 0"
-		>
+	<a-entity id="modelContainer" visible="true" xrextras-one-finger-rotate xrextras-pinch-scale>
 	</a-entity>
 
-	<a-plane 
-		id="ground" 
-		rotation="-90 0 0" 
-		height="50" 
-		width="50"
-		material="shader: shadow" shadow>
-</a-plane>
+	<a-entity id="alphaVideoMeshContainer" visible="true" xrextras-pinch-scale>
+		<a-entity id="alphaVideoMesh" visible="false" geometry="primitive: plane; height: 1; width: 1.78;"></a-entity>
+	</a-entity>
+
+	<a-plane id="ground" rotation="-90 0 0" height="1000" width="1000" material="shader: shadow" shadow></a-plane>
 </a-scene>
