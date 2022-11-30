@@ -1,21 +1,52 @@
-import { Theme } from '@mui/material';
-import { createContext, useContext } from 'react';
-import { BehaviorSubject, Subject } from 'rxjs';
 
-interface ICredential { username: string, password: string };
-export class AppStore {
-  // trigger page loading screen
-  appLoadingStateEvent = new BehaviorSubject<boolean>(false);
-  headerToggleEvent = new Subject<boolean>();
-  productClaimToggleEvent = new Subject<boolean>();
-  arResourcesLoadEvent = new Subject<boolean>();
-  aFrameModelLoadedEvent = new Subject<any>();
-  initialPageUrl = new BehaviorSubject<string>('');
-  // FIXME temp credential
-  appCredential: BehaviorSubject<ICredential> = new BehaviorSubject({ username: '', password: '' });
-  appTheme: BehaviorSubject<Theme> = new BehaviorSubject({} as Theme);
+import create from 'zustand';
+import { IButtonContentState, createButtonContentSlice } from './buttonContent';
+import { ICommentState, createCommentSlice } from './comment';
+import { IProductState, createProductSlice } from './product';
+import { IProductFinderState, createProductFinderSlice } from './productFinder';
+import { IStoreState, createStoreSlice } from './store';
+import { ISupportLanguageState, createSupportLanguageSlice } from './supportLanguages';
+
+interface IAggregationStateAction {
+  resetData: (resetStore?: boolean) => void;
 }
 
-export const Context = createContext<AppStore>(new AppStore());
+type IBoundStore = IProductState
+  & IStoreState
+  & ISupportLanguageState
+  & IProductFinderState
+  & IButtonContentState
+  & ICommentState
+  & IAggregationStateAction;
 
-export const useAppContext = (): AppStore => useContext(Context);
+const createAggregationSlice: (...args: any) => IAggregationStateAction = (set) => ({
+  resetData: () => {
+    // reset product data
+    createProductSlice(set).resetProduct();
+
+    // reset comment data
+    createCommentSlice(set).reset();
+
+    // reset button data
+    createButtonContentSlice(set).reset();
+
+    // reset product finder data
+    createProductFinderSlice(set).reset();
+  }
+})
+
+// FIXME check where the below are and should be removed?
+// queryClient.removeQueries(QueryKeys.compareProduct, { exact: true });
+// queryClient.removeQueries(QueryKeys.imageTargetsCodes, { exact: true });
+
+const useBoundStore = create<IBoundStore>((...a) => ({
+  ...createProductSlice(...a),
+  ...createStoreSlice(...a),
+  ...createSupportLanguageSlice(...a),
+  ...createProductFinderSlice(...a),
+  ...createButtonContentSlice(...a),
+  ...createCommentSlice(...a),
+  ...createAggregationSlice(...a)
+}));
+
+export { useBoundStore };

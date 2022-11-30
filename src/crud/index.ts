@@ -26,6 +26,6 @@ export { getFirstProductQRCodes } from './getFirstProductQRCodes';
 export { getProduct } from './getProduct';
 export { getProductById } from './getProductById';
 export { getProductComments } from './getProductComments';
-export { getQRCodeData } from './getQRCodeData';
+export { getStoreData } from './getStoreData';
 export { getSupportLanguages } from './getSupportLanguages';
 export { getSearchCriteria, getSearchCriteriaValues } from './searchCriteria';

@@ -1,24 +1,24 @@
-import React, { memo, useEffect, useState } from 'react';
-import { QueryObserver, useQueryClient } from 'react-query';
-import { IProduct, IQRCodeData } from 'src/core/declarations/app';
-import { QueryKeys } from 'src/core/declarations/enum';
+import React, { useEffect, useState } from 'react';
 import ArComponent from './ArComponent';
 import LoadingScreen from './LoadingScreen';
 import { Fade } from '@mui/material';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 import { concat, filter, take } from 'rxjs';
+import { useBoundStore } from 'src/core/store';
 
 const ARPage = () => {
   const { appLoadingStateEvent, arResourcesLoadEvent, aFrameModelLoadedEvent } = useAppContext();
 
   const [modelLoading, setModelLoading] = useState(true);
 
+  const productData = useBoundStore(state => state.product);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
 
     const subscription = appLoadingStateEvent.pipe(
       filter(v => !!v)
-    ).subscribe(appIsLoading => {
+    ).subscribe(() => {
       setModelLoading(true);
       appLoadingStateEvent.next(false);
     })

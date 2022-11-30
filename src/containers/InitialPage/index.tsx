@@ -1,12 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   useLocation
 } from 'react-router-dom';
 import queryString from 'query-string';
-import { useAppContext } from 'src/core/store';
-import { useQuery } from 'react-query';
-import { QueryKeys } from '../../core/declarations/enum';
-import { getProduct, getQRCodeData } from '../../crud';
 import { Navigate } from 'react-router-dom';
 import { LoadingBox } from 'src/components';
 import { getDataExportDate } from 'src/crud/crud.local';
@@ -15,7 +11,11 @@ import { isIOS } from 'src/core/helpers';
 import { Grid } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useLanguage } from 'src/core/i18n';
+import { useBoundStore } from 'src/core/store';
+import { StoreStatus } from 'src/core/declarations/enum';
+import { useAppContext } from 'src/core/events';
 
+// FIXME should check iOS in allow scan page
 const iOS = isIOS();
 
 const useStyles = makeStyles(() => ({
@@ -37,24 +37,19 @@ const InitialPage = () => {
   const [permissionStatus, setPermissionStatus] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { initialPageUrl } = useAppContext();
-  const { languageLoaded, supportedLanguagesFetched, loadLanguage } = useLanguage();
-
+  const { language, languagesStatus, loadLanguage } = useLanguage();
+  const { setStore, store, storeStatus } = useBoundStore(({ setStore, store, storeStatus }) => ({ setStore, store, storeStatus: storeStatus }));
+  const { product, productStatus, getByQR } = useBoundStore(({ product, productStatus, getByQR }) => ({ product, productStatus, getByQR }));
   const location = useLocation();
+
   let { sid, productqr } = queryString.parse(location.search) as { sid: string | null, productqr: string | null };
+  const loading = useMemo(() => storeStatus !== StoreStatus.loaded || (productqr && productStatus !== StoreStatus.loaded), [storeStatus, productqr, productStatus]);
   if (!sid) {
     let storedSid = localStorage.getItem("storeID");
     if (!!storedSid) sid = storedSid;
   } else {
     localStorage.setItem("storeID", sid);
   }
-
-  if (!productqr) {
-    let storedProductqr = localStorage.getItem("productqr");
-    if (!!storedProductqr) productqr = storedProductqr;
-  }
-  // else {
-  //   localStorage.setItem("productqr", productqr);
-  // }
 
   const handleDialogClose = useCallback(() => {
     setDialogOpen(false);
@@ -76,10 +71,6 @@ const InitialPage = () => {
             `)
       })
     }
-
-    return () => {
-      localStorage.removeItem("productqr");
-    }
   }, [])
 
   // FIXME should handle productqr as well
@@ -90,43 +81,28 @@ const InitialPage = () => {
     }
   }, [initialPageUrl, sid, location])
 
-  const { isLoading, error, data: qrCodeData } = useQuery(QueryKeys.qrCode, () => getQRCodeData(sid as string), {
-    staleTime: Infinity,
-    cacheTime: Infinity
-  });
-
-  const { isLoading: isProductDataLoading, refetch, data: productData } = useQuery(QueryKeys.product, () => {
-    return getProduct(productqr as string, languageLoaded, qrCodeData?.id as string)
-  }, {
-    enabled: false,
-    cacheTime: Infinity
-  });
+  // get store data
+  useEffect(() => {
+    if (!!sid) setStore(sid);
+  }, [sid, setStore])
 
   useEffect(() => {
-    if (supportedLanguagesFetched && qrCodeData?.brandId && !languageLoaded) {
-      loadLanguage(qrCodeData?.brandId);
+    if (!!productqr && language && store?.id) getByQR(productqr, language, store.id);
+  }, [store, language, productqr, getByQR])
+
+  useEffect(() => {
+    if (languagesStatus === StoreStatus.loaded && store?.brandId && !language) {
+      loadLanguage(store?.brandId);
     }
-  }, [qrCodeData, supportedLanguagesFetched, loadLanguage, languageLoaded])
+  }, [store, languagesStatus, loadLanguage, language])
 
   useEffect(() => {
-    if (!!qrCodeData?.id && !!productqr && languageLoaded) {
-      refetch();
-    }
-  }, [qrCodeData, refetch, productqr, languageLoaded])
-
-  useEffect(() => {
-    if (!!qrCodeData && !!productqr && !!iOS) {
+    if (!!store && !!productqr && !!iOS) {
       setDialogOpen(true);
     }
-  }, [qrCodeData, productqr])
+  }, [store, productqr])
 
-  if (error) {
-    return (
-      <>
-        {error}
-      </>
-    )
-  }
+  // FIXME should be a more meaningful message or should redirect to a unauthorized page
   if (!sid) {
     return (
       <>
@@ -135,11 +111,10 @@ const InitialPage = () => {
     )
   }
 
-  return isLoading
-    || !languageLoaded
-    || (!productqr && !qrCodeData)
-    || (!!productqr && isProductDataLoading)
-    || (!!productqr && !productData)
+  return !language // language is not loaded
+    || loading // store data and/or product data is loading
+    || (!productqr && !store) // no store data is loaded
+    || (!!productqr && !product) // no product data loaded when product qr value is provided
     ? (
       <>
         <LoadingBox sx={{ height: '100%' }} />
@@ -151,12 +126,13 @@ const InitialPage = () => {
         </Grid>
       </>
     )
-    : (!!qrCodeData && !productqr)
+    : (!!store && !productqr)
       ? (<Navigate to="/" />)
       : (
         <>
-          <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} />
-          {(!iOS || !!permissionStatus) && (<Navigate to="/ar-page" />)}
+          {/* // FIXME move permission logic to permission page */}
+          {/* <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} /> */}
+          {(!iOS || !!permissionStatus) && (<Navigate to="/allow-scan?showArPage=true" />)}
         </>
 
       )

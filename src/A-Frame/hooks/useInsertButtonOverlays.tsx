@@ -1,65 +1,46 @@
 import { useEffect } from "react";
 import { Subject, map } from "rxjs";
 import { IButtonContent, AFrameElement } from "src/core/declarations/app";
+import { Entity } from 'aframe';
 
 const useInsertButtonOverlays = (buttonListSub: Subject<IButtonContent[]>) => {
-	useEffect(() => {
-		const arModelOverlaysSub = buttonListSub.pipe(
-			map(list => list.filter(b => !!b.arModelOverlay)
-				.map<Pick<IButtonContent, 'buttonName' | 'arModelOverlay'>>(({ buttonName, arModelOverlay }) => ({ buttonName, arModelOverlay }))
-			)
-		);
+  useEffect(() => {
+    const arModelOverlaysSub = buttonListSub.pipe(
+      map(list => list.filter(b => !!b.arModelOverlay)
+        .map<Pick<IButtonContent, 'buttonName' | 'arModelOverlay'>>(({ buttonName, arModelOverlay }) => ({ buttonName, arModelOverlay }))
+      )
+    );
 
-		const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
-			const overlayVideoWrapperEl = document.querySelector('a-scene span#overlayVideoWrapper');
+    const subscription = arModelOverlaysSub.subscribe(arModelOverlays => {
+      // overlay video efect
+      const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
 
-			// clear previous product data
+      // clear previous model overlays
+      const allModelOverlays = alphaVideoWrapperEl?.querySelectorAll(".alpha-video");
+      allModelOverlays?.forEach(el => el.remove());
 
-			document.querySelector('a-entity#overlayVideoMesh')?.remove();
-			if (!!overlayVideoWrapperEl) overlayVideoWrapperEl.innerHTML = '';
+      // append current product data
+      if (!!alphaVideoWrapperEl && arModelOverlays.length > 0) {
+        arModelOverlays.forEach(({ buttonName, arModelOverlay }) => {
+          // loop="true"
+          const newAlphaVideoEl = document.createElement("video");
+          newAlphaVideoEl.id = `alphaVideo${buttonName}`;
+          newAlphaVideoEl.setAttribute("playsinline", "");
+          newAlphaVideoEl.className = "alpha-video";
+          newAlphaVideoEl.setAttribute("preload", "auto");
+          newAlphaVideoEl.setAttribute("src", arModelOverlay);
+          newAlphaVideoEl.setAttribute("type", "video/mp4");
+          newAlphaVideoEl.setAttribute("crossorigin", "anonymous");
 
-			// append current product data
-			if (!!overlayVideoWrapperEl && arModelOverlays.length > 0) {
-				overlayVideoWrapperEl.innerHTML = arModelOverlays.map(({ buttonName, arModelOverlay }) => `
-				<video
-					playsinline
-					id="overlayVideo${buttonName}"
-					class="alpha-video"
-					preload="auto"
-					src="${arModelOverlay}" 
-					type="video/mp4"
-					crossorigin="anonymous"
-				>
-				</video>
-				`).join(' ');
+          alphaVideoWrapperEl.insertAdjacentElement("beforeend", newAlphaVideoEl);
+        });
+      }
 
-				// TODO need calculate video ratio
-				const overlayVideoMeshEl = `<a-entity 
-					id="overlayVideoMesh" 
-					visible="false" 
-					></a-entity>`
 
-				// NOTE back up
-				// const overlayVideoMeshEl = document.createElement('a-entity') as AFrameElement;
-				// overlayVideoMeshEl.setAttribute('id', 'overlayVideoMesh');
-				// overlayVideoMeshEl.setAttribute('visible', 'false');
-				// overlayVideoMeshEl.setAttribute('geometry', {
-				// 	primitive: 'plane',
-				// 	height: 2,
-				// 	width: 2
-				// })
+    });
 
-				// overlayVideoMeshEl.setAttribute('xrextras-play-video', arModelOverlays.length > 0 ? `video: #overlayVideo${arModelOverlays[0].buttonName}` : '');
-				// overlayVideoMeshEl.setAttribute('material', `shader: chromakey; src: '${arModelOverlays.length > 0 ? `#overlayVideo${arModelOverlays[0].buttonName}` : ''
-				// 	}'; color: 0 0 0; side: double; depthTest: true;`)
-
-				const sceneEl = document.querySelector('a-scene#ascene');
-				if (!!sceneEl) sceneEl.insertAdjacentHTML('beforeend', overlayVideoMeshEl);
-			}
-		});
-
-		return () => { subscription.unsubscribe(); }
-	}, [buttonListSub])
+    return () => { subscription.unsubscribe(); }
+  }, [buttonListSub])
 }
 
 export default useInsertButtonOverlays;

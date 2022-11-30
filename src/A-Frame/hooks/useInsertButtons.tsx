@@ -2,7 +2,7 @@ import { Entity } from "aframe";
 import { useEffect } from "react"
 import { Subject, zip } from "rxjs";
 import { AFrameElement, IButtonContent } from "src/core/declarations/app";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 
 declare const THREE: any;
 
@@ -74,81 +74,87 @@ export const useInsertButtons = (
 					if (buttonsList && buttonsList.length > 0) {
 						buttonsList.forEach((btnItem, idx) => {
 
-							modelMesh.traverse((child: { [key: string]: any }) => {
-								if (child.name.includes(btnItem.buttonName)) {
-									//add new flat material for buttons that doesn't use lighting
-									var prevMaterial = child.material;
-									child.material = new THREE.MeshBasicMaterial();
-									THREE.MeshBasicMaterial.prototype.copy.call(child.material, prevMaterial);
-									child.castShadow = false;
-									modelButtons.push(child); //add to array
+							// FIXME setTimeout is temporary as the aframe buttons load quicker than the 3d object
+							// need checking the model loads event or put some delay else where 
+							setTimeout(() => {
+								modelMesh.traverse((child: { [key: string]: any }) => {
+									if (child.name.includes(btnItem.buttonName)) {
+										//add new flat material for buttons that doesn't use lighting
+										var prevMaterial = child.material;
+										child.material = new THREE.MeshBasicMaterial();
+										THREE.MeshBasicMaterial.prototype.copy.call(child.material, prevMaterial);
+										child.castShadow = false;
+										modelButtons.push(child); //add to array
 
-									const newEl = document.createElement('a-box');
+										const newEl = document.createElement('a-box');
 
-									newEl.setAttribute('color', 'red');
-									document.querySelector('#modelContainer')?.appendChild(newEl);
-									const target = new THREE.Vector3();
-									var box = new THREE.Box3().setFromObject(child);
-									const boxMin = box.min;
-									const boxMax = box.max;
-									const meshX = boxMax.x - boxMin.x,
-										meshY = boxMax.y - boxMin.y,
-										meshZ = boxMax.z - boxMin.z;
+										newEl.setAttribute('color', 'red');
+										document.querySelector('#modelContainer')?.appendChild(newEl);
+										const target = new THREE.Vector3();
+										var box = new THREE.Box3().setFromObject(child);
+										const boxMin = box.min;
+										const boxMax = box.max;
+										const meshX = boxMax.x - boxMin.x,
+											meshY = boxMax.y - boxMin.y,
+											meshZ = boxMax.z - boxMin.z;
 
-									// const testSize = child.getSize();
-									child.getWorldPosition(target);
-									newEl.setAttribute('position', target);
-									// check sizes of other models buttons
-									newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
-									newEl.setAttribute('transparency', true);
-									newEl.setAttribute('data-disabled', 'false');
-									newEl.setAttribute('opacity', 1);
-									newEl.setAttribute('class', 'model-button cantap');
+										// const testSize = child.getSize();
+										child.getWorldPosition(target);
+										newEl.setAttribute('position', target);
+										// check sizes of other models buttons
+										newEl.setAttribute('scale', { x: meshX, y: meshY, z: meshZ });
+										newEl.setAttribute('transparency', true);
+										newEl.setAttribute('data-disabled', 'false');
+										newEl.setAttribute('opacity', 1);
+										newEl.setAttribute('class', 'model-button cantap');
 
-									newEl.setAttribute('id', 'guiButton' + btnItem.buttonName);
-									newEl.addEventListener('click', (e: unknown) => {
-										const thisBtnBox = (e as CustomEvent).target as HTMLElement;
-										const btnBoxDisabled = thisBtnBox.getAttribute('data-disabled');
-										if (btnBoxDisabled === 'true') return;
+										newEl.setAttribute('id', 'guiButton' + btnItem.buttonName);
+										newEl.addEventListener('click', (e: unknown) => {
+											const thisBtnBox = (e as CustomEvent).target as HTMLElement;
+											const btnBoxDisabled = thisBtnBox.getAttribute('data-disabled');
+											if (btnBoxDisabled === 'true') return;
 
-										entityEl.setAttribute('animation-mixer', 'clip: ' + btnItem.buttonName);
-										if (btnItem.animationLooping)
-											entityEl.setAttribute("animation-mixer", "loop: true;");
-										else
-											entityEl.setAttribute("animation-mixer", "loop: once;");
+											entityEl.setAttribute('animation-mixer', 'clip: ' + btnItem.buttonName);
+											if (btnItem.animationLooping)
+												entityEl.setAttribute("animation-mixer", "loop: true;");
+											else
+												entityEl.setAttribute("animation-mixer", "loop: once;");
 
-										// temporary ignore beardstyle
-										// if (btnItem.hasBeardStyles) {
-										//   if (beardStyleEvent) {
-										//     beardStyleEvent.next(true);
-										//   }
-										// } else {
+											// temporary ignore beardstyle
+											// if (btnItem.hasBeardStyles) {
+											//   if (beardStyleEvent) {
+											//     beardStyleEvent.next(true);
+											//   }
+											// } else {
 
-										if (buttonClickHandle) {
-											buttonClickHandle(btnItem.buttonName);
-											// FIXME temporary if no popup content stop after x seconds
-											if (!btnItem.popupContent) {
-												setTimeout(() => {
-													buttonClickHandle("");
-												}, 8000)
+											if (buttonClickHandle) {
+												buttonClickHandle(btnItem.buttonName);
+												// FIXME temporary if no popup content stop after x seconds
+												// if (!btnItem.popupContent) {
+												// 	setTimeout(() => {
+												// 		buttonClickHandle("");
+												// 	}, 8000)
+												// }
+												// }
+
 											}
-											// }
+										})
 
-										}
-									})
+									}
+									if (child.name.includes('VideoPlane')) {
+										child.visible = false;
+										const pos = new THREE.Vector3();
+										child.getWorldPosition(pos);
+										var scale = new THREE.Vector3();
+										child.getWorldScale(scale);
+										document.querySelector('#alphaVideoMesh')?.setAttribute('position', pos);
+										document.querySelector('#alphaVideoMesh')?.setAttribute('scale', scale);
+										document.querySelector('#alphaVideoMesh')?.setAttribute('shadow', 'cast: false');
+									}
+								})
+							}, 500)
 
-								}
-								if (child.name.includes('VideoPlane')) {
-									child.visible = false;
-									const pos = new THREE.Vector3();
-									child.getWorldPosition(pos);
-									var scale = new THREE.Vector3();
-									child.getWorldScale(scale);
-									document.querySelector('#overlayVideoMesh')?.setAttribute('position', pos);
-									document.querySelector('#overlayVideoMesh')?.setAttribute('scale', scale);
-									document.querySelector('#overlayVideoMesh')?.setAttribute('shadow', 'cast: false');
-								}
-							})
+
 						})
 					}
 				})
@@ -172,16 +178,26 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 					enableButtons();
 
 					// disable all overlay as well when button should be displayed since this means a specific button animation ends
-					document.querySelector('#overlayVideoMesh')?.setAttribute('visible', 'false');
+					document.querySelector('#alphaVideoMesh')?.setAttribute('visible', 'false');
 					// display ar model if hidden before
 					const modelContainer = document.querySelector("#modelContainer");
 					modelContainer?.setAttribute("visible", "true");
-					
-					const videoEls = document.querySelectorAll('.alpha-video') as NodeListOf<HTMLVideoElement>;
-					videoEls.forEach((el: HTMLVideoElement) => {
-						el.pause();
-						el.currentTime = 0;
-					});
+					const fingerRotateAttr = modelContainer?.getAttribute("xrextras-one-finger-rotate");
+					if (fingerRotateAttr == null) modelContainer?.setAttribute("xrextras-one-finger-rotate", "");
+					const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
+					if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
+
+					console.log("removeAttribute 1");
+					const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+					alphaVideoMesh?.removeAttribute("play-video");
+					alphaVideoMesh?.removeAttribute("material");
+
+					// stop all playing audio
+					const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;
+					buttonAudios.forEach(audio => {
+						audio.pause();
+						audio.currentTime = 0;
+					})
 				} else {
 					const arButton = document.querySelector(`#guiButton${buttonName}`) as Entity;
 					// const arButton = document.querySelector(`#guiButton${buttonName}`) as AFrameElement;

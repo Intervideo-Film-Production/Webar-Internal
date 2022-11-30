@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { Subject } from "rxjs";
 import { IProductHotspot } from "src/core/declarations/app";
 
-const useInsertHotspots = (aFrameModelLoadedEvent: Subject<any>, hotspots: IProductHotspot[]) => {
+const useInsertHotspots = (aFrameModelLoadedEvent: Subject<any>, hotspots?: IProductHotspot[]) => {
   useEffect(() => {
 
     const subscription = aFrameModelLoadedEvent.subscribe(() => {
-
+      if (!hotspots) return;
       const fragments = hotspots.map(hotspot => {
         const text = `text:${hotspot.text};`
         const labelDistance = !!hotspot.labelDistance ? `labeldistance: ${hotspot.labelDistance};` : "";

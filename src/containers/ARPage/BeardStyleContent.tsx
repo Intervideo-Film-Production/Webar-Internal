@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Drawer, Grid, IconButton, Typography, Fade } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useQueryClient } from 'react-query';
-import { QueryKeys } from 'src/core/declarations/enum';
 import { IBeardStyle } from 'src/core/declarations/app';
 import { filter, map, Subject } from 'rxjs';
 import { AppButton } from 'src/components';
@@ -12,7 +10,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import BlockContent, { BlockContentProps } from '@sanity/block-content-to-react';
 import { LazyImage } from 'src/components';
 import { urlFor } from 'src/crud/api';
-import { IButtonContent } from 'src/core/declarations/app';
+import { useBoundStore } from 'src/core/store';
 
 const projectId: string = process.env.REACT_APP_PROJECT_ID as string;
 const dataset: string = process.env.REACT_APP_DATASET as string;
@@ -30,7 +28,7 @@ const useStyles = makeStyles(() => ({
 
 interface IBeardStylePopupContentProps {
   beardStyleEvent?: Subject<boolean>;
-  switchBeardStyleEvent?: Subject<string>;
+  switchBeardStyleEvent?: Subject<IBeardStyle>;
   beardStyles?: IBeardStyle[];
   headlineHeight?: number;
   onShowButtonContent?: (buttonName: string) => void;
@@ -51,8 +49,8 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [displayBeardStyleId, setDisplayBeardStyleId] = useState(beardStyles.length > 0 ? beardStyles[0].id : null);
-  const queryClient = useQueryClient();
-  const buttonData = queryClient.getQueryData<IButtonContent[]>(QueryKeys.buttonAnimationContent);
+
+  const buttonData = useBoundStore(state => state.buttons);
 
   const beardStyleIndex = useMemo(() => {
     if (!displayBeardStyleId || beardStyles.length === 0) return -1;
@@ -83,12 +81,12 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
 
   const handlePrevious = () => {
     const previousBeardIdx = (beardStyleIndex + beardStyles.length - 1) % beardStyles.length;
-    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[previousBeardIdx].id);
+    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[previousBeardIdx]);
   }
 
   const handleNext = () => {
-    const previousBeardIdx = (beardStyleIndex + beardStyles.length + 1) % beardStyles.length;
-    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[previousBeardIdx].id);
+    const nextBeardIdx = (beardStyleIndex + beardStyles.length + 1) % beardStyles.length;
+    if (switchBeardStyleEvent) switchBeardStyleEvent.next(beardStyles[nextBeardIdx]);
   }
 
   useEffect(() => {
@@ -112,8 +110,8 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
         .pipe(
           filter(() => beardStyles && beardStyles.length > 0),
         )
-        .subscribe(beardStyleId => {
-          setDisplayBeardStyleId(beardStyleId);
+        .subscribe(beardStyle => {
+          setDisplayBeardStyleId(beardStyle.id);
         });
 
       return () => subscription.unsubscribe();
@@ -214,7 +212,6 @@ const BeardStyleContent = ({ beardStyleEvent, switchBeardStyleEvent, beardStyles
           <Grid
             id="beard-content-drawer"
             sx={theme => ({
-              mb: '20px',
               display: 'flex',
               flexDirection: 'column',
               ...theme.arPageStyles?.beardStyles.root

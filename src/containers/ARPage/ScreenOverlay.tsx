@@ -2,10 +2,8 @@ import React, { useRef, useEffect, memo, useMemo } from 'react';
 import { Grid } from '@mui/material';
 import videojs, { VideoJsPlayer, VideoJsPlayerOptions } from "video.js";
 import "video.js/dist/video-js.css";
-import { useQueryClient } from 'react-query';
-import { QueryKeys } from 'src/core/declarations/enum';
-import { IButtonContent } from 'src/core/declarations/app';
 import { isIOS } from 'src/core/helpers';
+import { useBoundStore } from 'src/core/store';
 
 interface ScreenOverlayProps {
   buttonName: string;
@@ -21,8 +19,7 @@ const defaultOptions: Omit<VideoJsPlayerOptions, 'sources'> = {
 }
 
 const ScreenOverlay = memo(({ buttonName }: ScreenOverlayProps) => {
-  const queryClient = useQueryClient();
-  const buttonData = queryClient.getQueryData<IButtonContent[]>(QueryKeys.buttonAnimationContent);
+  const buttonData = useBoundStore(state => state.buttons);
 
   const screenOverlays = useMemo<{ [key: string]: { androidScreenOverlay: any, iosScreenOverlay: any } } | undefined>(() => {
     return buttonData?.reduce((a, b) => {

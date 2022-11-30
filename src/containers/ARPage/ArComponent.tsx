@@ -1,4 +1,4 @@
-import React, {
+import {
   memo,
   useState,
   useCallback,
@@ -12,47 +12,74 @@ import { Grid, Toolbar } from "@mui/material";
 import { AScene } from "src/A-Frame/AScene";
 import { BehaviorSubject, filter, Subject } from "rxjs";
 import ReviewContent from "./ReviewContent";
-import ButtonPopupContent from "./ButtonPopupContent";
+import ButtonDrawerContent from "./ButtonDrawerContent";
 import {
   IProduct,
   IButtonContent,
   IBeardStyle,
-  IQRCodeData,
+  IStore,
   IProductColor,
 } from "src/core/declarations/app";
-import { useQuery, useQueryClient } from "react-query";
-import { ProductColorTypes, QueryKeys } from "src/core/declarations/enum";
 import InfoMenu from "./InfoMenu";
 import ScreenOverlay from "./ScreenOverlay";
-import { getButtonAnimationContent } from "src/crud";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { useReactQueryData } from "src/hooks";
-import { useAppContext } from "src/core/store";
+import BeardStyleContent from "./BeardStyleContent";
+import { useBoundStore } from "src/core/store";
+import ButtonContent from "./ButtonContent";
 
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
   const location = useLocation();
-  const productId = location.state && (location.state as any).productId;
-  const { arResourcesLoadEvent } = useAppContext();
-  const productData = useReactQueryData<IProduct>([QueryKeys.product]);
+  const productId = (location.state as { productId: string })?.productId;;
 
-  const { data: buttonData } = useQuery(
-    QueryKeys.buttonAnimationContent,
-    () => {
-      return getButtonAnimationContent(productData.id, i18n.language);
-    },
-    {
-      enabled: !!productData.id,
-      notifyOnChangeProps: ["data"],
-    }
-  );
+  const product = useBoundStore(state => state.product);
+  const { buttons, getButtonContents } = useBoundStore(state => ({
+    buttons: state.buttons,
+    getButtonContents: state.getButtonContents
+  }))
 
-  const arModelUrlSub = useMemo(() => new Subject<Partial<IProduct>>(), []);
+  const fetchButtonContent = useCallback(() => {
+    if (!!product?.id) getButtonContents(product.id, i18n.language);
+
+  }, [getButtonContents, product, i18n.language])
+
+  useEffect(() => {
+    fetchButtonContent();
+  }, [fetchButtonContent]);
+
+  const headlineRef = useRef<HTMLDivElement>(null);
+  const [headlineHeight, setHeadlineHeight] = useState(0);
+
+  const arModelUrlSub = useMemo(() => new Subject<IProduct>(), []);
   const buttonListSub = useMemo(() => new Subject<IButtonContent[]>(), []);
-  // const beardStylesSub = useMemo(() => new Subject<IBeardStyle[]>(), []);
+  const beardStylesSub = useMemo(() => new Subject<IBeardStyle[]>(), []);
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  useEffect(() => {
+    if (!!product) {
+      arModelUrlSub.next(product);
+    }
+  }, [arModelUrlSub, product]);
+
+  useEffect(() => {
+    if (!!buttons) {
+      buttonListSub.next(buttons);
+    }
+  }, [buttonListSub, buttons]);
+
+  useEffect(() => {
+    if (!!product?.beardStyles) {
+      beardStylesSub.next(product.beardStyles);
+    }
+  }, [beardStylesSub, product?.beardStyles]);
+
+  useEffect(() => {
+    if (headlineRef.current) {
+      setHeadlineHeight(headlineRef.current.clientHeight);
+    }
+  }, [headlineRef]);
+
+  // const [drawerOpen, setDrawerOpen] = useState(false);
   const [reviewContentOpen, setReviewContentOpen] = useState(false);
   const [showGrandControl, setShowGrandControl] = useState(true);
   const [buttonName, setButtonName] = useState("");
@@ -65,7 +92,7 @@ const ArComponent = memo(() => {
   //   () => new BehaviorSubject<boolean>(false),
   //   []
   // );
-  const switchBeardStyleEvent = useMemo(() => new Subject<string>(), []);
+  const switchBeardStyleEvent = useMemo(() => new Subject<IBeardStyle>(), []);
 
   // useEffect(() => {
   //   if (beardStyleEvent) {
@@ -83,6 +110,23 @@ const ArComponent = memo(() => {
     (shouldReviewOpen: boolean) => {
       setReviewContentOpen(shouldReviewOpen);
     }, []);
+
+  const beardStyleEvent = useMemo(
+    () => new BehaviorSubject<boolean>(false),
+    []
+  );
+
+  useEffect(() => {
+    if (beardStyleEvent) {
+      const subscription = beardStyleEvent
+        .pipe(filter(() => !!product?.beardStyles && product?.beardStyles.length > 0))
+        .subscribe((shouldBeardStyleShow) => {
+          setShowGrandControl(!shouldBeardStyleShow);
+        });
+
+      return () => subscription.unsubscribe();
+    }
+  }, [beardStyleEvent, product?.beardStyles]);
 
   const infoMenuHandle = useCallback((shouldOpen: boolean) => {
     setInfoMenuOpen(shouldOpen);
@@ -116,47 +160,11 @@ const ArComponent = memo(() => {
     [buttonPopupHandle]
   );
 
-  useEffect(() => {
-    const subscription = arResourcesLoadEvent.pipe(
-      filter(isRealityReady => !!isRealityReady)
-    ).subscribe(() => {
-      const { arObjectUrl, cubemap } = productData;
-      arModelUrlSub.next({ arObjectUrl, cubemap });
-    });
-
-    return () => { subscription.unsubscribe(); }
-  }, [arResourcesLoadEvent, productData, arModelUrlSub, buttonListSub]);
-
-  // useEffect(() => {
-
-  // }, [])
-
-  // useEffect(() => {
-  //   if (!!productData) {
-  //     const { arObjectUrl, cubemap } = productData;
-  //     arModelUrlSub.next({
-  //       arObjectUrl, cubemap
-  //     });
-  //   }
-  // }, [arModelUrlSub, productData]);
-
-  useEffect(() => {
-    if (!!buttonData) {
-      buttonListSub.next(buttonData);
-    }
-  }, [buttonListSub, buttonData]);
-
-  // useEffect(() => {
-  //   if (!!beardStyles) {
-  //     beardStylesSub.next(beardStyles);
-  //   }
-  // }, [beardStylesSub, beardStyles]);
-
-  // FIXME for face effect only
-  // const handleShowBeardStyle = (beardStyleId: string) => {
-  //   beardStyleEvent.next(true);
-  //   switchBeardStyleEvent.next(beardStyleId);
-  // };
+  const handleShowBeardStyle = useCallback((beardStyleId: string) => {
+    beardStyleEvent.next(true);
+    const beardStyle = product?.beardStyles.find(b => b.id === beardStyleId);
+    if (!!beardStyle) switchBeardStyleEvent.next(beardStyle);
+  }, [product?.beardStyles, beardStyleEvent, switchBeardStyleEvent]);
 
   return (
     <AppGrid
@@ -172,7 +180,7 @@ const ArComponent = memo(() => {
         <AScene
           productDataSub={arModelUrlSub}
           buttonListSub={buttonListSub}
-          // beardStylesSub={beardStylesSub}
+          beardStylesSub={beardStylesSub}
           recenterEvent={recenterEvent}
           onButtonClick={arButtonHandle}
           buttonToggleEvent={arButtonToggleEvent}
@@ -195,16 +203,23 @@ const ArComponent = memo(() => {
 
       {/* Expand Content */}
       <ReviewContent
+        productId={productId ?? product?.id}
         open={reviewContentOpen}
         onReviewToggle={handleReviewToggle}
       />
 
       {/* Button Popup Content */}
-      <ButtonPopupContent
+      <ButtonContent
         buttonName={buttonName}
         onToggle={buttonPopupHandle}
-      // FIXME need this?
-      // onShowBeardStyle={handleShowBeardStyle}
+        onShowBeardStyle={handleShowBeardStyle} />
+
+      <BeardStyleContent
+        beardStyleEvent={beardStyleEvent}
+        switchBeardStyleEvent={switchBeardStyleEvent}
+        beardStyles={product?.beardStyles}
+        headlineHeight={headlineHeight}
+        onShowButtonContent={buttonName => buttonPopupHandle(buttonName)}
       />
 
       <InfoMenu

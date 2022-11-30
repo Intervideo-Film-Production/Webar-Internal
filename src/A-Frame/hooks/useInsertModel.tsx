@@ -1,69 +1,143 @@
-import { Scene } from "aframe";
+import { Entity, Scene } from "aframe";
 import { useEffect } from "react";
-import { Subject } from "rxjs";
+import { pairwise, startWith, Subject } from "rxjs";
 import { IProduct } from "src/core/declarations/app";
-import { modelRef } from "src/core/declarations/enum";
+import { modelRef, ProductTypes } from "src/core/declarations/enum";
 
-const useInsertModel = (modelLinkSub: Subject<Partial<IProduct>>) => {
+const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 	useEffect(() => {
 
-		const subscription = modelLinkSub.subscribe(({ arObjectUrl, cubemap }) => {
-			const assetContainer = document.querySelector('#assetContainer');
+		const subscription = modelLinkSub
+			.pipe(
+				startWith(null),
+				pairwise()
+			).subscribe(([prev, cur]) => {
+				if (cur === null) return;
 
-			// load asset
-			const assetItemEl = document.querySelector('a-scene a-asset-item#model');
-			assetItemEl?.remove();
+				const assetContainer = document.querySelector('#assetContainer');
+				const { id,
+					arObjectUrl,
+					arModelScale,
+					alphaVideoUrl,
+					alphaVideoBgColor,
+					alphaVideoScale,
+					alphaVideoPosition,
+					cubemap,
+					productType,
+				} = cur;
+				// load asset
+				// clean up either AR object or alpha video
+				if (prev?.id !== cur.id && prev?.productType === ProductTypes.arObject) {
+					const assetItemEl = document.querySelector('a-scene a-asset-item#model');
+					assetItemEl?.remove();
+				}
 
-			const newAssetEl = document.createElement('a-asset-item');
-			newAssetEl.setAttribute('id', 'model');
-			newAssetEl.setAttribute('src', arObjectUrl || "");
-			assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
+				const alphaVideoWrapperEl = document.querySelector('a-scene span#alphaVideoWrapper');
+				if (!!alphaVideoWrapperEl) alphaVideoWrapperEl.innerHTML = '';
 
-			// cubemap
-			if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
-				Object.keys(cubemap).forEach((key) => {
+				if (productType === ProductTypes.arObject && prev?.id !== cur.id) {
+					const newAssetEl = document.createElement('a-asset-item');
+					newAssetEl.setAttribute('id', 'model');
+					newAssetEl.setAttribute('src', arObjectUrl || "");
+					assetContainer?.insertAdjacentElement('afterbegin', newAssetEl);
 
-					const cubemapImg = document.createElement("img");
-					cubemapImg.setAttribute("id", key);
-					cubemapImg.setAttribute("crossorigin", "anonymous");
-					cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
+					// cubemap
+					if (cubemap && Object.values(cubemap).filter(v => !!v).length === 6) {
+						Object.keys(cubemap).forEach((key) => {
 
-					assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
-				})
-			}
+							const cubemapImg = document.createElement("img");
+							cubemapImg.setAttribute("id", key);
+							cubemapImg.setAttribute("crossorigin", "anonymous");
+							cubemapImg.setAttribute("src", cubemap[key as keyof IProduct["cubemap"]]);
 
-			// bind entity to ascene
-			const modelContainer = document.querySelector('#modelContainer');
-			// reset parent scale & rotation
-			// modelContainer?.setAttribute('scale', "1 1 1");
-			// modelContainer?.setAttribute('rotation', "0 0 0");
-			if (!!modelContainer) {
-				modelContainer.innerHTML = '';
-				const entity = document.createElement('a-entity') as Scene;
-				// const entity = document.createElement('a-entity') as AFrameElement;
-				entity.setAttribute('id', 'modelEntity');
-				entity.setAttribute('gltf-model', '#model');
-				// FIXME debug only
-				// entity.setAttribute('position', '0 0 .5');
-				// entity.setAttribute('rotation', '-90 0 0');
-				// entity.setAttribute('scale', '5 5 5');
-				// entity.setAttribute('xrextras-hold-drag', 'rise-height: 0');
-				// entity.setAttribute('xrextras-two-finger-rotate', '');
-				entity.setAttribute('cubemap-static', '')
-				// FIXME absolute scale proximity settings
-				entity.setAttribute('proximity', '');
-				// FIXME change model color feature
-				// entity.setAttribute('change-color', '')
-				entity.setAttribute('shadow', 'receive: false');
-				entity.setAttribute('animation-mixer', {
-					clip: 'none',
-					loop: 'once',
-					clampWhenFinished: 'true',
-				});
-				entity.setAttribute(modelRef, '');
-				modelContainer?.appendChild(entity);
-			}
-		})
+							assetContainer?.insertAdjacentElement('beforeend', cubemapImg);
+						})
+					}
+
+					// bind entity to ascene
+					const modelContainer = document.querySelector('#modelContainer');
+					const arObjectScale = arModelScale || "1 1 1";
+
+					// reset parent scale & rotation
+					modelContainer?.setAttribute('scale', "1 1 1");
+					modelContainer?.setAttribute('rotation', "0 0 0");
+					if (!!modelContainer) {
+						modelContainer.innerHTML = '';
+						const entity = document.createElement('a-entity') as Scene; // FIXME wrong name Scene
+						// const entity = document.createElement('a-entity') as AFrameElement;
+						entity.setAttribute('id', 'modelEntity');
+						entity.setAttribute('gltf-model', '#model');
+						// FIXME debug only
+						// entity.setAttribute('position', '0 0 .5');
+						// entity.setAttribute('rotation', '-90 0 0');
+						// entity.setAttribute('scale', '5 5 5');
+						// entity.setAttribute('xrextras-hold-drag', 'rise-height: 0');
+						// entity.setAttribute('xrextras-two-finger-rotate', '');
+						entity.setAttribute('scale', arObjectScale);
+
+						entity.setAttribute('cubemap-static', '')
+						// FIXME absolute scale proximity settings
+						entity.setAttribute('proximity', '');
+						// FIXME change model color feature
+						// entity.setAttribute('change-color', '')
+						entity.setAttribute('shadow', 'receive: false');
+						entity.setAttribute('animation-mixer', {
+							clip: 'none',
+							loop: 'once',
+							clampWhenFinished: 'true',
+						});
+						entity.setAttribute(modelRef, '');
+						modelContainer?.appendChild(entity);
+					}
+
+					// TODO an alpha video product has the same mechanism as an alpha video button effect
+					// thus these should be handled with the same module
+					// currently the app structure is mixed => need to implement in the restructure task
+					// overlay video efect
+
+					// append current product data
+					if (!!alphaVideoWrapperEl && alphaVideoUrl) {
+						// loop="true"
+						alphaVideoWrapperEl.innerHTML = `
+						<video
+							id="alphaVideo${id}"
+							playsinline
+							class="alpha-video-product"
+							preload="auto"
+							src="${alphaVideoUrl}" 
+							type="video/mp4"
+							crossorigin="anonymous"
+						>
+						</video>
+					`;
+
+						// FIXME
+
+						const alphaVideoProduct = document.querySelector(`#alphaVideo${id}`) as Entity<HTMLVideoElement>;
+						alphaVideoProduct?.addEventListener("canplaythrough", () => {
+							if (!!alphaVideoProduct) {
+								try {
+									const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+									// FIXME too many timeout
+									setTimeout(() => {
+
+										alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${id}`);
+										alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
+										alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
+										alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
+										setTimeout(() => {
+											alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
+										}, 500)
+									}, 200)
+
+								} catch (ex) {
+									console.error(ex);
+								}
+							}
+						})
+					}
+				}
+			})
 
 		return () => { subscription.unsubscribe(); }
 	}, [modelLinkSub])

@@ -3,8 +3,8 @@ import { IconButton, Menu, MenuItem } from '@mui/material';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { PaletteIcon } from 'src/components/icons';
 import { IProduct, IProductColor } from 'src/core/declarations/app';
-import { ProductColorTypes, QueryKeys } from 'src/core/declarations/enum';
-import { useReactQueryData } from 'src/hooks';
+import { ProductColorTypes } from 'src/core/declarations/enum';
+import { useBoundStore } from 'src/core/store';
 
 const ColorChangerIcon = styled.div({
 	position: "relative",
@@ -70,7 +70,7 @@ const ColorPicker: React.FC<IColorPickerProps> = memo(({ onSelectColor }) => {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const { arObjectColors } = useReactQueryData<IProduct>([QueryKeys.product]);
+	const arObjectColors = useBoundStore(state => state.product?.arObjectColors);
 
 	useEffect(() => {
 		// select first color by default
@@ -85,10 +85,6 @@ const ColorPicker: React.FC<IColorPickerProps> = memo(({ onSelectColor }) => {
 			.map((_, i) => arObjectColors.slice(3 * i, 3 * i + 3));
 		return arrayColorList;
 	}, [arObjectColors]);
-
-	useEffect(() => {
-		console.log("colors", colors);
-	}, [colors])
 
 	const handleClose = () => {
 		setAnchorEl(null);

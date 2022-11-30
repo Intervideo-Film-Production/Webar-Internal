@@ -12,7 +12,7 @@ import { deepCopyObject } from "src/core/helpers";
 import CloseIcon from "@mui/icons-material/Close";
 import { ISearchCriteria, ISearchCriteriaValue } from "src/core/declarations/app";
 import { isIOS } from "src/core/helpers";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 const iOS = isIOS();
 
 const useAppToogleButtonStyles = makeStyles({

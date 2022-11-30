@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataTypes, ProductColorTypes } from "./enum";
+import { DataTypes, ProductColorTypes, ProductTypes, ButtonActionTypes } from "./enum";
 
 interface IComponentStyles {
   [key: string]: string | number;
@@ -77,6 +77,12 @@ declare module '@mui/material/styles' {
         divider: IComponentStyles;
       };
       buttonPopupContent: {
+        root: IComponentStyles;
+        title: IComponentStyles;
+        closeButton: IComponentStyles;
+        content: IComponentStyles;
+      };
+      buttonDrawerContent: {
         root: IComponentStyles;
         title: IComponentStyles;
         closeButton: IComponentStyles;
@@ -199,6 +205,12 @@ declare module '@mui/material/styles' {
         closeButton: IComponentStyles;
         content: IComponentStyles;
       };
+      buttonDrawerContent: {
+        root: IComponentStyles;
+        title: IComponentStyles;
+        closeButton: IComponentStyles;
+        content: IComponentStyles;
+      };
       beardStyles: {
         root: IComponentStyles;
         title: IComponentStyles;
@@ -304,7 +316,7 @@ export interface IFont {
   fontUrl: string;
 };
 
-export interface IQRCodeData {
+export interface IStore {
   id: string;
   brandId: string;
   brandName: string;
@@ -322,6 +334,7 @@ export interface IQRCodeData {
     compareDetails: { styles: string };
     reviewContent: { styles: string };
     buttonPopupContent: { styles: string };
+    buttonDrawerContent: { styles: string };
     beardStyles: { styles: string };
     infoMenu: { styles: string };
   };
@@ -383,7 +396,13 @@ export interface IProduct {
   id: string;
   name: string;
   productClaim: string;
+  productType: ProductTypes;
   arObjectUrl: string;
+  alphaVideoUrl: string;
+  arModelScale: string;
+  alphaVideoBgColor: string;
+  alphaVideoScale: string;
+  alphaVideoPosition: string;
   image: string | { [key: string]: any; };
   searchImage: string | { [key: string]: any; };
   imageCaption: string;
@@ -412,6 +431,7 @@ export interface IProduct {
 export interface IButtonContent {
   buttonName: string;
   icon: string;
+  actionType: ButtonActionTypes;
   popupTitle: string;
   hasAnimation: boolean;
   hasBeardStyles: boolean;
@@ -428,7 +448,13 @@ export interface IButtonContent {
   arModelOverlayPlaytime: number;
   arModelOverlayBgColor: string;
   overlayHideModel: boolean;
-  arOverlayPosition: boolean;
+  arOverlayPosition: string;
+  arOverlayScale: string;
+
+  videoContent: string;
+  customContent: { [key: string]: any; }[];
+  link: string;
+  phoneNumber: string;
 }
 
 export interface ISearchCriteria {
@@ -448,6 +474,11 @@ export interface ISearchCriteriaValue {
 export interface IBeardStyle {
   id: string;
   beardImage: string | { [key: string]: any; };
+  faceEffectModel: string;
+  faceEffectModelAnchor: string;
+  modelPosition: string;
+  modelScale: string;
+  modelRotation: string;
   popupIcon: string;
   popupTitle: string;
   popupContent: {};

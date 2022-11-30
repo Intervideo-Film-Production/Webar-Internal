@@ -1,27 +1,28 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "react-query";
 import { filter, interval, Observable, throttle } from "rxjs";
-import { IQRCodeData } from "src/core/declarations/app";
-import { QueryKeys } from "src/core/declarations/enum";
-import { getProduct, getProductById } from "src/crud";
+import { StoreStatus } from "src/core/declarations/enum";
+import { useBoundStore } from "src/core/store";
 
 const useProductQRValue = (cameraEvent: Observable<string>) => {
 	const { i18n } = useTranslation();
 	const [productQrText, setProductQrText] = useState("");
-	const queryClient = useQueryClient();
 
-	const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
-
+	const store = useBoundStore(state => state.store);
+	const { product, productStatus, getByQR } = useBoundStore(state => ({
+		product: state.product,
+		productStatus: state.productStatus,
+		getByQR: state.getByQR
+	}))
 	// FIXME not sure if language changed this query will be updated
-	const { isFetching, data, isError } = useQuery(
-		[QueryKeys.product],
-		() => getProduct(productQrText, i18n.language, qrCodeData?.id as string),
-		{
-			enabled: !!productQrText,
-			cacheTime: Infinity,
-		}
-	);
+	const fetchProduct = useCallback(() => {
+		if (!store?.id) return;
+		return getByQR(productQrText, i18n.language, store?.id);
+	}, [productQrText, store, i18n.language, getByQR])
+
+	useEffect(() => {
+		if (!!productQrText) fetchProduct();
+	}, [productQrText, fetchProduct])
 
 	useEffect(() => {
 		const subscription = cameraEvent
@@ -41,9 +42,14 @@ const useProductQRValue = (cameraEvent: Observable<string>) => {
 		return () => {
 			subscription.unsubscribe();
 		};
-	}, []);
+	}, [cameraEvent, productQrText]);
 
-	return { isFetching, isError, productName: data?.name, productQrText };
+	return {
+		isFetching: productStatus === StoreStatus.loading,
+		isError: productStatus === StoreStatus.loaded && !product,
+		productName: product?.name,
+		productQrText
+	};
 }
 
 export default useProductQRValue;

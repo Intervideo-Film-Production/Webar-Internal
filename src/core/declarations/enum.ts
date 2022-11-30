@@ -1,19 +1,8 @@
-export enum QueryKeys {
-  language = 'language',
-  qrCode = 'qrCode',
-  store = 'store',
-  product = 'product',
-  compareProduct = 'compareProduct',
-  productComments = 'productComments',
-  compareProducts = 'compareProducts',
-  buttonAnimationContent = 'buttonAnimationContent',
-  searchCriteria = 'searchCriteria',
-  searchCriteriaValue = 'searchCriteriaValue',
-  productfinder = 'productfinder',
-  imageTargetsCodes = 'imageTargetsCodes',
-  homePageContent = 'homePageContent',
-  productsListByQRCode = 'productsListByQRCode'
-};
+export enum StoreStatus {
+  empty,
+  loading,
+  loaded,
+}
 
 export enum DataTypes {
   beardStyle = 'beardStyle',
@@ -40,6 +29,19 @@ export enum DataTypes {
   sanityFileAsset = 'sanity.fileAsset',
   homePageContent = 'homePageContent',
 }
+
+export enum ProductTypes {
+  arObject = 'arObject',
+  alphaVideo = 'alphaVideo'
+}
+
+export enum ButtonActionTypes {
+  DisplayProductFeatures = "DisplayProductFeatures",
+  CustomContent = "CustomContent",
+  WatchVideo = "WatchVideo",
+  Link = "Link",
+  GiveACall = "GiveACall",
+};
 
 export enum ProductColorTypes {
   color = 'color',

@@ -7,14 +7,12 @@ import {
 } from "src/components/icons";
 import { useTranslation } from "react-i18next";
 import { AppButton } from "src/components";
-import { useAppContext } from "src/core/store";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "react-query";
-import { QueryKeys } from "src/core/declarations/enum";
-import { IProduct, IProductColor } from "src/core/declarations/app";
-import { useReactQueryData } from "src/hooks";
+import { IProductColor } from "src/core/declarations/app";
 import ColorPicker from "./ColorPicker";
 import { Subject } from "rxjs";
+import { useBoundStore } from "src/core/store";
+import { useAppContext } from "src/core/events";
 
 interface ARPageControllerProps {
   showGrandControl?: boolean;
@@ -36,20 +34,18 @@ const ARPageController = (props: ARPageControllerProps) => {
   const { t } = useTranslation();
   const { appLoadingStateEvent } = useAppContext();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  const productData = useReactQueryData<IProduct>(QueryKeys.product);
+  const product = useBoundStore(state => state.product);
+  const resetData = useBoundStore(state => state.resetData);
 
   const averageRatings = useMemo(() => {
-    if (!productData || productData.ratings.length === 0) return null;
-    const _averageRatings = productData.ratings.reduce((a: number, b: number) => a + b, 0) / productData.ratings.length;
+    if (!product || product.ratings.length === 0) return null;
+    const _averageRatings = product.ratings.reduce((a: number, b: number) => a + b, 0) / product.ratings.length;
     return Math.floor(_averageRatings * 100) / 100;
-  }, [productData])
+  }, [product])
 
   const handleSelectColor = useCallback((color: IProductColor) => {
     if (!!productColorSub) productColorSub.next(color);
   }, [productColorSub]);
-
 
   const infoButtonHandle = () => {
     if (onInfo) {
@@ -64,15 +60,7 @@ const ARPageController = (props: ARPageControllerProps) => {
   };
 
   const scanButtonHandle = () => {
-    queryClient.removeQueries(QueryKeys.product, { exact: true });
-    queryClient.removeQueries(QueryKeys.compareProduct, { exact: true });
-    queryClient.removeQueries(QueryKeys.productComments, { exact: true });
-    queryClient.removeQueries(QueryKeys.compareProducts, { exact: true });
-    queryClient.removeQueries(QueryKeys.buttonAnimationContent, {
-      exact: true,
-    });
-    queryClient.removeQueries(QueryKeys.productfinder, { exact: true });
-    queryClient.removeQueries(QueryKeys.imageTargetsCodes, { exact: true });
+    resetData();
     appLoadingStateEvent.next(true);
     navigate("/scan-page");
   };
@@ -101,7 +89,7 @@ const ARPageController = (props: ARPageControllerProps) => {
           }}
         >
           <Grid sx={{ position: 'relative' }}>
-            {productData.arObjectColors && (<ColorPicker onSelectColor={handleSelectColor} />)}
+            {product?.arObjectColors && (<ColorPicker onSelectColor={handleSelectColor} />)}
 
             <IconButton
               sx={{ p: 0, zIndex: 2 }}
@@ -171,7 +159,7 @@ const ARPageController = (props: ARPageControllerProps) => {
               lineHeight: 1,
               color: theme => theme.palette.text.secondary,
               fontWeight: 700
-            }}>{productData?.name}</Typography>
+            }}>{product?.name}</Typography>
 
             <Button sx={{
               padding: "5px 10px",

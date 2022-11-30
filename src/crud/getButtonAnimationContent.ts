@@ -7,6 +7,7 @@ const useLocalData = process.env.REACT_APP_STATIC_DATA;
 const BUTTON_ANIMATION_CONTENT_QUERY = `
 *[_type=="button" && product['_ref'] == $productId]{
   buttonName,
+  actionType,
   'popupTitle': popupTitle[$lng],
   'popupContent': popupContent[$lng][]{
     ...,
@@ -27,11 +28,15 @@ const BUTTON_ANIMATION_CONTENT_QUERY = `
   'iosScreenOverlay': iosScreenOverlay.asset->['url'],
   hasModelOverlay,
   modelOverlayObjectname,
-  'arModelOverlay': arModelOverlay.asset->['url'],
+  'arModelOverlay': arModelOverlay[$lng].asset->['url'],
   arModelOverlayPlaytime,
   arModelOverlayBgColor,
   overlayHideModel,
-  arOverlayPosition
+  arOverlayPosition,
+  'videoContent': videoContent[$lng].asset->['url'],
+  'customContent': customContent[$lng],
+  link,
+  phoneNumber
 }
 `;
 

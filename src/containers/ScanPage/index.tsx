@@ -2,32 +2,34 @@
 // this current version includes image targets will be tackled after the holiday
 
 import { Box, Toolbar } from "@mui/material";
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppGrid, LoadingBox } from "src/components";
 import {
   qrdisplayPipelineModule,
   qrprocessPipelineModule,
 } from "./qrprocessPipelineModule";
-import { useQuery } from "react-query";
-import { QueryKeys } from "src/core/declarations/enum";
+import CameraSquare from "./CameraSquare";
+import { map, Subject, filter, throttle, interval } from "rxjs";
+import { useAppContext } from "src/core/events";
+import { StoreStatus } from "src/core/declarations/enum";
+import { useBoundStore } from "src/core/store";
 import { getFirstProductQRCodes } from "src/crud";
-import { Subject } from "rxjs";
-import { IQRCodeData } from "src/core/declarations/app";
+import { IStore } from "src/core/declarations/app";
 import { AframeComponent, AFrameScene } from "src/A-Frame/aframeScene";
 import qrScanPage from 'src/A-Frame/views/qr-scan.view.html';
-import BackgroundMask from "./BackgroundMask";
 import CameraSquareWrapper from "./CameraSquare";
-import ScanPageDetails from "./ScanPageDetails";
+import { useTranslation } from "react-i18next";
+import BackgroundMask from "./BackgroundMask";
 import useProductQRValue from "./useProductQRValue";
-import { useReactQueryData } from "src/hooks";
+import ScanPageDetails from "./ScanPageDetails";
 
 declare let XR8: any;
 declare let XRExtras: any;
 interface ICompopentGenerator {
   (
     onQrScan: (productText: string) => void,
-    imageTargets: string[] | undefined,
+    imageTargets: string[] | null,
     showImageTarget: ({ detail: { name } }: { detail: { name: string } }) => void,
   ): Array<AframeComponent>;
 };
@@ -82,16 +84,75 @@ const components: ICompopentGenerator =
   }
 
 const ScanPage = () => {
+  const { appTheme, appLoadingStateEvent } = useAppContext();
   const navigate = useNavigate();
 
-  const qrCodeData = useReactQueryData<IQRCodeData>(QueryKeys.qrCode)
-  const onCameraUpdateEvent = useRef(new Subject<string>());
+  const { t, i18n } = useTranslation();
+  const storeData = useBoundStore(state => state.store);
 
-  const { isFetched: imageTargetsFetched, data: imageTargetData } = useQuery(QueryKeys.imageTargetsCodes, () =>
-    getFirstProductQRCodes(qrCodeData?.id as string)
-      // FIXME: temporary fix => should adjust api instead
-      .then((qrCodes) => qrCodes.slice(0, 5))
-  );
+  const onCameraUpdateEvent = useRef(new Subject<string>());
+  const productFinderButton = useRef<HTMLButtonElement | null>(null);
+
+  const [productQrText, setProductQrText] = useState("");
+
+  const storeId = useBoundStore(state => state.store?.id);
+  const { product, productStatus, getByQR } = useBoundStore(({ product, productStatus, getByQR }) => ({ product, productStatus, getByQR }));
+  const { imageTargetCodes, imageTargetCodesStatus, setImageTargetCodes } = useBoundStore(({ imageTargetCodes, imageTargetCodesStatus, setImageTargetCodes }) => ({
+    imageTargetCodes,
+    imageTargetCodesStatus,
+    setImageTargetCodes
+  }))
+
+  useEffect(() => {
+    if (!!storeId) setImageTargetCodes(storeId);
+
+  }, [setImageTargetCodes, storeId]);
+
+  useEffect(() => {
+    // disable app loading page
+    if (appLoadingStateEvent && appLoadingStateEvent.getValue() === true) {
+      appLoadingStateEvent.next(false);
+    }
+  });
+
+  useEffect(() => {
+    /**
+     * if product data successfully returned from server
+     * navigate to AR page
+     */
+    if (product && navigate) {
+      navigate("/ar-page");
+    }
+  }, [product, navigate]);
+
+  useEffect(() => {
+    if (!!productQrText && !!storeData?.id) {
+      getByQR(productQrText, i18n.language, storeData?.id);
+    }
+  }, [productQrText, getByQR, i18n.language, storeData]);
+
+  useEffect(() => {
+    if (onCameraUpdateEvent.current) {
+      const cameraUpdateEvent = onCameraUpdateEvent.current;
+      const subscription = cameraUpdateEvent
+        .pipe(
+          // filter all empty values
+          filter((v) => !!v),
+          // take value once every half second
+          throttle((val) => interval(150))
+        )
+        .subscribe((foundProductQrText) => {
+          if (productQrText !== foundProductQrText) {
+            // found another text set new product Qr text
+            setProductQrText(foundProductQrText);
+          }
+        });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  });
 
   const qrScanHandler = useCallback((productText: string) => {
     onCameraUpdateEvent.current.next(productText || "");
@@ -109,8 +170,8 @@ const ScanPage = () => {
   // }, [])
 
   const registerComponents = useMemo(() => {
-    return components(qrScanHandler, imageTargetData, showImage)
-  }, [qrScanHandler, imageTargetData, showImage])
+    return components(qrScanHandler, imageTargetCodes, showImage)
+  }, [qrScanHandler, imageTargetCodes, showImage])
 
   const { isFetching, isError, productName } = useProductQRValue(onCameraUpdateEvent.current);
 
@@ -120,7 +181,7 @@ const ScanPage = () => {
     }
   }, [productName, navigate])
 
-  if (!imageTargetsFetched) {
+  if (imageTargetCodesStatus === StoreStatus.loading) {
     return (<LoadingBox />)
   }
 
@@ -161,9 +222,8 @@ const ScanPage = () => {
           isError={isError}
           itemName={productName}
         />
-      </AppGrid>
-    </>
-  );
+      </AppGrid >
+    </>)
 };
 
 export default ScanPage;

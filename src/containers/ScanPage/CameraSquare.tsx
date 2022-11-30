@@ -2,7 +2,7 @@ import { Grid, Typography } from '@mui/material';
 import React, { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, Observable } from 'rxjs';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 
 interface CameraSquareProps {
   found: boolean;

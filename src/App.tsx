@@ -1,25 +1,14 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import { QueryCache, QueryClient, QueryClientProvider, useQueryClient } from 'react-query';
+import React, { useEffect, useMemo, useState } from 'react';
 import AppRouter from './routes/AppRouter';
 import { InitialPage, LoginPage } from './containers';
 import { LoadingBox } from './components';
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
 import routeMaps, { AppPages } from './routes/routeMap';
 import { getRootSubPath, useTrackBrowserHeight } from './core/helpers';
-import { AppStore, Context, useAppContext } from 'src/core/store';
+import { AppStore, Context, useAppContext } from './core/events';
 import RouteWithRedirect from './routes/PrivateRoute';
-import { ReactQueryDevtools } from 'react-query/devtools';
 
 const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: Infinity
-    }
-  }
-});
-
 const appStore = new AppStore();
 
 
@@ -76,16 +65,12 @@ function App() {
 
   return (
     <Context.Provider value={appStore}>
-      <QueryClientProvider client={queryClient}>
-        <React.Suspense fallback={<LoadingBox sx={{ height: '100%' }} />}>
-          <BrowserRouter basename={currentRootPath}>
-            <Wrapper />
-          </BrowserRouter>
-        </React.Suspense>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
+      <React.Suspense fallback={<LoadingBox sx={{ height: '100%' }} />}>
+        <BrowserRouter basename={currentRootPath}>
+          <Wrapper />
+        </BrowserRouter>
+      </React.Suspense>
     </Context.Provider>
-
   );
 }
 

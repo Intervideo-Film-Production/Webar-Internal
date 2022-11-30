@@ -4,7 +4,7 @@ import { IProduct } from 'src/core/declarations/app';
 import { LazyImage } from 'src/components';
 import { urlFor } from 'src/crud/api';
 import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 
 interface ICompareProductContentProps {
   product: IProduct;

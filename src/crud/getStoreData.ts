@@ -36,7 +36,7 @@ firstQuestion
  * @param qrValue 
  * @returns 
  */
-export const getQRCodeData = (qrValue: string) => {
+export const getStoreData = (qrValue: string) => {
   return useLocalData !== 'TRUE'
     ? client.fetch<IStore[]>(QRCODE_QUERY, { qrValue: qrValue }).then(res => res[0])
     : getLocalQRCodeData(qrValue);

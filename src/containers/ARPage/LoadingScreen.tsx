@@ -12,8 +12,7 @@ import { styled } from "@mui/material/styles";
 import { AppGrid, LazyImage } from "src/components";
 import { IProduct } from "src/core/declarations/app";
 import { DefaultComponentProps } from "@mui/material/OverridableComponent";
-import { QueryKeys } from "src/core/declarations/enum";
-import { useReactQueryData } from "src/hooks";
+import { useBoundStore } from "src/core/store";
 
 const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
   [`& .${linearProgressClasses.bar}`]: {
@@ -28,7 +27,7 @@ const LoadingScreen = forwardRef(
     }: DefaultComponentProps<GridTypeMap>,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
-    const product = useReactQueryData<IProduct>([QueryKeys.product]);
+    const product = useBoundStore(state => state.product);
     if (!product) return <>Data not available</>;
 
     return (
