@@ -132,7 +132,8 @@ const InitialPage = () => {
         <>
           {/* // FIXME move permission logic to permission page */}
           {/* <PermissionsDialog open={dialogOpen} onClose={handleDialogClose} onPermissionGranted={handlePermissionStatus} /> */}
-          {(!iOS || !!permissionStatus) && (<Navigate to="/allow-scan?showArPage=true" />)}
+          {/* {(!iOS || !!permissionStatus) && (<Navigate to="/allow-scan?showArPage=true" />)} */}
+          <Navigate to="/allow-scan?showArPage=true" />
         </>
 
       )

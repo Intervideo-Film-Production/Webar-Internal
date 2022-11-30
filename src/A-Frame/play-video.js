@@ -4,6 +4,7 @@ export const playVideoComponent = {
   },
   init() {
     const v = document.querySelector(this.data.video)
+    console.log("play");
     setTimeout(() => {
       v.play();
     }, 200)

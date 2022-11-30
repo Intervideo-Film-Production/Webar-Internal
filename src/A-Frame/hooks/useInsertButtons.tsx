@@ -140,6 +140,43 @@ export const useInsertButtons = (
 											}
 										})
 
+										window.addEventListener('focus', () => {
+											console.log("focos");
+											console.log('#guiButton' + btnItem.buttonName);
+											const btn = document.querySelector('#guiButton' + btnItem.buttonName);
+											console.log(btn);
+											btn?.addEventListener('click', (e: unknown) => {
+												const thisBtnBox = (e as CustomEvent).target as HTMLElement;
+												const btnBoxDisabled = thisBtnBox.getAttribute('data-disabled');
+												if (btnBoxDisabled === 'true') return;
+
+												entityEl.setAttribute('animation-mixer', 'clip: ' + btnItem.buttonName);
+												if (btnItem.animationLooping)
+													entityEl.setAttribute("animation-mixer", "loop: true;");
+												else
+													entityEl.setAttribute("animation-mixer", "loop: once;");
+
+												// temporary ignore beardstyle
+												// if (btnItem.hasBeardStyles) {
+												//   if (beardStyleEvent) {
+												//     beardStyleEvent.next(true);
+												//   }
+												// } else {
+
+												if (buttonClickHandle) {
+													buttonClickHandle(btnItem.buttonName);
+													// FIXME temporary if no popup content stop after x seconds
+													// if (!btnItem.popupContent) {
+													// 	setTimeout(() => {
+													// 		buttonClickHandle("");
+													// 	}, 8000)
+													// }
+													// }
+
+												}
+											})
+										})
+
 									}
 									if (child.name.includes('VideoPlane')) {
 										child.visible = false;

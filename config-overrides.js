@@ -5,13 +5,13 @@ module.exports = function override(config) {
         loader: 'html-loader',
     });
 
-    config.module.rules.push({
-        test: /\.(png|jpg|gif|svg|ico|glb)$/,
-        loader: 'file-loader',
-        options: {
-            outputPath: './assets/',
-            name: '[path][name].[ext]?[hash]'
-        }
-    })
+    // config.module.rules.push({
+    //     test: /\.(png|jpg|gif|svg|ico|glb)$/,
+    //     loader: 'file-loader',
+    //     options: {
+    //         outputPath: './assets/',
+    //         name: '[path][name].[ext]?[hash]'
+    //     }
+    // })
     return config
 }

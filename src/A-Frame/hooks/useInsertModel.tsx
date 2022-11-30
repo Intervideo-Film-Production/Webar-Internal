@@ -95,26 +95,28 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 					// currently the app structure is mixed => need to implement in the restructure task
 					// overlay video efect
 
+					console.log("alphaVideoWrapperEl", alphaVideoWrapperEl);
+					console.log("alphaVideoWrapperEl", alphaVideoUrl);
 					// append current product data
 					if (!!alphaVideoWrapperEl && alphaVideoUrl) {
 						// loop="true"
-						alphaVideoWrapperEl.innerHTML = `
-						<video
-							id="alphaVideo${id}"
-							playsinline
-							class="alpha-video-product"
-							preload="auto"
-							src="${alphaVideoUrl}" 
-							type="video/mp4"
-							crossorigin="anonymous"
-						>
-						</video>
-					`;
+						const newAlphaVideoEl = document.createElement("video");
+						newAlphaVideoEl.id = `alphaVideo${id}`;
+						newAlphaVideoEl.setAttribute("playsinline", "");
+						newAlphaVideoEl.className = "alpha-video-product";
+						newAlphaVideoEl.setAttribute("preload", "auto");
+						newAlphaVideoEl.setAttribute("src", alphaVideoUrl);
+						newAlphaVideoEl.setAttribute("type", "video/mp4");
+						newAlphaVideoEl.setAttribute("crossorigin", "anonymous");
 
+						alphaVideoWrapperEl.insertAdjacentElement("beforeend", newAlphaVideoEl);
+				
 						// FIXME
 
 						const alphaVideoProduct = document.querySelector(`#alphaVideo${id}`) as Entity<HTMLVideoElement>;
-						alphaVideoProduct?.addEventListener("canplaythrough", () => {
+						alphaVideoWrapperEl.insertAdjacentElement("beforeend", newAlphaVideoEl);
+
+						setTimeout(() => {
 							if (!!alphaVideoProduct) {
 								try {
 									const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
@@ -134,7 +136,14 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 									console.error(ex);
 								}
 							}
+						},200)
+						console.log("alphaVideoProduct", alphaVideoProduct);
+						alphaVideoProduct?.addEventListener("canplaythrough", () => {
+							console.log("canplaythrough");
+							
 						})
+
+
 					}
 				}
 			})
