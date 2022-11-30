@@ -130,11 +130,11 @@ export const useInsertButtons = (
 											if (buttonClickHandle) {
 												buttonClickHandle(btnItem.buttonName);
 												// FIXME temporary if no popup content stop after x seconds
-												if (!btnItem.popupContent) {
-													setTimeout(() => {
-														buttonClickHandle("");
-													}, 8000)
-												}
+												// if (!btnItem.popupContent) {
+												// 	setTimeout(() => {
+												// 		buttonClickHandle("");
+												// 	}, 8000)
+												// }
 												// }
 
 											}
@@ -188,6 +188,7 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 					const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
 					if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
 
+					console.log("removeAttribute 1");
 					const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
 					alphaVideoMesh?.removeAttribute("play-video");
 					alphaVideoMesh?.removeAttribute("material");

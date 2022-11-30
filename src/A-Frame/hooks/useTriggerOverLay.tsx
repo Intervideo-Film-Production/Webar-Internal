@@ -24,6 +24,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 						setTimeout(() => {
 							try {
 								videoEl.play();
+								console.log("removeAttribute 2");
 
 								const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
 								alphaVideoMesh?.removeAttribute("play-video");

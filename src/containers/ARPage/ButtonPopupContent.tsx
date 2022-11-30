@@ -1,9 +1,14 @@
 import { Box, Dialog, DialogContent, DialogTitle, Divider, IconButton, Rating, Toolbar, Typography } from '@mui/material';
 import { t } from 'i18next';
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { LoadingBox, VideoJS } from 'src/components';
 import CloseIcon from '@mui/icons-material/Close';
 import BlockContent from '@sanity/block-content-to-react';
+import PopupVideoContent from './PopupVideoContent';
+import { Subject } from 'rxjs';
+
+const projectId: string = process.env.REACT_APP_PROJECT_ID as string;
+const dataset: string = process.env.REACT_APP_DATASET as string;
 
 interface IButtonPopupContentProps {
   content?: { [key: string]: any }[];
@@ -13,13 +18,22 @@ interface IButtonPopupContentProps {
 }
 
 const ButtonPopupContent: React.FC<IButtonPopupContentProps> = ({ open, onToggle, content, video }) => {
+  const videoCloseEvent = useMemo(() => new Subject<void>(), []);
+
+  const handleClosed = () => {
+    if (!!video) videoCloseEvent.next();
+    if (!!onToggle) onToggle("")
+  }
+
+
+
   return (
     <Dialog
       fullScreen
       open={open}
       scroll="paper"
       // FIXME
-      onClose={() => { if (!!onToggle) onToggle("") }}
+      onClose={() => { handleClosed(); }}
       keepMounted={true}
     >
       <DialogTitle sx={{
@@ -32,17 +46,28 @@ const ButtonPopupContent: React.FC<IButtonPopupContentProps> = ({ open, onToggle
         <Toolbar />
         <IconButton
           sx={{ marginLeft: 'auto' }}
-          onClick={() => { if (!!onToggle) onToggle("") }}>
+          onClick={() => { handleClosed(); }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ px: 2, mb: '20px' }} >
-        {!!video && (<VideoJS
-          sources={[video]}
-          onReady={v => v.play()}
-        />)}
+        {!!video && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <PopupVideoContent stopVideoEvent={videoCloseEvent} source={video} />
+          </div>
+        )}
         {!!content && (<BlockContent
           blocks={content}
+
+          // className={classes.blockContent}
+          // serializers={serializers}
+          // blocks={beardStyles[beardStyleIndex].popupContent}
+          // imageOptions={{ w: 400, auto: 'format', fit: 'max' }}
+          projectId={projectId}
+          dataset={dataset}
         />)}
         {/* {
         isLoading

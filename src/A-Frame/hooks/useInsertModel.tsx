@@ -118,18 +118,18 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 							if (!!alphaVideoProduct) {
 								try {
 									const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
-									alphaVideoMesh?.removeAttribute("play-video");
-									alphaVideoMesh?.removeAttribute("material");
-									alphaVideoMesh?.removeAttribute("position");
-
-									alphaVideoMesh?.removeAttribute("scale");
-									alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${id}`);
-									alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
-									alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
-									alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
+									// FIXME too many timeout
 									setTimeout(() => {
-										alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
-									}, 500)
+
+										alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${id}`);
+										alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
+										alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
+										alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
+										setTimeout(() => {
+											alphaVideoMesh?.setAttribute('visible', 'true'); //disable water video
+										}, 500)
+									}, 200)
+
 								} catch (ex) {
 									console.error(ex);
 								}
