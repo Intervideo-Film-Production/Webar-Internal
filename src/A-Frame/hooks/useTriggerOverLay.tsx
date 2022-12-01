@@ -32,6 +32,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 								alphaVideoMesh?.removeAttribute("position");
 								alphaVideoMesh?.removeAttribute("scale");
 								alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${btnName}`);
+								alphaVideoMesh?.setAttribute('data-is-product', 'false');
 								alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
 								alphaVideoMesh?.setAttribute("position", overlayPosition);
                 alphaVideoMesh?.setAttribute("scale", overlayScale);

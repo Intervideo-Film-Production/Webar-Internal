@@ -323,7 +323,7 @@ const AScene = memo((props: AFrameComponentProps) => {
     [arResourcesLoadEvent, aFrameModelLoadedEvent, productColorSub]
   );
   useMaxTouchPoints();
-  useInsertModel(productDataSub);
+  useInsertModel(productDataSub, aFrameModelLoadedEvent);
   useInsertButtonOverlays(buttonListSub);
   useInsertButtonSound(buttonListSub);
   useInsertButtons(buttonListSub, buttonHandleEventRef.current);

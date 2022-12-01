@@ -1,12 +1,12 @@
 import { Entity, Scene } from "aframe";
 import { useEffect } from "react";
-import { pairwise, startWith, Subject } from "rxjs";
+import { pairwise, startWith, Subject, Subscription } from "rxjs";
 import { IProduct } from "src/core/declarations/app";
 import { modelRef, ProductTypes } from "src/core/declarations/enum";
 
-const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
+const useInsertModel = (modelLinkSub: Subject<IProduct>, modelLoad: Subject<any>) => {
 	useEffect(() => {
-
+		let modelLoadedSubscription: Subscription;
 		const subscription = modelLinkSub
 			.pipe(
 				startWith(null),
@@ -95,8 +95,6 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 					// currently the app structure is mixed => need to implement in the restructure task
 					// overlay video efect
 
-					console.log("alphaVideoWrapperEl", alphaVideoWrapperEl);
-					console.log("alphaVideoWrapperEl", alphaVideoUrl);
 					// append current product data
 					if (!!alphaVideoWrapperEl && alphaVideoUrl) {
 						// loop="true"
@@ -110,13 +108,13 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 						newAlphaVideoEl.setAttribute("crossorigin", "anonymous");
 
 						alphaVideoWrapperEl.insertAdjacentElement("beforeend", newAlphaVideoEl);
-				
+
 						// FIXME
 
 						const alphaVideoProduct = document.querySelector(`#alphaVideo${id}`) as Entity<HTMLVideoElement>;
 						alphaVideoWrapperEl.insertAdjacentElement("beforeend", newAlphaVideoEl);
 
-						setTimeout(() => {
+						modelLoadedSubscription = modelLoad.subscribe(() => {
 							if (!!alphaVideoProduct) {
 								try {
 									const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
@@ -125,6 +123,7 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 
 										alphaVideoMesh?.setAttribute('play-video', `video: #alphaVideo${id}`);
 										alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${id}; color: ${alphaVideoBgColor}; side: double; depthTest: true;`);
+										alphaVideoMesh?.setAttribute('data-is-product', 'true');
 										alphaVideoMesh?.setAttribute("position", alphaVideoPosition);
 										alphaVideoMesh?.setAttribute("scale", alphaVideoScale);
 										setTimeout(() => {
@@ -136,20 +135,19 @@ const useInsertModel = (modelLinkSub: Subject<IProduct>) => {
 									console.error(ex);
 								}
 							}
-						},200)
-						console.log("alphaVideoProduct", alphaVideoProduct);
-						alphaVideoProduct?.addEventListener("canplaythrough", () => {
-							console.log("canplaythrough");
-							
 						})
+						// setTimeout(() => {
 
-
+						// }, 200)
 					}
 				}
 			})
 
-		return () => { subscription.unsubscribe(); }
-	}, [modelLinkSub])
+		return () => {
+			subscription.unsubscribe();
+			modelLoadedSubscription?.unsubscribe();
+		}
+	}, [modelLinkSub, modelLoad])
 }
 
 export default useInsertModel;

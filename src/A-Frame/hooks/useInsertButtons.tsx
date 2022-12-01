@@ -120,6 +120,11 @@ export const useInsertButtons = (
 											else
 												entityEl.setAttribute("animation-mixer", "loop: once;");
 
+											const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+											const aProductVideoIsPlaying = alphaVideoMesh?.getAttribute('play-video');
+											if (!!aProductVideoIsPlaying) {
+												alphaVideoMesh?.setAttribute('product-video-pause', 'true');
+											}
 											// temporary ignore beardstyle
 											// if (btnItem.hasBeardStyles) {
 											//   if (beardStyleEvent) {
@@ -141,12 +146,8 @@ export const useInsertButtons = (
 										})
 
 										window.addEventListener('focus', () => {
-											console.log("focos");
-											console.log('#guiButton' + btnItem.buttonName);
 											const btn = document.querySelector('#guiButton' + btnItem.buttonName);
-											console.log(btn);
 											btn?.addEventListener('click', (e: unknown) => {
-												console.log('click triggered');
 												const thisBtnBox = (e as CustomEvent).target as HTMLElement;
 												const btnBoxDisabled = thisBtnBox.getAttribute('data-disabled');
 												if (btnBoxDisabled === 'true') return;
@@ -178,6 +179,9 @@ export const useInsertButtons = (
 											})
 
 											enableButtons();
+
+											const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+											alphaVideoMesh?.setAttribute('product-video-pause', 'false');
 										})
 
 									}
@@ -216,9 +220,10 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 
 				if (!buttonName) {
 					enableButtons();
+					const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
+					alphaVideoMesh?.setAttribute('product-video-pause', 'false');
 
 					// disable all overlay as well when button should be displayed since this means a specific button animation ends
-					document.querySelector('#alphaVideoMesh')?.setAttribute('visible', 'false');
 					// display ar model if hidden before
 					const modelContainer = document.querySelector("#modelContainer");
 					modelContainer?.setAttribute("visible", "true");
@@ -227,10 +232,12 @@ export const useEnableButtonsFromExternalEvent = (buttonToggleEvent?: Subject<st
 					const pinchScaleAttr = modelContainer?.getAttribute("xrextras-pinch-scale");
 					if (pinchScaleAttr == null) modelContainer?.setAttribute("xrextras-pinch-scale", "");
 
-					console.log("removeAttribute 1");
-					const alphaVideoMesh = document.querySelector('#alphaVideoMesh');
-					alphaVideoMesh?.removeAttribute("play-video");
-					alphaVideoMesh?.removeAttribute("material");
+					const isProductAlpha = alphaVideoMesh.getAttribute("data-is-product");
+					if (isProductAlpha !== 'true') {
+						document.querySelector('#alphaVideoMesh')?.setAttribute('visible', 'false');
+						alphaVideoMesh?.removeAttribute("play-video");
+						alphaVideoMesh?.removeAttribute("material");
+					}
 
 					// stop all playing audio
 					const buttonAudios = document.querySelectorAll(`.ar-button-audio`) as NodeListOf<HTMLAudioElement>;
