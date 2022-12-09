@@ -4,11 +4,9 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import { InfoIcon, LanguageIcon } from 'src/components/icons';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useQueryClient } from 'react-query';
 import { TabPanel } from 'src/components';
-import { QueryKeys } from 'src/core/declarations/enum';
-import { ISupportLanguage } from 'src/core/declarations/app';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
+import { useBoundStore } from 'src/core/store';
 
 interface IinfoMenuProps {
 	open: boolean;
@@ -33,9 +31,23 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 	const { appTheme } = useAppContext();
 	const { t, i18n } = useTranslation();
 	const [tabPanel, setTabPanel] = useState(0);
-	const queryClient = useQueryClient();
 
-	const supportedLanguages = queryClient.getQueryData<ISupportLanguage[]>(QueryKeys.language);
+	const supportedLanguages = useBoundStore(state => state.languages);
+	const {
+		product,
+		store,
+		getById,
+		getButtonContents,
+		getSearchCriteria,
+		getSearchCriteriaValue
+	} = useBoundStore(state => ({
+		product: state.product,
+		store: state.store,
+		getById: state.getById,
+		getButtonContents: state.getButtonContents,
+		getSearchCriteria: state.getSearchCriteria,
+		getSearchCriteriaValue: state.getSearchCriteriaValue
+	}));
 
 	const handleClose = () => {
 		if (onClose) onClose();
@@ -44,15 +56,19 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 
 	const switchLanguageHandle = (lng: string) => {
 		i18n.changeLanguage(lng, (err) => {
-			// if no error refetch all available queries to get localized data
-			if (!err) {
-				queryClient.invalidateQueries({
-					refetchActive: true,
-					refetchInactive: true
-				});
+			if (err) {
+				console.error("an error when trying to change language");
+				return;
+			}
+
+			// refetch all data
+			if (!!product?.id && !!store?.id) {
+				getById(product.id, lng, store.id);
+				getButtonContents(product.id, lng);
+				getSearchCriteria(lng);
+				getSearchCriteriaValue(lng);
 			}
 		});
-
 		handleClose();
 	}
 
@@ -96,7 +112,7 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 					<IconButton sx={{ p: 0 }} onClick={handleClose}>
 						<CloseIcon
 							sx={theme => ({ ...theme.arPageStyles?.infoMenu.navigationIcons })}
-							// style={{ ...appTheme.getValue().arPageStyles?.infoMenu.navigationIcons }}
+						// style={{ ...appTheme.getValue().arPageStyles?.infoMenu.navigationIcons }}
 						/>
 					</IconButton>
 				</Grid>

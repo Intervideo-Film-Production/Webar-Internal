@@ -1,56 +1,48 @@
-import React from "react";
-import { Redirect, Route, Switch, useLocation } from "react-router-dom";
-import { AppHeader, LoginPage } from "../containers";
+import React from 'react';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { AppHeader } from "../containers";
 
-import routeMaps, { AppPages } from "./routeMap";
 import { ThemeProvider } from "@emotion/react";
 import { Container, CssBaseline, ThemeOptions } from "@mui/material";
-import PrivateRoute from "./PrivateRoute";
 import createAppTheme from "../core/theme";
-import { useQueryClient } from "react-query";
-import { QueryKeys } from "../core/declarations/enum";
-import { IQRCodeData } from "../core/declarations/app";
 // import CookieConsent from "src/components/CookieConsent";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 import { FontLoader } from "src/components/FontLoader";
-import RegisterAframe from "src/A-Frame/RegisterAframe";
+// import RegisterAframe from "src/A-Frame/RegisterAframe";
 import queryString from "query-string";
-
-const loginEnabled = process.env.REACT_APP_ENABLE_LOGIN === "TRUE";
-const script8thWallDisabled = process.env.REACT_APP_8THWALL_DISABLED;
+import { useBoundStore } from "src/core/store";
 
 const AppRouter = () => {
   const { appTheme } = useAppContext();
-  const queryClient = useQueryClient();
-  const qrCodeData = queryClient.getQueryData(QueryKeys.qrCode) as IQRCodeData;
+  const storeData = useBoundStore(({ store }) => store);
   const location = useLocation();
-  const brandName = qrCodeData?.brandName;
-  const logo = qrCodeData?.logo;
-  const fontSetting = qrCodeData?.fontSetting;
-  const headerStyles = qrCodeData?.headerStyles;
-  const loadingBoxStyles = qrCodeData?.loadingBoxStyles;
-  const arPageStyles = qrCodeData?.arPageStyles;
-  const homePageStyles = qrCodeData?.homePage?.homePageStyles;
-  const scanPageStyles = qrCodeData?.scanPageStyles;
-  const productFinderStyles = qrCodeData?.productFinderStyles;
-  const coreTheme = qrCodeData?.coreTheme;
+  const brandName = storeData?.brandName;
+  const logo = storeData?.logo;
+  const fontSetting = storeData?.fontSetting;
+  const headerStyles = storeData?.headerStyles;
+  const loadingBoxStyles = storeData?.loadingBoxStyles;
+  const arPageStyles = storeData?.arPageStyles;
+  const homePageStyles = storeData?.homePage?.homePageStyles;
+  const scanPageStyles = storeData?.scanPageStyles;
+  const productFinderStyles = storeData?.productFinderStyles;
+  const coreTheme = storeData?.coreTheme;
 
   const theme = createAppTheme(
     !!coreTheme
       ? coreTheme.fontFamily
       : '"Roboto", "Helvetica", "Arial", sans-serif',
     !!coreTheme ? (JSON.parse(coreTheme.styles) as ThemeOptions) : {},
-    fontSetting || {},
+    fontSetting,
     !!headerStyles ? JSON.parse(headerStyles.styles) : null,
     !!loadingBoxStyles ? JSON.parse(loadingBoxStyles.styles) : null,
     {
       loadingScreen:
         arPageStyles && arPageStyles.loadingScreen
           ? {
-              ...JSON.parse(arPageStyles.loadingScreen.styles),
-              showProductHeadline:
-                arPageStyles.loadingScreen.showProductHeadline,
-            }
+            ...JSON.parse(arPageStyles.loadingScreen.styles),
+            showProductHeadline:
+              arPageStyles.loadingScreen.showProductHeadline,
+          }
           : null,
       productClaim:
         arPageStyles && arPageStyles.productClaim
@@ -80,6 +72,9 @@ const AppRouter = () => {
         arPageStyles && arPageStyles.buttonPopupContent
           ? JSON.parse(arPageStyles.buttonPopupContent.styles)
           : null,
+      buttonDrawerContent: arPageStyles && arPageStyles.buttonDrawerContent
+      ? JSON.parse(arPageStyles.buttonDrawerContent.styles)
+      : null,
       beardStyles:
         arPageStyles && arPageStyles.beardStyles
           ? JSON.parse(arPageStyles.beardStyles.styles)
@@ -96,7 +91,7 @@ const AppRouter = () => {
 
   appTheme.next(theme);
 
-  if (!qrCodeData) {
+  if (!storeData) {
     let { sid, productqr } = queryString.parse(location.search) as {
       sid: string | null;
       productqr: string | null;
@@ -108,13 +103,13 @@ const AppRouter = () => {
       localStorage.setItem("productqr", productqr);
     }
 
-    if (!!localStorage.getItem("storeID")) return <Redirect to="/initialize" />;
+    if (!!localStorage.getItem("storeID")) return <Navigate to="/initialize" />;
   }
 
   return (
     <>
+      {/* FIXME */}
       {/* Register Aframe */}
-      {script8thWallDisabled ? null : <RegisterAframe />}
 
       <ThemeProvider theme={theme}>
         {/* Css normalise */}
@@ -132,23 +127,8 @@ const AppRouter = () => {
         >
           {/* Header */}
           <AppHeader brandName={brandName} logo={logo} />
-
-          <Switch>
-            {routeMaps.map((route, idx) => {
-              return (
-                <PrivateRoute
-                  key={`route-${idx}`}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.component}
-                />
-              );
-            })}
-            {loginEnabled && (
-              <Route path={AppPages.LoginPage} component={LoginPage} />
-            )}
-          </Switch>
-
+          {/* nested route outlet */}
+          <Outlet />
           {/* Cookie Consent */}
           {/* <CookieConsent /> */}
         </Container>

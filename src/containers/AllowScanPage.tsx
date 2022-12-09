@@ -3,12 +3,15 @@ import { Grid, Typography } from '@mui/material';
 import React from 'react';
 import Button from '@mui/material/Button';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 
 // FIXME need data
 const AllowScanPage = () => {
 	const { t } = useTranslation();
-	const history = useHistory();
+	const location = useLocation();
+	const { showArPage } = queryString.parse(location.search) as { showArPage: boolean | null };
+	const navigate = useNavigate();
 
 	return (
 		<>
@@ -52,11 +55,13 @@ const AllowScanPage = () => {
 
 					}}>
 						<Button variant="outlined" style={{ borderRadius: 0, width: "40%" }}
-							onClick={() => { history.push('/'); }}
+							onClick={() => { navigate('/'); }}
 
 						>{t("AllowScanPageCancelButton")}</Button>
 						<Button variant="contained" style={{ borderRadius: 0, width: "40%" }}
-							onClick={() => { history.push('/scan-page'); }}
+							onClick={() => {
+								navigate(showArPage ? '/ar-page' : '/scan-page');
+							}}
 
 						>{t("AllowScanPageAllowButton")}</Button>
 					</Grid>

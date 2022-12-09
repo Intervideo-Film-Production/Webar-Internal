@@ -4,13 +4,11 @@ import LanguageDetector, { CustomDetector, DetectorOptions } from 'i18next-brows
 import HttpApi, { BackendOptions } from 'i18next-http-backend';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  getSupportLanguages,
   GET_TRANSLATION_QUERY
-} from 'src/crud/crud';
-import { useQuery } from "react-query";
-import { QueryKeys } from "../declarations/enum";
+} from 'src/crud';
 import { ISupportLanguage } from "../declarations/app";
 import { Subject } from "rxjs";
+import { useBoundStore } from "../store";
 
 const projectId = process.env.REACT_APP_PROJECT_ID as string;
 const dataset = process.env.REACT_APP_DATASET as string;
@@ -158,20 +156,24 @@ const loadLanguageI18n = (brandId: string, supportLanguage?: ISupportLanguage[])
 
 
 export const useLanguage = () => {
-  const [languageLoaded, setLanguageLoaded] = useState('');
-  const { isFetched: supportedLanguagesFetched, data: supportedLanguages } = useQuery(QueryKeys.language, () => getSupportLanguages());
+  const [language, setLanguage] = useState('');
+  const { languagesStatus, languages, setSupportLanguages } = useBoundStore(({ languagesStatus, languages, setSupportLanguages }) => ({ languagesStatus, languages, setSupportLanguages }))
   const ref = useRef<Subject<any>>(new Subject());
 
+  // get supported languages
+  useEffect(() => {
+    setSupportLanguages();
+  }, [setSupportLanguages])
 
   const loadLanguage = useCallback((brandId: string) => {
-    if (supportedLanguages) {
-      loadLanguageI18n(brandId, supportedLanguages);
+    if (languages) {
+      loadLanguageI18n(brandId, languages);
 
       i18n.on('loaded', function () {
         // if loaded language is not ready => fallback to en
         const hasLng = i18n.hasResourceBundle(i18n.language, 'default');
         if (!hasLng) {
-          const defaultLanguage = supportedLanguages.find(l => l.isDefault);
+          const defaultLanguage = languages.find(l => l.isDefault);
           if (!!defaultLanguage) {
             i18n.changeLanguage(defaultLanguage.code);
             ref.current.next(defaultLanguage.code);
@@ -185,17 +187,17 @@ export const useLanguage = () => {
 
 
     }
-  }, [supportedLanguages]);
+  }, [languages]);
 
   useEffect(() => {
     if (!!ref.current) {
       const subscription = ref.current.subscribe(lng => {
-        setLanguageLoaded(lng);
+        setLanguage(lng);
       });
 
       return () => { subscription.unsubscribe(); }
     }
-  })
+  }, [])
 
-  return { supportedLanguagesFetched, languageLoaded, loadLanguage };
+  return { languagesStatus, language, loadLanguage };
 }

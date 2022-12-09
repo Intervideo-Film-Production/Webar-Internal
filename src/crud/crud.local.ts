@@ -6,12 +6,12 @@
  * Any missing data or assets will be notified as a server error from UX point of view and should be logged to data provider server
 */
 
-import { DataTypes, ProductTypes } from 'src/core/declarations/enum';
+import { ButtonActionTypes, DataTypes, ProductTypes } from 'src/core/declarations/enum';
 import { map, from, lastValueFrom } from 'rxjs';
 import {
   SanityOriginalDataType,
   ISupportLanguage,
-  IQRCodeData,
+  IStore,
   IProduct,
   IComment,
   IButtonContent,
@@ -44,7 +44,7 @@ export const getLocalSupportLanguages = () => {
 
 export const getLocalQRCodeData = (qrValue: string) => {
   return lastValueFrom(
-    localDataTransform<IQRCodeData | null>(data => {
+    localDataTransform<IStore | null>(data => {
 
       const qrCode = data.find(d => d._type === DataTypes.qrCode && d.qrValue === qrValue);
       const brandData = data.find(b => b._type === DataTypes.brand && b._id === qrCode?.brand._ref);
@@ -161,7 +161,9 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
           posz: '',
         },
         beardStyles: beardStyles,
-        productQRCodes: product?.productQRCodes
+        productQRCodes: product?.productQRCodes,
+        arObjectColors: [],
+        hotspots: []
       }
     })
   )
@@ -229,6 +231,8 @@ const getLocalProductList = (predicate: (product: SanityOriginalDataType) => boo
             posy: '',
             posz: '',
           },
+          arObjectColors: [],
+          hotspots: []
         }
       })
     })
@@ -346,6 +350,7 @@ export const getLocalButtonAnimationContent = (productId: string, lng: string) =
 
         return {
           buttonName: b.buttonName,
+          actionType: ButtonActionTypes.DisplayProductFeatures,
           popupTitle: b.popupTitle ? b.popupTitle[lng] : null,
           popupContent: btnContent,
           hasBeardStyles: b.hasBeardStyles,
@@ -364,7 +369,11 @@ export const getLocalButtonAnimationContent = (productId: string, lng: string) =
           arModelOverlayBgColor: b.arModelOverlayBgColor,
           overlayHideModel: b.overlayHideModel,
           arOverlayPosition: b.arOverlayPosition,
-          arOverlayScale: b.arOverlayScale
+          arOverlayScale: b.arOverlayScale,
+          videoContent: "",
+          customContent: [],
+          link: "",
+          phoneNumber: ""
         }
       })
     )

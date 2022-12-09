@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
 	Grid,
 	Typography,
@@ -10,21 +10,20 @@ import {
 } from '@mui/material';
 // @ts-ignore
 // import SwipeableViews from "react-swipeable-views";
-import { useQueries, useQuery, useQueryClient } from 'react-query';
 import { useTranslation } from 'react-i18next';
-import { getSearchCriteria, getSearchCriteriaValues, findMatchingProducts } from 'src/crud/crud';
 import { AppGrid } from '../../components';
-import { QueryKeys } from 'src/core/declarations/enum';
 import { LoadingBox, AppButton, TabPanel, CompareProductContent } from 'src/components';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ProductFinderSettingIcon, AppArrowLeftSquareIcon } from 'src/components/icons';
-import { IProduct, IQRCodeData, ISearchCriteria, ISearchCriteriaValue } from 'src/core/declarations/app';
+import { IProduct, ISearchCriteria, ISearchCriteriaValue } from 'src/core/declarations/app';
 import { deepCopyObject, sortFunction } from 'src/core/helpers';
 import ModifySettingDrawer from './ModifySettingDrawer';
 import {
 	useLocation
 } from 'react-router-dom';
 import queryString from "query-string";
+import { StoreStatus } from 'src/core/declarations/enum';
+import { useBoundStore } from 'src/core/store';
 const isMultipleChoicesAnswerChecked = (answers: { questionId: string, answerId: string | string[] }[], q: ISearchCriteria, aId: string) => {
 	if (!q.isMultipleChoices) return false;
 	const answer = answers.find(qa => qa.questionId === q.id);
@@ -32,7 +31,7 @@ const isMultipleChoicesAnswerChecked = (answers: { questionId: string, answerId:
 	return (answer.answerId as string[]).includes(aId);
 }
 
-const getAnswer = (answers: ISearchCriteriaValue[] | undefined, answerId: string | string[]) => {
+const getAnswer = (answers: ISearchCriteriaValue[] | null, answerId: string | string[]) => {
 	if (Array.isArray(answerId)) {
 		return answerId.map(aId => answers?.find(ans => ans.id === aId)?.answer || '').filter(v => v !== '').join('/');
 	}
@@ -47,23 +46,44 @@ const ProductFinderPage = () => {
 	const [lastQuestion, setLastQuestion] = useState<ISearchCriteria | null>(null);
 	const { t, i18n } = useTranslation();
 	const breadcrumnbsRef = useRef<HTMLUListElement | null>(null);
-	const history = useHistory();
-	const queryClient = useQueryClient();
-	const qrCodeData = queryClient.getQueryData<IQRCodeData>(QueryKeys.qrCode);
+	const navigate = useNavigate();
+	const storeData = useBoundStore(state => state.store);
 	const location = useLocation();
 	let { showFullList } = queryString.parse(location.search) as { showFullList: string }; // FIXME should be boolean
 
-	const [searchCriteria, searchCriteriaValue] = useQueries([
-		{ queryKey: QueryKeys.searchCriteria, queryFn: () => getSearchCriteria(i18n.language) },
-		{ queryKey: QueryKeys.searchCriteriaValue, queryFn: () => getSearchCriteriaValues(i18n.language) },
-	]);
+	const {
+		searchCriteria,
+		searchCriteriaStatus,
+		getSearchCriteria,
+		searchCriteriaValue,
+		searchCriteriaValueStatus,
+		getSearchCriteriaValue
+	} = useBoundStore((state) =>
+	({
+		searchCriteria: state.searchCriteria,
+		searchCriteriaStatus: state.searchCriteriaStatus,
+		getSearchCriteria: state.getSearchCriteria,
+		searchCriteriaValue: state.searchCriteriaValue,
+		searchCriteriaValueStatus: state.searchCriteriaValueStatus,
+		getSearchCriteriaValue: state.getSearchCriteriaValue
+	}));
 
-	const { isIdle, isFetching, refetch, data } = useQuery(
-		[QueryKeys.productfinder],
-		() => findMatchingProducts(selectedAnswers, i18n.language, qrCodeData?.id as string),
-		{
-			enabled: false
-		});
+	useEffect(() => {
+		getSearchCriteria(i18n.language);
+		getSearchCriteriaValue(i18n.language);
+	}, [i18n.language, getSearchCriteria, getSearchCriteriaValue]);
+
+	const { searchProducts, searchProductsStatus, findMatchingProducts, setProduct } = useBoundStore(state => ({
+		searchProducts: state.searchProducts,
+		searchProductsStatus: state.searchProductsStatus,
+		findMatchingProducts: state.findMatchingProducts,
+		setProduct: state.setProduct
+	}));
+
+	const findMatchingProductsQuery = useCallback(() => {
+		if (!storeData?.id) return;
+		findMatchingProducts(selectedAnswers, i18n.language, storeData?.id);
+	}, [findMatchingProducts, selectedAnswers, i18n.language, storeData?.id])
 
 	const handleModifySettingClose = (modifiedSettings?: { questionId: string, answerId: string | string[] }[]) => {
 		setModifySettingOpen(false);
@@ -93,26 +113,28 @@ const ProductFinderPage = () => {
 		// if users want fullist simply put firstquetion to null to ignore applying search questions params in API
 		return !!showFullList
 			? null
-			: !!qrCodeData?.firstQuestion
-				? !!searchCriteria.data
-					? searchCriteria.data.find(q => q.id === qrCodeData?.firstQuestion?._ref) || null
+			: !!storeData?.firstQuestion
+				? !!searchCriteria
+					? searchCriteria.find(q => q.id === storeData?.firstQuestion?._ref) || null
 					: undefined
 				: null;
-	}, [searchCriteria.data, qrCodeData, showFullList])
+	}, [searchCriteria, storeData, showFullList])
 
 	useEffect(() => {
-		if (selectedAnswers.length > 0 && !lastQuestion) { if (refetch) refetch() };
+		if (selectedAnswers.length > 0 && !lastQuestion) {
+			findMatchingProductsQuery();
+		};
 
 		if (lastQuestion && lastQuestion.isSearchable && !lastQuestion.isMultipleChoices && lastQuestion.id === activeStep) {
-			if (refetch) refetch()
+			findMatchingProductsQuery();
 		}
-	}, [selectedAnswers, lastQuestion, activeStep, refetch])
+	}, [selectedAnswers, lastQuestion, activeStep, findMatchingProductsQuery])
 
 	const questions: (ISearchCriteria & { answers: ISearchCriteriaValue[] })[] | null = useMemo(() => {
-		if (!!searchCriteria.data && !!searchCriteriaValue.data) {
-			return searchCriteria.data.map((cr, crIdx) => ({
+		if (!!searchCriteria && !!searchCriteriaValue) {
+			return searchCriteria.map((cr, crIdx) => ({
 				...cr,
-				answers: searchCriteriaValue.data.filter(crVal => crVal.criteriaRef === cr.id)
+				answers: searchCriteriaValue.filter(crVal => crVal.criteriaRef === cr.id)
 			}))
 		} else {
 			return null;
@@ -122,21 +144,20 @@ const ProductFinderPage = () => {
 
 	useEffect(() => {
 		if (firstQuestion === null) {
-			refetch();
+			findMatchingProductsQuery();
 		} else if (firstQuestion !== undefined) {
 			setActiveStep(firstQuestion.id);
 		}
-	}, [firstQuestion, refetch])
+	}, [firstQuestion, findMatchingProductsQuery])
 
 	const handleSelectProduct = (product: IProduct) => {
-		queryClient.setQueryData(QueryKeys.product, () => product);
-		history.push('/ar-page')
+		setProduct(product);
+		navigate('/ar-page');
 	}
 
 	const handleBackToStart = () => {
 		setSelectedAnwsers([]);
 		setLastQuestion(null);
-		queryClient.resetQueries(QueryKeys.productfinder);
 		setTrackStep(activeStep);
 		setActiveStep(firstQuestion?.id || '');
 	}
@@ -181,7 +202,6 @@ const ProductFinderPage = () => {
 			setLastQuestion(q);
 
 			setSelectedAnwsers(deepCopyObject(answers));
-
 		}
 
 		// check next destination
@@ -196,7 +216,13 @@ const ProductFinderPage = () => {
 		}
 	};
 
-	if (searchCriteria.isLoading || searchCriteriaValue.isLoading || isFetching) {
+	const pageLoading = useMemo(() => {
+		return searchCriteriaStatus === StoreStatus.loading
+			|| searchCriteriaValueStatus === StoreStatus.loading
+			|| searchProductsStatus === StoreStatus.loading;
+	}, [searchCriteriaStatus, searchCriteriaValueStatus, searchProductsStatus]);
+
+	if (pageLoading) {
 		return <LoadingBox sx={{ height: '100%' }} />;
 	}
 
@@ -214,15 +240,14 @@ const ProductFinderPage = () => {
 				variant="contained"
 				sx={theme => ({ ...theme.productFinderStyles?.backToScannerButton })}
 				onClick={() => {
-					queryClient.resetQueries(QueryKeys.productfinder);
-					history.push('/scan-page')
+					navigate('/scan-page')
 				}}
 				startIcon={<AppArrowLeftSquareIcon sx={{ fontSize: '1.25rem' }} />}
 			>
 				{t('ProductFinderBackButtonText')}
 			</AppButton>
 
-			{isIdle
+			{searchProductsStatus === StoreStatus.empty
 				? (<>
 
 					<Grid sx={{
@@ -253,7 +278,7 @@ const ProductFinderPage = () => {
 													whiteSpace: 'nowrap',
 													color: '#797979',
 													opacity: sa.questionId === trackStep ? 1 : .5
-												}}>{getAnswer(searchCriteriaValue.data, sa.answerId)}</Typography>
+												}}>{getAnswer(searchCriteriaValue, sa.answerId)}</Typography>
 											</ListItemButton>))}
 									</List>
 								</>
@@ -302,7 +327,7 @@ const ProductFinderPage = () => {
 											variant="contained"
 											size="large"
 											sx={theme => ({ ...theme.productFinderStyles?.showResultsButton })}
-											onClick={() => { refetch() }}>
+											onClick={() => { findMatchingProductsQuery(); }}>
 											{t('ProductFinderShowResultButtonText')}
 										</AppButton>)}
 								</Box>
@@ -333,8 +358,8 @@ const ProductFinderPage = () => {
 						gridGap: '1rem',
 						overflowY: 'auto'
 					}}>
-						{data && data.length > 0
-							? (<>{data.sort(sortFunction).map((p, idx) =>
+						{searchProducts && searchProducts.length > 0
+							? (<>{searchProducts.sort(sortFunction).map((p, idx) =>
 							(
 								<Grid
 									sx={{ width: '100%' }}

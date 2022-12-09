@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AppBar, IconButton, Toolbar, Link } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 import { filter } from 'rxjs';
 import { useTranslation } from 'react-i18next';
 

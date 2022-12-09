@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataTypes, ProductTypes } from "./enum";
+import { DataTypes, ProductColorTypes, ProductTypes, ButtonActionTypes } from "./enum";
 
 interface IComponentStyles {
   [key: string]: string | number;
@@ -77,6 +77,12 @@ declare module '@mui/material/styles' {
         divider: IComponentStyles;
       };
       buttonPopupContent: {
+        root: IComponentStyles;
+        title: IComponentStyles;
+        closeButton: IComponentStyles;
+        content: IComponentStyles;
+      };
+      buttonDrawerContent: {
         root: IComponentStyles;
         title: IComponentStyles;
         closeButton: IComponentStyles;
@@ -199,6 +205,12 @@ declare module '@mui/material/styles' {
         closeButton: IComponentStyles;
         content: IComponentStyles;
       };
+      buttonDrawerContent: {
+        root: IComponentStyles;
+        title: IComponentStyles;
+        closeButton: IComponentStyles;
+        content: IComponentStyles;
+      };
       beardStyles: {
         root: IComponentStyles;
         title: IComponentStyles;
@@ -264,7 +276,7 @@ declare module '@mui/material/Button' {
 
 export interface IAppRoute {
   path: string;
-  component: React.FC<any>;
+  element: JSX.Element;
   name?: string;
   exact?: boolean;
 }
@@ -304,7 +316,7 @@ export interface IFont {
   fontUrl: string;
 };
 
-export interface IQRCodeData {
+export interface IStore {
   id: string;
   brandId: string;
   brandName: string;
@@ -322,6 +334,7 @@ export interface IQRCodeData {
     compareDetails: { styles: string };
     reviewContent: { styles: string };
     buttonPopupContent: { styles: string };
+    buttonDrawerContent: { styles: string };
     beardStyles: { styles: string };
     infoMenu: { styles: string };
   };
@@ -354,7 +367,31 @@ export interface IComment {
   comment: string;
 }
 
-// different product types
+export interface IProductColor {
+  type: ProductColorTypes;
+  value: string;
+  icon?: string;
+}
+
+export interface IProductHotspot {
+  id: string;
+  position: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  labelDistance?: number;
+  hsdistance?: number;
+  offsetY?: number;
+  text: string;
+}
+/**
+ * If IProduct is updated, it is likely that the following queries should be updated
+ * findMatchingProducts
+ * getProduct
+ * getProductById
+ * getAllProductsByQRCode
+*/
 export interface IProduct {
   id: string;
   name: string;
@@ -387,11 +424,14 @@ export interface IProduct {
   };
   beardStyles: IBeardStyle[];
   productQRCodes?: string[];
+  arObjectColors: IProductColor[];
+  hotspots: IProductHotspot[];
 }
 
 export interface IButtonContent {
   buttonName: string;
   icon: string;
+  actionType: ButtonActionTypes;
   popupTitle: string;
   hasAnimation: boolean;
   hasBeardStyles: boolean;
@@ -410,6 +450,11 @@ export interface IButtonContent {
   overlayHideModel: boolean;
   arOverlayPosition: string;
   arOverlayScale: string;
+
+  videoContent: string;
+  customContent: { [key: string]: any; }[];
+  link: string;
+  phoneNumber: string;
 }
 
 export interface ISearchCriteria {
@@ -458,4 +503,5 @@ export type AFrameElement = HTMLElement & {
   material: any;
   emit: Function;
   click: Function;
+  [key: string]: any;
 }

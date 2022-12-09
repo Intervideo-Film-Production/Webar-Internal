@@ -4,24 +4,22 @@ import { AppGrid, AppButton } from 'src/components';
 import { AccountCircle, VpnKey } from '@mui/icons-material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useQueryClient } from 'react-query';
-import { IProduct, IQRCodeData } from 'src/core/declarations/app';
-import { QueryKeys } from 'src/core/declarations/enum';
-import { useHistory } from 'react-router';
-import { useAppContext } from 'src/core/store';
+import { IProduct, IStore } from 'src/core/declarations/app';
+import { useNavigate } from 'react-router-dom';
+import { useAppContext } from 'src/core/events';
+import { useBoundStore } from 'src/core/store';
 
 const LoginPage = () => {
-  const queryClient = useQueryClient();
 
-  const qrCodeData = queryClient.getQueryData(QueryKeys.qrCode) as IQRCodeData;
-  const productData = queryClient.getQueryData(QueryKeys.product) as IProduct;
-  const history = useHistory();
+  const product = useBoundStore(state => state.product);
+  const store = useBoundStore(state => state.store);
+  const navigate = useNavigate();
 
   const { appCredential } = useAppContext();
 
   useEffect(() => {
-    if (!qrCodeData) {
-      history.push('/initialize');
+    if (!store) {
+      navigate('/initialize');
     }
   });
 
@@ -42,10 +40,10 @@ const LoginPage = () => {
 
   const handleSubmit = () => {
     appCredential.next(credential);
-    if (!productData) {
-      history.push('/');
+    if (!product) {
+      navigate('/');
     } else {
-      history.push('/ar-page');
+      navigate('/allow-scan?showArPage=true');
     }
   }
 
@@ -55,7 +53,7 @@ const LoginPage = () => {
       gridTemplateRows: "auto 1fr"
     }}>
       <Toolbar />
-      {qrCodeData && (
+      {store && (
         <Grid sx={{ p: 2 }}>
           <Grid sx={{ mb: 1 }}>
             <TextField

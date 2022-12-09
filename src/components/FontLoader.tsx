@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { filter, map, take } from 'rxjs';
-import { useAppContext } from 'src/core/store';
+import { useAppContext } from 'src/core/events';
 
 export const FontLoader = () => {
   const { appTheme } = useAppContext();

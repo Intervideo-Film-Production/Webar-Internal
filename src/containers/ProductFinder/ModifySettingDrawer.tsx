@@ -6,15 +6,13 @@ import {
   ButtonGroup,
   SwipeableDrawer
 } from "@mui/material";
-// @ts-ignore
-// import SwipeableViews from "react-swipeable-views";
 import { makeStyles } from "@mui/styles";
 import { AppButton } from "src/components";
 import { deepCopyObject } from "src/core/helpers";
 import CloseIcon from "@mui/icons-material/Close";
 import { ISearchCriteria, ISearchCriteriaValue } from "src/core/declarations/app";
 import { isIOS } from "src/core/helpers";
-import { useAppContext } from "src/core/store";
+import { useAppContext } from "src/core/events";
 const iOS = isIOS();
 
 const useAppToogleButtonStyles = makeStyles({
