@@ -66,7 +66,7 @@ function App() {
   return (
     <Context.Provider value={appStore}>
       <React.Suspense fallback={<LoadingBox sx={{ height: '100%' }} />}>
-        <BrowserRouter> 
+        <BrowserRouter basename={currentRootPath}> 
         {/* basename={currentRootPath} */}
           <Wrapper />
         </BrowserRouter>
