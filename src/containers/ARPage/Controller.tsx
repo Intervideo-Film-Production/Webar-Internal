@@ -103,7 +103,6 @@ const ARPageController = (props: ARPageControllerProps) => {
             sx={(theme) => ({
               p: 0,
               backgroundColor: "rgba(0,0,0, .3)",
-              // borderRadius: '12px',
               whiteSpace: "pre-wrap",
               minWidth: '51px',
               width: "51px",
