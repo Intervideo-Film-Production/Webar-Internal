@@ -1,5 +1,14 @@
-import { ARPage, HomePage, ScanPage, ProductFinder,AllowScanPage} from "../containers";
-import { IAppRoute } from "../core/declarations/app";
+import { RouteObject } from "react-router-dom";
+import {
+  ARPage,
+  HomePage,
+  ScanPage,
+  ProductFinder,
+  AllowScanPage,
+  InitialPage,
+  CategorySelection
+} from "../containers";
+import AppRouter from "./AppRouter";
 /**
  * WARNING: for further development, check deployment scenario before developing nested routes
  * currently the app is deployed to a NGINX subpath thus it gets the subpath window.location to serve as BrowserRouter's basename
@@ -13,30 +22,45 @@ export const AppPages = {
   StorePage: '/store',
   ARPage: '/ar-page',
   ScanPage: '/scan-page',
+  Categories: '/categories',
   ProductFinderPage: '/product-finder',
-  AllowScanPage:'/allow-scan',
+  AllowScanPage: '/allow-scan',
 };
 
-const routeMaps: IAppRoute[] = [
+const routeMaps: RouteObject[] = [
   {
-    path: AppPages.HomePage,
-    element: <HomePage />
+    path: AppPages.InitialPage,
+    element: <InitialPage />
   },
   {
-    path: AppPages.ScanPage,
-    element: <ScanPage />
-  },
-  {
-    path: AppPages.ARPage,
-    element: <ARPage />
-  },
-  {
-    path: AppPages.ProductFinderPage,
-    element: <ProductFinder />
-  },
-  {
-    path: AppPages.AllowScanPage,
-    element: <AllowScanPage />
+    path: "/",
+    element: <AppRouter />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />
+      },
+      {
+        path: AppPages.ScanPage,
+        element: <ScanPage />
+      },
+      {
+        path: AppPages.ARPage,
+        element: <ARPage />
+      },
+      {
+        path: AppPages.Categories,
+        element: <CategorySelection />
+      },
+      {
+        path: AppPages.ProductFinderPage,
+        element: <ProductFinder />
+      },
+      {
+        path: AppPages.AllowScanPage,
+        element: <AllowScanPage />
+      }
+    ]
   }
 ];
 

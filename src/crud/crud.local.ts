@@ -405,7 +405,7 @@ export const getLocalSearchCriteriaValues = (lng: string) => {
   )
 }
 
-export const findLocalMatchingProducts = (questionsObject: { [key: string]: any }, lng: string, qrCodeId: string) => getLocalProductList(
+export const findLocalMatchingProducts = (questionsObject: { [key: string]: any }, lng: string, qrCodeId: string, category: string) => getLocalProductList(
   product => {
     const criterias = Object.keys(questionsObject).filter(k => k.includes('questionId'));
 

@@ -19,7 +19,7 @@ export interface IProductState {
 
   searchProducts: IProduct[] | null;
   searchProductsStatus: StoreStatus;
-  findMatchingProducts: (selectedAnswers: Array<{ questionId: string, answerId: string | string[] }>, lng: string, storeId: string) => void;
+  findMatchingProducts: (selectedAnswers: Array<{ questionId: string, answerId: string | string[] }>, lng: string, storeId: string, category: string) => void;
 }
 
 export const createProductSlice: (...args: any) => IProductState = (set) => ({
@@ -55,9 +55,9 @@ export const createProductSlice: (...args: any) => IProductState = (set) => ({
 
   searchProducts: null,
   searchProductsStatus: StoreStatus.empty,
-  findMatchingProducts: async (selectedAnswers, lng, storeId) => {
+  findMatchingProducts: async (selectedAnswers, lng, storeId, category) => {
     set({ searchProductsStatus: StoreStatus.loading });
-    const searchProducts = await findMatchingProducts(selectedAnswers, lng, storeId);
+    const searchProducts = await findMatchingProducts(selectedAnswers, lng, storeId, category);
     set({ searchProducts, searchProductsStatus: StoreStatus.loaded });
   },
 

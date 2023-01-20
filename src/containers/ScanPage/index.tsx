@@ -9,13 +9,10 @@ import {
   qrdisplayPipelineModule,
   qrprocessPipelineModule,
 } from "./qrprocessPipelineModule";
-import CameraSquare from "./CameraSquare";
-import { map, Subject, filter, throttle, interval } from "rxjs";
+import { Subject, filter, throttle, interval } from "rxjs";
 import { useAppContext } from "src/core/events";
 import { StoreStatus } from "src/core/declarations/enum";
 import { useBoundStore } from "src/core/store";
-import { getFirstProductQRCodes } from "src/crud";
-import { IStore } from "src/core/declarations/app";
 import { AframeComponent, AFrameScene } from "src/A-Frame/aframeScene";
 import qrScanPage from 'src/A-Frame/views/qr-scan.view.html';
 import CameraSquareWrapper from "./CameraSquare";
@@ -84,19 +81,18 @@ const components: ICompopentGenerator =
   }
 
 const ScanPage = () => {
-  const { appTheme, appLoadingStateEvent } = useAppContext();
+  const { appLoadingStateEvent } = useAppContext();
   const navigate = useNavigate();
 
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const storeData = useBoundStore(state => state.store);
 
   const onCameraUpdateEvent = useRef(new Subject<string>());
-  const productFinderButton = useRef<HTMLButtonElement | null>(null);
 
   const [productQrText, setProductQrText] = useState("");
 
   const storeId = useBoundStore(state => state.store?.id);
-  const { product, productStatus, getByQR } = useBoundStore(({ product, productStatus, getByQR }) => ({ product, productStatus, getByQR }));
+  const { product, getByQR } = useBoundStore(({ product, productStatus, getByQR }) => ({ product, productStatus, getByQR }));
   const { imageTargetCodes, imageTargetCodesStatus, setImageTargetCodes } = useBoundStore(({ imageTargetCodes, imageTargetCodesStatus, setImageTargetCodes }) => ({
     imageTargetCodes,
     imageTargetCodesStatus,
@@ -139,7 +135,7 @@ const ScanPage = () => {
           // filter all empty values
           filter((v) => !!v),
           // take value once every half second
-          throttle((val) => interval(150))
+          throttle(() => interval(150))
         )
         .subscribe((foundProductQrText) => {
           if (productQrText !== foundProductQrText) {
@@ -161,13 +157,6 @@ const ScanPage = () => {
   const showImage = useCallback(({ detail }: { detail: { name: string } }) => {
     onCameraUpdateEvent.current.next(detail.name || "");
   }, []);
-
-  // FIXME test model only
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     onCameraUpdateEvent.current.next("KTM");
-  //   }, 5000)
-  // }, [])
 
   const registerComponents = useMemo(() => {
     return components(qrScanHandler, imageTargetCodes, showImage)
@@ -211,10 +200,11 @@ const ScanPage = () => {
         <Toolbar />
 
         {/* gray mask just for decoration only */}
-        <BackgroundMask />
+        <BackgroundMask maskImage="imgs/rect.svg" />
+        <BackgroundMask maskImage="imgs/rect_contrast.svg" backgroundColor="rgba(255,255,255,.4)" />
 
         {/* responsive camera square */}
-        <CameraSquareWrapper cameraQRCodeEvent={onCameraUpdateEvent.current} />
+        <CameraSquareWrapper />
 
         {/* qr code scan results and prefined list of items */}
         <ScanPageDetails

@@ -45,7 +45,7 @@ const useProductQRValue = (cameraEvent: Observable<string>) => {
 	}, [cameraEvent, productQrText]);
 
 	return {
-		isFetching: productStatus === StoreStatus.loading,
+		isFetching: productStatus,
 		isError: productStatus === StoreStatus.loaded && !product,
 		productName: product?.name,
 		productQrText

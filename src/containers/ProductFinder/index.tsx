@@ -49,7 +49,7 @@ const ProductFinderPage = () => {
 	const navigate = useNavigate();
 	const storeData = useBoundStore(state => state.store);
 	const location = useLocation();
-	let { showFullList } = queryString.parse(location.search) as { showFullList: string }; // FIXME should be boolean
+	let { showFullList, cat } = queryString.parse(location.search) as { showFullList: string, cat: string }; // FIXME should be boolean
 
 	const {
 		searchCriteria,
@@ -82,8 +82,8 @@ const ProductFinderPage = () => {
 
 	const findMatchingProductsQuery = useCallback(() => {
 		if (!storeData?.id) return;
-		findMatchingProducts(selectedAnswers, i18n.language, storeData?.id);
-	}, [findMatchingProducts, selectedAnswers, i18n.language, storeData?.id])
+		findMatchingProducts(selectedAnswers, i18n.language, storeData?.id, cat);
+	}, [findMatchingProducts, selectedAnswers, i18n.language, storeData?.id, cat])
 
 	const handleModifySettingClose = (modifiedSettings?: { questionId: string, answerId: string | string[] }[]) => {
 		setModifySettingOpen(false);
@@ -431,7 +431,6 @@ const ProductFinderPage = () => {
 			/>
 		</AppGrid>
 	)
-
 }
 
 export default ProductFinderPage;

@@ -8,6 +8,7 @@ const PRODUCT_FINDER_QUERY = (searchParamsCount: number) => `
 *[_type=="product"
   && isDisabled != true
   && _id in *[_type =="qrCode" && @._id == $qrCodeId][0].productList[]._ref
+  && categories._ref == $category
   ${Array(searchParamsCount).fill(null).map((_, i) => (
   `
   && defined(searchCriteria[@.criteria._ref == $questionId${i}
@@ -83,7 +84,7 @@ const PRODUCT_FINDER_QUERY = (searchParamsCount: number) => `
  * @returns 
  */
 
- export const findMatchingProducts = (params: { questionId: string, answerId: string | string[] }[], lng: string, qrCodeId: string) => {
+export const findMatchingProducts = (params: { questionId: string, answerId: string | string[] }[], lng: string, qrCodeId: string, category: string) => {
   // filter empty answers
   const questions = params.filter(q => !(Array.isArray(q.answerId) && q.answerId.length === 0));
 
@@ -92,10 +93,10 @@ const PRODUCT_FINDER_QUERY = (searchParamsCount: number) => `
       ...a,
       [`questionId${i}`]: b.questionId,
       [`answerId${i}`]: b.answerId,
-    }), { lng, qrCodeId }))
+    }), { lng, qrCodeId, category }))
     : findLocalMatchingProducts(questions.reduce((a, b, i) => ({
       ...a,
       [`questionId${i}`]: b.questionId,
       [`answerId${i}`]: b.answerId,
-    }), {}), lng, qrCodeId)
+    }), {}), lng, qrCodeId, category)
 }
