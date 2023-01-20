@@ -152,7 +152,6 @@ const ModifySettingDrawer = ({ open, questions, selectedAnswers, onClose }: IMod
     if (onClose) onClose(isAnswerChanged ? changedAnswer : undefined);
   }
 
-
   const handleValueChange = useCallback((questionId: string, selectAnswerId: string) => {
     const answerIdx = changedAnswer.findIndex(ca => ca.questionId === questionId);
     if (answerIdx >= 0) {
@@ -169,7 +168,6 @@ const ModifySettingDrawer = ({ open, questions, selectedAnswers, onClose }: IMod
     setChangedAnswer(deepCopyObject(changedAnswer));
   }, [changedAnswer])
 
-
   const answersData: IAnswerData[] | null = useMemo(() => {
     return changedAnswer
       ? changedAnswer.map(sa => ({
@@ -178,7 +176,6 @@ const ModifySettingDrawer = ({ open, questions, selectedAnswers, onClose }: IMod
       }))
       : null;
   }, [changedAnswer, questions]);
-
 
   return (
     <SwipeableDrawer

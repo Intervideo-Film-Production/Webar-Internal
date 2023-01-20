@@ -46,7 +46,7 @@ const useBoundStore = create<IBoundStore>((...a) => ({
   ...createProductFinderSlice(...a),
   ...createButtonContentSlice(...a),
   ...createCommentSlice(...a),
-  ...createAggregationSlice(...a)
+  ...createAggregationSlice(...a),
 }));
 
 export { useBoundStore };
