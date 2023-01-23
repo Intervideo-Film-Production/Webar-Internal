@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AppRouter from './routes/AppRouter';
 import { InitialPage, LoginPage } from './containers';
 import { LoadingBox } from './components';
@@ -49,15 +49,14 @@ const Wrapper = () => {
 
 function App() {
   // FIXME
-  // const currentRootPath = useMemo(() => getRootSubPath(), []);
+  const currentRootPath = useMemo(() => getRootSubPath(), []);
   // browser resize event should be bound here to avoid muiltiple executions
   useTrackBrowserHeight();
 
   return (
     <Context.Provider value={appStore}>
       <React.Suspense fallback={<LoadingBox sx={{ height: '100%' }} />}>
-        <BrowserRouter>
-          {/* basename={currentRootPath} */}
+        <BrowserRouter basename={currentRootPath}>
           <Wrapper />
         </BrowserRouter>
       </React.Suspense>
