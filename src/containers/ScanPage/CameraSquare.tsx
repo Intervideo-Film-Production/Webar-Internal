@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 const CameraSquare = memo(() => {
   return (
-    <img style={{ width: '265px', height: '265px' }} src='/imgs/QR_Quad.png' />
+    <img style={{ width: '265px', height: '265px' }} src='./imgs/QR_Quad.png' />
   )
 })
 
