@@ -123,7 +123,7 @@ const ARPageController = (props: ARPageControllerProps) => {
                 height: '51px',
                 position: 'absolute'
               }}
-              src='/imgs/QR_Quad.png'
+              src='./imgs/QR_Quad.png'
             />
             }
           >
