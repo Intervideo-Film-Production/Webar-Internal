@@ -31,7 +31,7 @@ import ButtonContent from "./ButtonContent";
 const ArComponent = memo(() => {
   const { i18n } = useTranslation();
   const location = useLocation();
-  const productId = (location.state as { productId: string })?.productId;;
+  const productId = (location.state as { productId: string })?.productId;
 
   const product = useBoundStore(state => state.product);
   const { buttons, getButtonContents } = useBoundStore(state => ({

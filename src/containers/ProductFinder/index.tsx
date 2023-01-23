@@ -240,7 +240,8 @@ const ProductFinderPage = () => {
 				variant="contained"
 				sx={theme => ({ ...theme.productFinderStyles?.backToScannerButton })}
 				onClick={() => {
-					navigate('/scan-page')
+					navigate('/scan-page');
+					setSelectedAnwsers([]);
 				}}
 				startIcon={<AppArrowLeftSquareIcon sx={{ fontSize: '1.25rem' }} />}
 			>
