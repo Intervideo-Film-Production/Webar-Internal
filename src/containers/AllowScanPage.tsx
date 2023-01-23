@@ -1,5 +1,5 @@
 
-import { Grid, Typography } from '@mui/material';
+import { Grid, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 import Button from '@mui/material/Button';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +20,24 @@ const AllowScanPage = () => {
 				justifyContent="center"
 				alignItems="center"
 				sx={{
-					position: "relative"
+					position: "relative",
+					height: "100%",
+					overflow: 'hidden'
+					// backgroundImage: "url(./imgs/allow-scan.jpg)",
+					// backgroundSize: "auto 85%",
+					// backgroundRepeat: "no-repeat",
+					// backgroundPosition: "73%"
 				}}
 			>
+				<Toolbar />
 				<img
-					src="./imgs/image-content.png"
+					style={{
+						height: 'calc(100% - 56px)',
+						width: 'auto',
+						transform: 'translateX(-13%)'
+					}}
+					// src="./imgs/image-content.png"
+					src="./imgs/allow-scan.jpg"
 					alt="allow-permissions"
 				/>
 				<Grid sx={{
@@ -32,11 +45,11 @@ const AllowScanPage = () => {
 					alignContent: 'flex-start',
 					position: 'absolute',
 					bottom: 0,
-					left: 0,
-					right: 0,
-					background: "#fff",
+					left: '20px',
+					right: '20px',
+					background: "rgba(255,255,255,.8)",
 					pt: 3,
-					pb: 7
+					pb: 3
 				}}>
 					<Typography variant="h3" sx={{
 						px: 1,

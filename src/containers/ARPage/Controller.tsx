@@ -103,7 +103,6 @@ const ARPageController = (props: ARPageControllerProps) => {
             sx={(theme) => ({
               p: 0,
               backgroundColor: "rgba(0,0,0, .3)",
-              borderRadius: '12px',
               whiteSpace: "pre-wrap",
               minWidth: '51px',
               width: "51px",
@@ -118,16 +117,14 @@ const ARPageController = (props: ARPageControllerProps) => {
               }
             })}
             onClick={() => scanButtonHandle()}
-            startIcon={
-              <AppCameraSquareIcon
-                sx={{
-                  position: "absolute",
-                  width: "51px",
-                  height: "51px",
-                  top: 0,
-                  strokeWidth: 10
-                }}
-              />
+            startIcon={<img
+              style={{
+                width: '51px',
+                height: '51px',
+                position: 'absolute'
+              }}
+              src='/imgs/QR_Quad.png'
+            />
             }
           >
             {t("ArPageScanOtherProductButtonText")}

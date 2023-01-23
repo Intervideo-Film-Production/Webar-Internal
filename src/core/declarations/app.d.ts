@@ -385,6 +385,13 @@ export interface IProductHotspot {
   offsetY?: number;
   text: string;
 }
+
+export interface ICategory {
+  id: string;
+  image: string;
+  name: string;
+}
+
 /**
  * If IProduct is updated, it is likely that the following queries should be updated
  * findMatchingProducts

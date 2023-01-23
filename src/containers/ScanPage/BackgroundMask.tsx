@@ -1,7 +1,12 @@
 import { Grid } from '@mui/material';
 import React, { memo } from 'react';
 
-const BackgroundMask = memo(() => <Grid
+interface IBackgroundMaskProps {
+    maskImage: string;
+    backgroundColor?: string;
+}
+
+const BackgroundMask = memo<IBackgroundMaskProps>(({ maskImage, backgroundColor = "rgba(0,0,0,.4)" }) => <Grid
     sx={{
         position: "absolute",
         top: 0,
@@ -9,8 +14,10 @@ const BackgroundMask = memo(() => <Grid
         right: 0,
         bottom: 0,
         display: "flex",
-        background: "rgba(0,0,0,.3)",
-        maskImage: `url("imgs/rect.svg")`,
+        background: backgroundColor,
+        // background: "rgba(0,0,0,.4)",
+        maskImage: `url("${maskImage}")`,
+        // maskImage: `url("imgs/rect.svg")`,
         maskRepeat: "no-repeat",
         maskPosition: "center top",
         maskSize: "1000px 1000px",

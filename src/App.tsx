@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import AppRouter from './routes/AppRouter';
 import { InitialPage, LoginPage } from './containers';
 import { LoadingBox } from './components';
-import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import { Route, BrowserRouter, Routes, useRoutes } from 'react-router-dom';
 import routeMaps, { AppPages } from './routes/routeMap';
 import { getRootSubPath, useTrackBrowserHeight } from './core/helpers';
 import { AppStore, Context, useAppContext } from './core/events';
@@ -15,6 +15,7 @@ const appStore = new AppStore();
 const Wrapper = () => {
   const { appLoadingStateEvent } = useAppContext();
   const [isAppLoading, setIsAppLoading] = useState(false);
+  const element = useRoutes(routeMaps);
 
   useEffect(() => {
     if (appLoadingStateEvent) {
@@ -30,19 +31,7 @@ const Wrapper = () => {
 
   return (
     <>
-      <Routes>
-        <Route path={AppPages.InitialPage} element={<InitialPage />} />
-        <Route path="/" element={<AppRouter />}>
-          {routeMaps.map((route, idx) => <Route key={`route-${idx}`}
-            path={route.path}
-            element={<RouteWithRedirect element={route.element} />}
-          />)}
-          {loginEnabled && (
-            <Route path={AppPages.LoginPage} element={<LoginPage />} />
-          )}
-        </Route>
-      </Routes>
-
+      {element}
       {isAppLoading && (<LoadingBox sx={{
         height: '100%',
         zIndex: 1060,
@@ -59,6 +48,7 @@ const Wrapper = () => {
 };
 
 function App() {
+  // FIXME
   const currentRootPath = useMemo(() => getRootSubPath(), []);
   // browser resize event should be bound here to avoid muiltiple executions
   useTrackBrowserHeight();
@@ -66,8 +56,7 @@ function App() {
   return (
     <Context.Provider value={appStore}>
       <React.Suspense fallback={<LoadingBox sx={{ height: '100%' }} />}>
-        <BrowserRouter basename={currentRootPath}> 
-        {/* basename={currentRootPath} */}
+        <BrowserRouter basename={currentRootPath}>
           <Wrapper />
         </BrowserRouter>
       </React.Suspense>
