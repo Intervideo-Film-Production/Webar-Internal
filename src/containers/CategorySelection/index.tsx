@@ -35,7 +35,7 @@ const CategorySelection: React.FC = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        px: '28px',
+        px: '24px',
         paddingTop: '30px'
       }}>
         <Typography
@@ -58,7 +58,7 @@ const CategorySelection: React.FC = () => {
 
       {/* Category Selection */}
       <Box sx={{
-        px: '28px'
+        px: '24px'
       }}>
         {categories?.map((category, idx) =>
         (<CategoryItem

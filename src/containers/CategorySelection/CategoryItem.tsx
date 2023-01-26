@@ -14,15 +14,15 @@ const CategoryItem: React.FC<ICategoryItemProps & BoxProps> = ({ image, title, .
       sx={{
         display: 'flex',
         boxShadow: '',
-        width: 'calc(100vw - 56px)',
+        width: 'calc(100vw - 48px)',
         backgroundColor: '#fff',
-        marginBottom: '25px'
+        marginBottom: '22px'
       }}>
       <LazyImage
         src={image}
         styles={{
-          width: '143px',
-          height: '143px'
+          width: '125px',
+          height: '125px'
         }} />
       <div style={{
         flexGrow: '1',
@@ -31,7 +31,7 @@ const CategoryItem: React.FC<ICategoryItemProps & BoxProps> = ({ image, title, .
         justifyContent: 'center',
         textAlign: 'center'
       }}>
-        <Typography variant="h5" sx={{ color: '#152436' }}>{title}</Typography>
+        <Typography variant="body1" sx={{ color: '#152436', fontWeight: 400, fontSize: '18px' }}>{title}</Typography>
       </div>
     </Box>
   )
