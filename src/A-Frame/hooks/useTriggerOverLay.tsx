@@ -16,7 +16,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 				const arModelOverlayPlaytime = btnData?.arModelOverlayPlaytime || 0;
 				const chromaColor = btnData?.arModelOverlayBgColor || '0 0 0';
 				const overlayPosition = btnData?.arOverlayPosition || '0 0 0';
-        const overlayScale = btnData?.arOverlayScale || '1 1 1';
+				const overlayScale = btnData?.arOverlayScale || '1 1 1';
 
 				if (!!btnName) {
 					const videoEl = document.querySelector(`#alphaVideo${btnName}`) as Entity<HTMLVideoElement>;
@@ -35,7 +35,7 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 								alphaVideoMesh?.setAttribute('data-is-product', 'false');
 								alphaVideoMesh?.setAttribute('material', `shader: chromakey; src: #alphaVideo${btnName}; color: ${chromaColor}; side: double; depthTest: true;`);
 								alphaVideoMesh?.setAttribute("position", overlayPosition);
-                alphaVideoMesh?.setAttribute("scale", overlayScale);
+								alphaVideoMesh?.setAttribute("scale", overlayScale);
 								alphaVideoMesh?.setAttribute('geometry', {
 									primitive: 'plane',
 									height: 1,
@@ -53,9 +53,9 @@ const useTriggerOverLay = (buttonListSub: Subject<IButtonContent[]>, buttonHandl
 
 					if (!!btnData?.overlayHideModel) {
 						const modelContainer = document.querySelector("#modelContainer");
-            modelContainer?.removeAttribute("xrextras-one-finger-rotate");
-            modelContainer?.removeAttribute("xrextras-pinch-scale");
-            modelContainer?.setAttribute("visible", "false");
+						modelContainer?.removeAttribute("xrextras-one-finger-rotate");
+						modelContainer?.removeAttribute("xrextras-pinch-scale");
+						modelContainer?.setAttribute("visible", "false");
 					}
 
 				}

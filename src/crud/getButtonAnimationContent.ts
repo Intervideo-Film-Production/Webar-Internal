@@ -27,6 +27,7 @@ const BUTTON_ANIMATION_CONTENT_QUERY = `
   'androidScreenOverlay': androidScreenOverlay.asset->['url'],
   'iosScreenOverlay': iosScreenOverlay.asset->['url'],
   hasModelOverlay,
+  arOverlayScale,
   modelOverlayObjectname,
   'arModelOverlay': arModelOverlay[$lng].asset->['url'],
   arModelOverlayPlaytime,
