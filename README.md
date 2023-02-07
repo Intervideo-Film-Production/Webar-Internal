@@ -1,4 +1,9 @@
 # Intervideo WebAR guide
+### Errors
+bugs:
+glass: virtual tryon
+led video projector: 3000 lumen
+robot vacuum cleaner: strong suction power
 
 ### I. WebAR application (Frontend)
 **1. The source code is currently managed from [here](https://github.com/eman2XR/BraunWebAR)**
