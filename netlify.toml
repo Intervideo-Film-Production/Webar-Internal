@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/webar-internal"
+  to = "/index.html"
+  status = 200
+  force = true
