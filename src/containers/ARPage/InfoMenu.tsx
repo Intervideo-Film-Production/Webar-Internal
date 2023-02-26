@@ -103,7 +103,7 @@ const InfoMenu = memo(({ open, onClose, headlineHeight }: IinfoMenuProps) => {
 			}}>
 				<Grid sx={{ display: "flex", justifyContent: "space-between", alignItems: 'center' }}>
 					{tabPanel === 0
-						? (<InfoIcon sx={theme => ({ ...theme.arPageStyles?.infoMenu.navigationIcons })} />)
+						? (<InfoIcon sx={theme => ({...theme.arPageStyles?.infoMenu.navigationIcons })} />)
 						: (<IconButton
 							onClick={() => { setTabPanel(0) }}
 							sx={{ p: 0 }}

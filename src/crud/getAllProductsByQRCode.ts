@@ -13,6 +13,7 @@ const PRODUCT_QUERY_BY_QRCODE = `
   'name': name[$lng],
   productType,
   'productClaim': productClaim[$lng],
+  displayProductClaim,
   'arObjectUrl': arObject.asset->['url'],
   arModelScale,
   'alphaVideoUrl': alphaVideo[$lng].asset->['url'],

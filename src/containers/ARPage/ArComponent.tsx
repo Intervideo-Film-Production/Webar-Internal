@@ -12,12 +12,12 @@ import { Grid, Toolbar } from "@mui/material";
 import { AScene } from "src/A-Frame/AScene";
 import { BehaviorSubject, filter, Subject } from "rxjs";
 import ReviewContent from "./ReviewContent";
-import ButtonDrawerContent from "./ButtonDrawerContent";
+// import ButtonDrawerContent from "./ButtonDrawerContent";
 import {
   IProduct,
   IButtonContent,
   IBeardStyle,
-  IStore,
+  // IStore,
   IProductColor,
 } from "src/core/declarations/app";
 import InfoMenu from "./InfoMenu";
@@ -29,6 +29,12 @@ import { useBoundStore } from "src/core/store";
 import ButtonContent from "./ButtonContent";
 
 const ArComponent = memo(() => {
+  // const [drawerOpen, setDrawerOpen] = useState(false);
+  const [reviewContentOpen, setReviewContentOpen] = useState(false);
+  const [showGrandControl, setShowGrandControl] = useState(true);
+  const [buttonName, setButtonName] = useState("");
+  const [infoMenuOpen, setInfoMenuOpen] = useState(false);
+
   const { i18n } = useTranslation();
   const location = useLocation();
   const productId = (location.state as { productId: string })?.productId;
@@ -79,11 +85,6 @@ const ArComponent = memo(() => {
     }
   }, [headlineRef]);
 
-  // const [drawerOpen, setDrawerOpen] = useState(false);
-  const [reviewContentOpen, setReviewContentOpen] = useState(false);
-  const [showGrandControl, setShowGrandControl] = useState(true);
-  const [buttonName, setButtonName] = useState("");
-  const [infoMenuOpen, setInfoMenuOpen] = useState(false);
 
   const recenterEvent = useMemo(() => new Subject(), []);
   const arButtonToggleEvent = useMemo(() => new Subject<string>(), []);

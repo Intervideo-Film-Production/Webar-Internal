@@ -13,6 +13,7 @@ const PRODUCT_QUERY = `
   'id': _id,
   'name': name[$lng],
   'productClaim': productClaim[$lng],
+  displayProductClaim,
   productType,
   'arObjectUrl': arObject.asset->['url'],
   arModelScale,

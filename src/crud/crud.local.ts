@@ -133,6 +133,7 @@ const getLocalProduct = (predicate: (product: SanityOriginalDataType) => boolean
         id: product?._id as string,
         name: product?.name[lng],
         productClaim: product?.productClaim[lng],
+        displayProductClaim: product?.displayProductClaim,
         // FIXME
         productType: ProductTypes.arObject,
         arObjectUrl: `./sourceData${arObject?.localUrl}`,
@@ -203,6 +204,7 @@ const getLocalProductList = (predicate: (product: SanityOriginalDataType) => boo
           id: product?._id as string,
           name: product?.name[lng],
           productClaim: product?.productClaim[lng],
+          displayProductClaim: product?.displayProductClaim,
           // FIXME
           productType: ProductTypes.arObject,
           arObjectUrl: `./sourceData${arObject?.localUrl}`,

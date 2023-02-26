@@ -54,7 +54,6 @@ const AllowScanPage = () => {
 					<Typography variant="h3" sx={{
 						px: 1,
 						mb: 7,
-						fontSize: '2rem',
 						fontWeight: 600,
 						color: theme => theme.palette.text.secondary,
 						textAlign: 'center'

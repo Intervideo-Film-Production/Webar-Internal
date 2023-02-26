@@ -5,7 +5,7 @@
     <rect x="0" y="0" width="1000" height="1000" fill="white" />
 
     <!-- Everything under a black pixel will be invisible -->
-    <rect x="375" y="138" width="250" height="250" fill="black" />
+    <rect x="391" y="116" width="218" height="218" fill="black" />
   </mask>
 
   <rect id="mask" x="0" y="0" width="1000" height="1000" mask="url(#myMask)" />

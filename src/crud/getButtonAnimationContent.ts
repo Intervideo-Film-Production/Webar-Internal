@@ -35,7 +35,15 @@ const BUTTON_ANIMATION_CONTENT_QUERY = `
   overlayHideModel,
   arOverlayPosition,
   'videoContent': videoContent[$lng].asset->['url'],
-  'customContent': customContent[$lng],
+  'customContent': customContent[$lng][]{
+    ...,
+    _type=='file' => {
+    'url': @.asset->['url']
+    },
+    _type=='image' => {
+      'url': @.asset->['url']
+    }
+  },
   link,
   phoneNumber
 }

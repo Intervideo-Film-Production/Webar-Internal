@@ -62,7 +62,7 @@ const ARPageController = (props: ARPageControllerProps) => {
   const scanButtonHandle = () => {
     resetData();
     appLoadingStateEvent.next(true);
-    navigate("/scan-page");
+    navigate("/categories");
   };
 
   const reviewButtonHandle = () => {
@@ -95,7 +95,7 @@ const ARPageController = (props: ARPageControllerProps) => {
               sx={{ p: 0, zIndex: 2 }}
               onClick={() => infoButtonHandle()}
             >
-              <ProductInfoIcon sx={{ fontSize: 42 }} />
+              <ProductInfoIcon sx={{ fontSize: 42, marginTop: '9px' }} />
             </IconButton>
           </Grid>
 
@@ -104,9 +104,9 @@ const ARPageController = (props: ARPageControllerProps) => {
               p: 0,
               backgroundColor: "rgba(0,0,0, .3)",
               whiteSpace: "pre-wrap",
-              minWidth: '51px',
-              width: "51px",
-              height: "51px",
+              minWidth: '60px',
+              width: "60px",
+              height: "60px",
               textAlign: "center",
               justifyContent: 'center',
               position: "relative",
@@ -119,8 +119,8 @@ const ARPageController = (props: ARPageControllerProps) => {
             onClick={() => scanButtonHandle()}
             startIcon={<img
               style={{
-                width: '51px',
-                height: '51px',
+                width: '60px',
+                height: '60px',
                 position: 'absolute'
               }}
               src='./imgs/QR_Quad.png'

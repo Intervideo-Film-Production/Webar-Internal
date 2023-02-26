@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppGrid } from 'src/components';
 import { useBoundStore } from 'src/core/store';
 import CategoryItem from './CategoryItem';
+import NavigationButtons from './NavigationButtons';
 
 const CategorySelection: React.FC = () => {
   const navigate = useNavigate();
@@ -43,17 +44,9 @@ const CategorySelection: React.FC = () => {
           color="primary"
           sx={{
             fontWeight: 700,
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            marginBottom: '1rem'
           }}>{t("ChooseCategoryText")}</Typography>
-        <IconButton
-          onClick={() => { navigate('/scan-page'); }}
-        >
-          <img style={{
-            width: '47px',
-            height: '47px',
-            objectPosition: '3px 3px'
-          }} src='./imgs/QR_square.png' />
-        </IconButton>
       </Box>
 
       {/* Category Selection */}
@@ -68,6 +61,8 @@ const CategorySelection: React.FC = () => {
           title={category.name} />
         ))}
       </Box>
+
+      <NavigationButtons />
     </AppGrid>
   )
 }

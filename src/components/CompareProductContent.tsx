@@ -59,14 +59,22 @@ const CompareProductContent = memo((props: ICompareProductContentProps & BoxProp
         </Grid>
       </Grid>}
     />
-    <Typography sx={{
-      color: product.fgColor || "#fff",
+    <Box sx={{
       position: "absolute",
-      whiteSpace: "pre-wrap",
-      fontWeight: 700,
-      top: theme => theme.spacing(1),
-      left: theme => theme.spacing(1)
-    }}>{product.name}</Typography>
+      top: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: "#152436",
+      p: 1
+    }}>
+      <Typography sx={{
+        color: "#fff",
+        whiteSpace: "pre-wrap",
+        fontWeight: 700,
+        // top: theme => theme.spacing(1),
+        // left: theme => theme.spacing(1)
+      }}>{product.name}</Typography>
+    </Box>
     {children}
   </Box >)
 });

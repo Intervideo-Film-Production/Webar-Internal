@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 const CameraSquare = memo(() => {
   return (
-    <img style={{ width: '265px', height: '265px' }} src='./imgs/QR_Quad.png' />
+    <img style={{ width: '231px', height: '231px' }} src='./imgs/QR_Quad.png' />
   )
 })
 
@@ -29,7 +29,7 @@ const CameraSquareWrapper: React.FC = memo(() => {
           display: "flex",
           alignItems: "center",
           position: "absolute",
-          top: "130px",
+          top: "110px",
           justifyContent: "center",
         }}
       >

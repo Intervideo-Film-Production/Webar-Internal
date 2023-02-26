@@ -50,7 +50,7 @@ const AppHeader = ({ brandName, logo }: AppHeaderProps) => {
       color="secondary"
     >
       <Toolbar sx={{ paddingLeft: "20px", "paddingRight": "20px" }}>
-        <Link sx={theme => ({ ...theme.headerStyles.logo })} href="/">
+        <Link sx={theme => ({ ...theme.headerStyles.logo })} href="https://intervideo.de/" target="_blank">
           <img style={{ height: '100%', width: 'auto' }} src={logo} alt={brandName} />
         </Link>
         <IconButton onClick={() => shareLinkHandle()} sx={theme => ({

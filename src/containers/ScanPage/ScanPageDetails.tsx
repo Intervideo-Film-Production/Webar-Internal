@@ -120,11 +120,16 @@ const ScanPageDetails: React.FC<IScanPageDetailsProps> = (props) => {
 
         <ScanPageProductList />
       </Grid> */}
+      <Typography variant="h5" sx={{ color: "#000", fontWeight: 'normal', my: 1 }}>
+        {t("ScanPageHelperAndText")}
+      </Typography>
 
       <AppButton
         onClick={() => { navigate('/categories') }}
         variant="contained"
         sx={theme => ({
+          width: "230px",
+          height: "230px",
           whiteSpace: 'pre-wrap',
           ...theme.scanPageStyles.productFinderButton
         })}

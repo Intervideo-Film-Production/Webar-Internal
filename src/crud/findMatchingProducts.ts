@@ -22,6 +22,7 @@ const PRODUCT_FINDER_QUERY = (searchParamsCount: number) => `
   'name': name[$lng],
   productType,
   'productClaim': productClaim[$lng],
+  displayProductClaim,
   'arObjectUrl': arObject.asset->['url'],
   arModelScale,
   'alphaVideoUrl': alphaVideo[$lng].asset->['url'],

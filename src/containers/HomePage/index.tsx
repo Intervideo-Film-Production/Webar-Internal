@@ -76,8 +76,6 @@ const HomePage = () => {
             </AppButton>
           </Grid>
         </AppGrid>
-
-
       </AppGrid>
     </>
   )

@@ -403,6 +403,7 @@ export interface IProduct {
   id: string;
   name: string;
   productClaim: string;
+  displayProductClaim: boolean;
   productType: ProductTypes;
   arObjectUrl: string;
   alphaVideoUrl: string;

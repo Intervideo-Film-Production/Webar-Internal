@@ -24,6 +24,7 @@ import {
 import queryString from "query-string";
 import { StoreStatus } from 'src/core/declarations/enum';
 import { useBoundStore } from 'src/core/store';
+import NavigationButtons from '../CategorySelection/NavigationButtons';
 const isMultipleChoicesAnswerChecked = (answers: { questionId: string, answerId: string | string[] }[], q: ISearchCriteria, aId: string) => {
 	if (!q.isMultipleChoices) return false;
 	const answer = answers.find(qa => qa.questionId === q.id);
@@ -236,17 +237,6 @@ const ProductFinderPage = () => {
 			overflow: 'hidden',
 		}}>
 			<Toolbar />
-			<AppButton
-				variant="contained"
-				sx={theme => ({ ...theme.productFinderStyles?.backToScannerButton })}
-				onClick={() => {
-					navigate('/scan-page');
-					setSelectedAnwsers([]);
-				}}
-				startIcon={<AppArrowLeftSquareIcon sx={{ fontSize: '1.25rem' }} />}
-			>
-				{t('ProductFinderBackButtonText')}
-			</AppButton>
 
 			{searchProductsStatus === StoreStatus.empty
 				? (<>
@@ -382,16 +372,6 @@ const ProductFinderPage = () => {
 											}}
 											product={p}
 										>
-											<Typography sx={{
-												color: "#fff",
-												position: 'absolute',
-												p: 0,
-												fontWeight: 700,
-												fontSize: '0.625rem',
-												textDecoration: 'underline',
-												bottom: theme => theme.spacing(1),
-												right: theme => theme.spacing(1),
-											}}>{t('ProductFinderViewInARText')}</Typography>
 										</CompareProductContent>
 									</Link>
 								</Grid>
@@ -422,6 +402,7 @@ const ProductFinderPage = () => {
 							endIcon={<ProductFinderSettingIcon sx={{ width: "20px", height: "20px", marginLeft: "6px" }} />}
 						>{t('ProductFinderChangeSettingButtonText')}</AppButton>
 					</Grid>)}
+					<NavigationButtons isProductFinderPage={true} />
 				</Grid>)}
 
 			<ModifySettingDrawer
